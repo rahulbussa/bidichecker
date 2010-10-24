@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+   <!--
+    Copyright 2009 Google Inc. All Rights Reserved.
+
+    Use of this source code is governed by an Apache 2.0 License.
+    See the COPYING file for details.
+  -->
+
+ <!--
+  Unit tests for errorcollector.js.
+  -->
+  <head>
+    <title>bidichecker - Javascript Unit Tests</title>
+    <script type="text/javascript" src="../third_party/closure-library/closure/goog/base.js">
+    </script>
+
+    <!-- Include the generated deps.js which enables goog.require of
+         the modules under test.
+    -->
+    <script type="text/javascript" src="deps.js"></script>
+    <script type="text/javascript" src="testutils.js"></script>
+
+    <script type="text/javascript">
+// This in turn pulls in the rest of the files.
+goog.require('bidichecker.ErrorCollector');
+goog.require('bidichecker.FilterFactory');
+goog.require('bidichecker.FrameStack');
+
+goog.require('goog.testing.jsunit');
+    </script>
+
+  </head>
+  <body>
+    <script type="text/javascript">
+
+function testErrorCollector_Empty() {
+  var collector = new bidichecker.ErrorCollector(new bidichecker.FrameStack());
+  assertArrayEquals([], collector.getErrors());
+}
+
+
+function testErrorCollector_AddErrorWithoutLocation() {
+  var collector = new bidichecker.ErrorCollector(new bidichecker.FrameStack());
+  var error = new bidichecker.Error('abc', 2);
+  collector.addError(error);
+  assertArrayEquals([error], collector.getErrors());
+
+  // Check that the error contents have not been modified.
+  var expectedFields = {'type': 'abc', 'severity': 2};
+  assertErrorFields([expectedFields], collector.getErrors());
+}
+
+
+function testErrorCollector_AddErrorWithLocation() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  testDiv.innerHTML = '<div id=\'nomatch\'><p>Okay?</p></div>';
+
+  var collector = new bidichecker.ErrorCollector(new bidichecker.FrameStack());
+  var error = new bidichecker.Error('abc', 2);
+  var locationElement = (/** @type {Element} */ testDiv.firstChild);
+  collector.addError(error, locationElement);
+  assertArrayEquals([error], collector.getErrors());
+
+  // Check that the error now has a location description.
+  var expectedFields = {'type': 'abc',
+                        'severity': 2,
+                        'locationDescription': '<div id=\'nomatch\'>'};
+  assertErrorFields([expectedFields], collector.getErrors());
+}
+
+
+function testErrorCollector_AddErrorSuppressedByFilter() {
+  var filters = [bidichecker.FilterFactory.constructFilter(
+      {'atText': 'friends', 'opcode': 'AT_TEXT'})];
+
+  var collector =
+      new bidichecker.ErrorCollector(new bidichecker.FrameStack(), filters);
+  var error = new bidichecker.Error('abc', 2, null, 'friends');
+  collector.addError(error);
+  assertArrayEquals([], collector.getErrors());
+}
+
+
+function testErrorCollector_AddErrorNotSuppressedByFilter() {
+  var filters = [bidichecker.FilterFactory.constructFilter(
+      {'atText': 'friends', 'opcode': 'AT_TEXT'})];
+
+  var collector =
+      new bidichecker.ErrorCollector(new bidichecker.FrameStack(), filters);
+  var error = new bidichecker.Error('abc', 2, null, 'enemies');
+  collector.addError(error);
+  assertArrayEquals([error], collector.getErrors());
+}
+
+
+function testErrorCollector_AddErrorSuppressedBySecondFilter() {
+  // Make sure all filters are applied to all errors.
+  var filters = [bidichecker.FilterFactory.constructFilter(
+      {'atText': 'friends', 'opcode': 'AT_TEXT'}),
+      bidichecker.FilterFactory.constructFilter(
+      {'atText': 'enemies', 'opcode': 'AT_TEXT'})];
+
+  var collector =
+      new bidichecker.ErrorCollector(new bidichecker.FrameStack(), filters);
+  var error1 = new bidichecker.Error('abc', 2, null, 'enemies');
+  var error2 = new bidichecker.Error('abc', 2, null, 'countrymen');
+  collector.addError(error1);
+  collector.addError(error2);
+  assertArrayEquals([error2], collector.getErrors());
+}
+
+
+function testErrorCollector_AddErrorsInFrames() {
+  // The ErrorCollector doesn't actually care whether the frame location element
+  // it receives in fact belongs to a frame; it just uses it to generate the
+  // nested location description. To simplify the test, we just use any old
+  // element to represent the frame element.
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  testDiv.innerHTML =
+      '<div id=\'nomatch\'><p><b>Text</b></p></div>';
+
+  var frameStack = new bidichecker.FrameStack;
+  var collector = new bidichecker.ErrorCollector(frameStack);
+  var frameElement1 = (/** @type {Element} */ testDiv.firstChild);
+  var frameElement2 = (/** @type {Element} */ testDiv.firstChild.firstChild);
+  var locationElement =
+      (/** @type {Element} */ testDiv.firstChild.firstChild.firstChild);
+
+  frameStack.push(frameElement1);
+  var error1 = new bidichecker.Error('abc', 2);
+  collector.addError(error1, locationElement);
+
+  frameStack.push(frameElement2);
+  var error2 = new bidichecker.Error('abc', 2);
+  collector.addError(error2, locationElement);
+  frameStack.pop();
+
+  var error3 = new bidichecker.Error('abc', 2);
+  collector.addError(error3);  // This one has no DOM location.
+  frameStack.pop();
+
+  // Back at the top-level document.
+  var error4 = new bidichecker.Error('abc', 2);
+  collector.addError(error4, locationElement);
+
+  assertArrayEquals([error1, error2, error3, error4], collector.getErrors());
+
+  // Check that the location descriptions include the frames.
+  var expectedFields = [{
+      'type': 'abc',
+      'severity': 2,
+      'locationDescription':
+          '<div id=\'nomatch\'><p><b> in <div id=\'nomatch\'>'
+  },
+  {
+      'type': 'abc',
+      'severity': 2,
+      'locationDescription':
+          '<div id=\'nomatch\'><p><b> in ' +
+          '<div id=\'nomatch\'><p> in <div id=\'nomatch\'>'
+  },
+  {
+      'type': 'abc',
+      'severity': 2,
+      'locationDescription':
+          '<div id=\'nomatch\'>'  // Just a frame location.
+  },
+  {
+      'type': 'abc',
+      'severity': 2,
+      'locationDescription':
+          '<div id=\'nomatch\'><p><b>'  // No parent frame.
+  }];
+  assertErrorFields(expectedFields, collector.getErrors());
+}
+
+
+function testErrorCollector_SetThrowOnError() {
+  var collector = new bidichecker.ErrorCollector(new bidichecker.FrameStack());
+  collector.SetThrowOnError();
+
+  var createError = function() {
+    var error = new bidichecker.Error('abc', 2);
+    collector.addError(error);
+  };
+  assertThrows(createError);
+}
+    </script>
+
+  </body>
+</html>

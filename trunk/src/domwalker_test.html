@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html>
+  <!--
+    Copyright 2009 Google Inc. All Rights Reserved.
+
+    Use of this source code is governed by an Apache 2.0 License.
+    See the COPYING file for details.
+  -->
+
+  <!--
+  Unit tests for domwalker.js.
+  -->
+  <head>
+    <title>bidichecker - Javascript Unit Tests</title>
+    <script type="text/javascript" src="../third_party/closure-library/closure/goog/base.js">
+    </script>
+
+    <!-- Include the generated deps.js which enables goog.require of
+         the modules under test.
+    -->
+    <script type="text/javascript" src="deps.js"></script>
+    <script type="text/javascript" src="testutils.js"></script>
+
+    <script type="text/javascript">
+// This in turn pulls in the rest of the files.
+goog.require('bidichecker.DomWalker');
+goog.require('bidichecker.DomWalker.EventTypes');
+
+goog.require('goog.events.EventHandler');
+goog.require('goog.testing.jsunit');
+    </script>
+
+  </head>
+  <body>
+    <script type="text/javascript">
+
+// Aliases for convenience in unit testing.
+var START_TAG = bidichecker.DomWalker.EventTypes.START_TAG;
+var END_TAG = bidichecker.DomWalker.EventTypes.END_TAG;
+var TEXT_NODE = bidichecker.DomWalker.EventTypes.TEXT_NODE;
+var END_OF_DOM = bidichecker.DomWalker.EventTypes.END_OF_DOM;
+
+
+/**
+ * Walks the DOM using a {@code bidichecker.DomWalker}, collecting all DOM
+ * events dispatched along the way.
+ * @param {!bidichecker.DomWalker} domWalker The DOM walker.
+ * @return {Array.<!Object>} The sequence of states encountered while walking
+ *     the DOM, each of which is represented by an object with fields indicating
+ *     the state variables: 'type' is the event type string, 'inRtl' is the
+ *     directionality (boolean), 'block' is the current lowest-level enclosing
+ *     block, 'text' (if applicable) is the string contents of a text node,
+ *     'element' (if applicable) is the DOM element for a start or end tag,
+ *     and 'inDeclaredDir' (if applicable) is the declared-directionality status
+ *     (boolean).
+ */
+function walkTheDom(domWalker) {
+  var states = [];
+
+  // Listen to all types of DOM events and collect the state of the traversal in
+  // {@code states}.
+  var handler = function(event) {
+    var state = {
+      type: event.type,
+      inRtl: domWalker.inRtl(),
+      block: domWalker.getCurrentBlock()
+    };
+    if (event.type == TEXT_NODE) {
+      state.text = domWalker.getNode().data;
+    } else if (event.type == START_TAG || event.type == END_TAG) {
+      state.element = domWalker.getNode();
+    }
+    if (domWalker.inDeclaredDir() != undefined) {
+      state.inDeclaredDir = domWalker.inDeclaredDir();
+    }
+    states.push(state);
+  };
+
+  var eventHandler = new goog.events.EventHandler();
+  eventHandler.listen(domWalker,
+                      [START_TAG, END_TAG, TEXT_NODE, END_OF_DOM],
+                      handler);
+  domWalker.go();
+  eventHandler.removeAll();
+
+  return states;
+}
+
+
+/**
+ * Asserts the equality of two sequences of DOM states, as returned by
+ * {@code walkTheDom()}.
+ * @param {Array.<!Object>} expected The expected sequence of DOM states.
+ * @param {Array.<!Object>} actual The actual sequence of DOM states.
+ */
+function assertStatesEqual(expected, actual) {
+  // Check the lengths of the arguments.
+  assertEquals('Expected ' + expected.length + ' elements: [' + expected +
+               '], ' + 'got ' + actual.length + ' elements: [' + actual + ']',
+               expected.length, actual.length);
+
+  // Compare individual entries by hash equality, which is a shallow equality
+  // check on the keys and values.
+  for (var i = 0; i < expected.length; ++i) {
+    // Warning: borrowing private _displayStringForValue() function from
+    // closure/testing/asserts.js.
+    assertHashEquals('Failed assertion in DOM state #' + i + ': Expected ' +
+                     _displayStringForValue(expected[i]) + ', got ' +
+                     _displayStringForValue(actual[i]),
+                     expected[i], actual[i]);
+  }
+}
+
+
+function testDomWalker_EmptyDiv() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+
+  var domWalker = new bidichecker.DomWalker(testDiv);
+  assertEquals(testDiv, domWalker.getRootBlock());
+  assertArrayEquals([], domWalker.getFrames());
+
+  var states = walkTheDom(domWalker);
+  var expected = [{type: START_TAG, element: testDiv,
+                   inRtl: false, inDeclaredDir: false, block: testDiv},
+
+                  {type: END_TAG, element: testDiv,
+                   inRtl: false, inDeclaredDir: false, block: testDiv},
+
+                  {type: END_OF_DOM, inRtl: false, block: testDiv}
+                 ];
+  assertStatesEqual(expected, states);
+}
+
+
+function testDomWalker_TextNode() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'}, 'test');
+  goog.dom.appendChild(document.body, testDiv);
+
+  var domWalker = new bidichecker.DomWalker(testDiv);
+  var states = walkTheDom(domWalker);
+  var expected = [{type: START_TAG, element: testDiv,
+                   inRtl: false, inDeclaredDir: false, block: testDiv},
+
+                  {type: TEXT_NODE, text: 'test',
+                   inRtl: false, inDeclaredDir: false, block: testDiv},
+
+                  {type: END_TAG, element: testDiv,
+                   inRtl: false, inDeclaredDir: false, block: testDiv},
+
+                  {type: END_OF_DOM, inRtl: false, block: testDiv}
+                 ];
+  assertStatesEqual(expected, states);
+}
+
+
+function testDomWalker_TwoOppositeDirParagraphs() {
+  // Two paragraphs with opposite directionality tags.
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<p dir=\'rtl\'>Shalom!</p><p>Okay?</p>';
+  var rtlPara = testDiv.firstChild;  // <p dir='rtl'>...
+  var ltrPara = testDiv.childNodes[1];  // <p>Okay?</p>
+
+  var domWalker = new bidichecker.DomWalker(testDiv);
+  var states = walkTheDom(domWalker);
+  var expected = [{type: START_TAG, element: testDiv,
+                   inRtl: false, inDeclaredDir: false, block: testDiv},
+
+                  {type: START_TAG, element: rtlPara,
+                   inRtl: true, inDeclaredDir: true, block: rtlPara},
+
+                  {type: TEXT_NODE, text: 'Shalom!',
+                   inRtl: true, inDeclaredDir: true, block: rtlPara},
+
+                  {type: END_TAG, element: rtlPara,
+                   inRtl: true, inDeclaredDir: true, block: rtlPara},
+
+                  {type: START_TAG, element: ltrPara,
+                   inRtl: false, inDeclaredDir: false, block: ltrPara},
+
+                  {type: TEXT_NODE, text: 'Okay?',
+                   inRtl: false, inDeclaredDir: false, block: ltrPara},
+
+                  {type: END_TAG, element: ltrPara,
+                   inRtl: false, inDeclaredDir: false, block: ltrPara},
+
+                  {type: END_TAG, element: testDiv,
+                   inRtl: false, inDeclaredDir: false, block: testDiv},
+
+                  {type: END_OF_DOM, inRtl: false, block: testDiv}
+                 ];
+  assertStatesEqual(expected, states);
+}
+
+
+function testDomWalker_DeclaredSameDirParagraphs() {
+  // Paragraphs have explicit directionality declaration, though they're the
+  // same as the root element's.
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<p dir=\'ltr\'>Shalom!</p><p dir=\'ltr\'>Okay?</p>';
+  var para1 = testDiv.firstChild;  // <p dir='ltr'>Shalom!</p>
+  var para2 = testDiv.childNodes[1];  // <p dir='ltr'>Okay?</p>
+
+  var domWalker = new bidichecker.DomWalker(testDiv);
+  var states = walkTheDom(domWalker);
+  var expected = [{type: START_TAG, element: testDiv,
+                   inRtl: false, inDeclaredDir: false, block: testDiv},
+
+                  {type: START_TAG, element: para1,
+                   inRtl: false, inDeclaredDir: true, block: para1},
+
+                  {type: TEXT_NODE, text: 'Shalom!',
+                   inRtl: false, inDeclaredDir: true, block: para1},
+
+                  {type: END_TAG, element: para1,
+                   inRtl: false, inDeclaredDir: true, block: para1},
+
+                  {type: START_TAG, element: para2,
+                   inRtl: false, inDeclaredDir: true, block: para2},
+
+                  {type: TEXT_NODE, text: 'Okay?',
+                   inRtl: false, inDeclaredDir: true, block: para2},
+
+                  {type: END_TAG, element: para2,
+                   inRtl: false, inDeclaredDir: true, block: para2},
+
+                  {type: END_TAG, element: testDiv,
+                   inRtl: false, inDeclaredDir: false, block: testDiv},
+
+                  {type: END_OF_DOM, inRtl: false, block: testDiv}
+                 ];
+  assertStatesEqual(expected, states);
+}
+
+
+function testDomWalker_DeclaredSameDirInBlock() {
+  // Text elements with the same directionality within the same block,
+  // but the second has declared directionality.
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<p>Shalom! <span dir=\'ltr\'>BACK</span> Okay? </p>';
+  var para = testDiv.firstChild;  // <p>Shalom!...
+  var span = para.childNodes[1];  // <p dir='ltr'>BACK</p>
+
+  var domWalker = new bidichecker.DomWalker(testDiv);
+  var states = walkTheDom(domWalker);
+  var expected = [{type: START_TAG, element: testDiv,
+                   inRtl: false, inDeclaredDir: false, block: testDiv},
+
+                  {type: START_TAG, element: para,
+                   inRtl: false, inDeclaredDir: false, block: para},
+
+                  {type: TEXT_NODE, text: 'Shalom! ',
+                   inRtl: false, inDeclaredDir: false, block: para},
+
+                  {type: START_TAG, element: span,
+                   inRtl: false, inDeclaredDir: true, block: para},
+
+                  {type: TEXT_NODE, text: 'BACK',
+                   inRtl: false, inDeclaredDir: true, block: para},
+
+                  {type: END_TAG, element: span,
+                   inRtl: false, inDeclaredDir: true, block: para},
+
+                  {type: TEXT_NODE, text: ' Okay? ',
+                   inRtl: false, inDeclaredDir: false, block: para},
+
+                  {type: END_TAG, element: para,
+                   inRtl: false, inDeclaredDir: false, block: para},
+
+                  {type: END_TAG, element: testDiv,
+                   inRtl: false, inDeclaredDir: false, block: testDiv},
+
+                  {type: END_OF_DOM, inRtl: false, block: testDiv}
+                 ];
+  assertStatesEqual(expected, states);
+}
+
+
+function testDomWalker_EmbeddedBlockCancelsDeclaredStatus() {
+  // If a block with declared directionality contains another block inside it,
+  // we don't consider the outer block's contents to be "declared".
+  // Note: This DOM must be built with createDom(), since the HTML parser
+  // inserts unwanted paragraph breaks.
+  var para1 = goog.dom.createDom('p', {'dir': 'ltr'}, 'BACK');
+  var para2 = goog.dom.createDom('p', {'dir': 'ltr'}, 'Shalom', para1, 'Okay');
+  var testDiv = goog.dom.createDom('div', {'id': 'test'}, para2);
+  goog.dom.appendChild(document.body, testDiv);
+
+  var domWalker = new bidichecker.DomWalker(testDiv);
+  var states = walkTheDom(domWalker);
+  var expected = [{type: START_TAG, element: testDiv,
+                   inRtl: false, inDeclaredDir: false, block: testDiv},
+
+                  {type: START_TAG, element: para2,
+                   inRtl: false, inDeclaredDir: false, block: para2},
+
+                  {type: TEXT_NODE, text: 'Shalom',
+                   inRtl: false, inDeclaredDir: false, block: para2},
+
+                  {type: START_TAG, element: para1,
+                   inRtl: false, inDeclaredDir: true, block: para1},
+
+                  {type: TEXT_NODE, text: 'BACK',
+                   inRtl: false, inDeclaredDir: true, block: para1},
+
+                  {type: END_TAG, element: para1,
+                   inRtl: false, inDeclaredDir: true, block: para1},
+
+                  {type: TEXT_NODE, text: 'Okay',
+                   inRtl: false, inDeclaredDir: false, block: para2},
+
+                  {type: END_TAG, element: para2,
+                   inRtl: false, inDeclaredDir: false, block: para2},
+
+                  {type: END_TAG, element: testDiv,
+                   inRtl: false, inDeclaredDir: false, block: testDiv},
+
+                  {type: END_OF_DOM, inRtl: false, block: testDiv}
+                 ];
+  assertStatesEqual(expected, states);
+}
+
+
+function testDomWalker_BlockChangesAfterExitingEmbeddedBlock() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<div><div dir=\'ltr\'>Shalom</div>Okay</div>';
+  var parentDiv = testDiv.firstChild;  // <div>...
+  var ltrDiv = parentDiv.firstChild;  // <div dir='ltr'>...
+
+  var domWalker = new bidichecker.DomWalker(testDiv);
+  var states = walkTheDom(domWalker);
+  var expected = [{type: START_TAG, element: testDiv,
+                   inRtl: true, inDeclaredDir: false, block: testDiv},
+
+                  {type: START_TAG, element: parentDiv,
+                   inRtl: true, inDeclaredDir: false, block: parentDiv},
+
+                  {type: START_TAG, element: ltrDiv,
+                   inRtl: false, inDeclaredDir: true, block: ltrDiv},
+
+                  {type: TEXT_NODE, text: 'Shalom',
+                   inRtl: false, inDeclaredDir: true, block: ltrDiv},
+
+                  {type: END_TAG, element: ltrDiv,
+                   inRtl: false, inDeclaredDir: true, block: ltrDiv},
+
+                  {type: TEXT_NODE, text: 'Okay',
+                   inRtl: true, inDeclaredDir: false, block: parentDiv},
+
+                  {type: END_TAG, element: parentDiv,
+                   inRtl: true, inDeclaredDir: false, block: parentDiv},
+
+                  {type: END_TAG, element: testDiv,
+                   inRtl: true, inDeclaredDir: false, block: testDiv},
+
+                  {type: END_OF_DOM, inRtl: true, block: testDiv}
+                 ];
+  assertStatesEqual(expected, states);
+}
+
+
+function testDomWalker_DisplayNoneIsIgnored() {
+  // All the contents have display:none set.
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<p dir=\'rtl\' style=\'display: none\'>Shalom!</p>' +
+      '<p style=\'display: none\'>Okay?</p>';
+
+  var domWalker = new bidichecker.DomWalker(testDiv);
+  var states = walkTheDom(domWalker);
+  var expected = [{type: START_TAG, element: testDiv,
+                   inRtl: false, inDeclaredDir: false, block: testDiv},
+
+                  {type: END_TAG, element: testDiv,
+                   inRtl: false, inDeclaredDir: false, block: testDiv},
+
+                  {type: END_OF_DOM, inRtl: false, block: testDiv}
+                 ];
+  assertStatesEqual(expected, states);
+}
+
+
+function testDomWalker_ScriptAndStyleAreIgnored() {
+  // <style> shouldn't really appear in the body, but sometimes it does.
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<\script dir=\'rtl\'>if (true) x=7;</\script>' +
+      '<style>A b c d e f g</style>';
+
+  var domWalker = new bidichecker.DomWalker(testDiv);
+  var states = walkTheDom(domWalker);
+  var expected = [{type: START_TAG, element: testDiv,
+                   inRtl: false, inDeclaredDir: false, block: testDiv},
+
+                   {type: END_TAG, element: testDiv,
+                   inRtl: false, inDeclaredDir: false, block: testDiv},
+
+                   {type: END_OF_DOM, inRtl: false, block: testDiv}
+                 ];
+  assertStatesEqual(expected, states);
+}
+
+
+function testDomWalker_CanWalkAnIframe() {
+  // Create an iframe in the document.
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<iframe id=\'iframe\'></iframe>';
+  // For iframes to work, the div must belong to a document.
+  goog.dom.appendChild(document.body, testDiv);
+
+  // Fill the iframe with two "hello world" div's.
+  var iframe = testDiv.firstChild;
+  var iframeDoc =
+      goog.dom.getFrameContentDocument(/** @type {Element} */ (iframe));
+  iframeDoc.open();
+  iframeDoc.write('<div id=line1>hello world</div>' +
+                  '<div id=line2>hello world</div>');
+  iframeDoc.close();
+  var iframeRoot = iframeDoc.body;
+
+  // Walk the DOM; this should also collect the iframes.
+  var domWalker = new bidichecker.DomWalker(testDiv);
+  var states = walkTheDom(domWalker);
+  var expected = [{type: START_TAG, element: testDiv,
+                   inRtl: false, inDeclaredDir: false, block: testDiv},
+
+                  {type: START_TAG, element: iframe,
+                   inRtl: false, inDeclaredDir: false, block: testDiv},
+
+                  {type: END_TAG, element: iframe,
+                   inRtl: false, inDeclaredDir: false, block: testDiv},
+
+                  {type: END_TAG, element: testDiv,
+                   inRtl: false, inDeclaredDir: false, block: testDiv},
+
+                  {type: END_OF_DOM, inRtl: false, block: testDiv}
+                 ];
+  assertStatesEqual(expected, states);
+  assertArrayEquals([iframe], domWalker.getFrames());
+
+  // Access the elements for the div's inside the iframe.
+  var iframeHelper = new goog.dom.DomHelper(iframeDoc);
+  var line1 = iframeHelper.getElement('line1');
+  var line2 = iframeHelper.getElement('line2');
+
+  // Now walk the DOM for the iframe, with a new DomWalker.
+  var iframeDomWalker = new bidichecker.DomWalker(iframeRoot);
+  states = walkTheDom(iframeDomWalker);
+  expected = [{type: START_TAG, element: iframeRoot,
+               inRtl: false, inDeclaredDir: false, block: iframeRoot},
+
+              {type: START_TAG, element: line1,
+               inRtl: false, inDeclaredDir: false, block: line1},
+
+              {type: TEXT_NODE, text: 'hello world',
+               inRtl: false, inDeclaredDir: false, block: line1},
+
+              {type: END_TAG, element: line1,
+               inRtl: false, inDeclaredDir: false, block: line1},
+
+              {type: START_TAG, element: line2,
+               inRtl: false, inDeclaredDir: false, block: line2},
+
+              {type: TEXT_NODE, text: 'hello world',
+               inRtl: false, inDeclaredDir: false, block: line2},
+
+              {type: END_TAG, element: line2,
+               inRtl: false, inDeclaredDir: false, block: line2},
+
+              {type: END_TAG, element: iframeRoot,
+               inRtl: false, inDeclaredDir: false, block: iframeRoot},
+
+              {type: END_OF_DOM, inRtl: false, block: iframeRoot}
+             ];
+  assertStatesEqual(expected, states);
+  assertArrayEquals([], iframeDomWalker.getFrames());  // No nested iframes.
+}
+
+
+function testDomWalker_CanWalkMultipleIframes() {
+  // This time, there's more than iframe on the page, and there are nested
+  // iframes too.
+
+  // Create two iframes in the document.
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<iframe id=\'iframe1\'></iframe>' +
+      '<iframe id=\'iframe2\'></iframe>';
+  goog.dom.appendChild(document.body, testDiv);
+
+  // Fill the first iframe with content.
+  var iframe1 = testDiv.firstChild;
+  var iframe1Doc =
+      goog.dom.getFrameContentDocument(/** @type {Element} */ (iframe1));
+  iframe1Doc.open();
+  iframe1Doc.write('<p>hello world</p>');
+  iframe1Doc.close();
+  var iframe1Root = iframe1Doc.body;
+
+  // Fill the second iframe with a nested iframe.
+  var iframe2 = testDiv.childNodes[1];
+  var iframe2Doc = goog.dom.getFrameContentDocument(iframe2);
+  iframe2Doc.open();
+  iframe2Doc.write('<iframe id=\'iframe_nested\'></iframe>');
+  iframe2Doc.close();
+  var iframe2Root = iframe2Doc.body;
+
+  // Fill the nested iframe with content.
+  var iframe3 = iframe2Root.firstChild;
+  var iframe3Doc =
+      goog.dom.getFrameContentDocument(/** @type {Element} */ (iframe3));
+  iframe3Doc.open();
+  iframe3Doc.write('<p id=\'para\'>In a nested iframe!</p>');
+  iframe3Doc.close();
+  var iframe3Root = iframe3Doc.body;
+
+  // Walk the DOM; this should also collect the iframes.
+  var domWalker = new bidichecker.DomWalker(testDiv);
+  walkTheDom(domWalker);
+
+  // No need to bother testing the state machine here. Just make sure we've
+  // seen both top-level iframes.
+  var expectedFrames = [iframe1, iframe2];
+  assertArrayEquals(expectedFrames, domWalker.getFrames());
+
+
+  // Now walk the DOM for the first iframe, with a new DomWalker. No new iframes
+  // there.
+  var iframe1DomWalker = new bidichecker.DomWalker(iframe1Root);
+  walkTheDom(iframe1DomWalker);
+  assertArrayEquals([], iframe1DomWalker.getFrames());
+
+  // Now walk the DOM for the second iframe, revealing a third, nested, iframe.
+  // there.
+  var iframe2DomWalker = new bidichecker.DomWalker(iframe2Root);
+  walkTheDom(iframe2DomWalker);
+  assertArrayEquals([iframe3], iframe2DomWalker.getFrames());
+
+  // Finally, walk the DOM for the third iframe, with a new DomWalker. No new
+  // iframes there.
+  var iframe3DomWalker = new bidichecker.DomWalker(iframe3Root);
+  var states = walkTheDom(iframe3DomWalker);
+  assertArrayEquals([], iframe3DomWalker.getFrames());
+
+  // This time, we'll also check the DOM in the nested iframe.
+  var iframeHelper = new goog.dom.DomHelper(iframe3Doc);
+  var para = iframeHelper.getElement('para');
+  var expected = [{type: START_TAG, element: iframe3Root,
+                   inRtl: false, inDeclaredDir: false, block: iframe3Root},
+
+                   {type: START_TAG, element: para,
+                   inRtl: false, inDeclaredDir: false, block: para},
+
+                   {type: TEXT_NODE, text: 'In a nested iframe!',
+                   inRtl: false, inDeclaredDir: false, block: para},
+
+                   {type: END_TAG, element: para,
+                   inRtl: false, inDeclaredDir: false, block: para},
+
+                   {type: END_TAG, element: iframe3Root,
+                   inRtl: false, inDeclaredDir: false, block: iframe3Root},
+
+                   {type: END_OF_DOM, inRtl: false, block: iframe3Root}
+                 ];
+  assertStatesEqual(expected, states);
+}
+
+
+function testDomWalker_CanWalkAFrameSet() {
+  // There doesnt seem to be a way to create a frameset using Javascript under
+  // IE. Disable this test; handling of framesets will be tested by the Java
+  // tests anyway.
+  if (goog.userAgent.IE) {
+    return;
+  }
+
+  var frameset = goog.dom.createDom('frameset', {'rows': '*,*', 'id': 'test' },
+      goog.dom.createDom('frame'), goog.dom.createDom('frame'));
+  document.documentElement.appendChild(frameset);
+
+  // Add a paragraph of text to the first frame.
+  var frame1 = frameset.firstChild;
+  var frame2 = frameset.childNodes[1];
+  var frame1Doc =
+      goog.dom.getFrameContentDocument(/** @type {Element} */ (frame1));
+  var frame1Root = frame1Doc.body;
+  frame1Root.appendChild(goog.dom.createDom('p', null, 'testing'));
+
+  // Walk the top-level DOM for the frameset.
+  var domWalker = new bidichecker.DomWalker(frameset);
+  var states = walkTheDom(domWalker);
+
+  var expected = [{type: START_TAG, element: frameset,
+                   inRtl: false, inDeclaredDir: false, block: frameset},
+
+                  {type: START_TAG, element: frame1,
+                   inRtl: false, inDeclaredDir: false, block: frameset},
+
+                  {type: END_TAG, element: frame1,
+                   inRtl: false, inDeclaredDir: false, block: frameset},
+
+                  {type: START_TAG, element: frame2,
+                   inRtl: false, inDeclaredDir: false, block: frameset},
+
+                  {type: END_TAG, element: frame2,
+                   inRtl: false, inDeclaredDir: false, block: frameset},
+
+                  {type: END_TAG, element: frameset,
+                   inRtl: false, inDeclaredDir: false, block: frameset},
+
+                  {type: END_OF_DOM, inRtl: false, block: frameset}
+                 ];
+  assertStatesEqual(expected, states);
+
+  assertArrayEquals([frame1, frame2], domWalker.getFrames());
+
+  // Now walk the DOM for the first frame, with a new DomWalker.
+  var frame1DomWalker = new bidichecker.DomWalker(frame1Root);
+  states = walkTheDom(frame1DomWalker);
+
+  var para = frame1Root.firstChild;
+  expected = [{type: START_TAG, element: frame1Root,
+               inRtl: false, inDeclaredDir: false, block: frame1Root},
+
+              {type: START_TAG, element: para,
+               inRtl: false, inDeclaredDir: false, block: para},
+
+              {type: TEXT_NODE, text: 'testing',
+               inRtl: false, inDeclaredDir: false, block: para},
+
+              {type: END_TAG, element: para,
+               inRtl: false, inDeclaredDir: false, block: para},
+
+              {type: END_TAG, element: frame1Root,
+               inRtl: false, inDeclaredDir: false, block: frame1Root},
+
+              {type: END_OF_DOM, inRtl: false, block: frame1Root}
+             ];
+  assertStatesEqual(expected, states);
+
+  assertArrayEquals([], frame1DomWalker.getFrames());
+}
+
+    </script>
+
+  </body>
+</html>

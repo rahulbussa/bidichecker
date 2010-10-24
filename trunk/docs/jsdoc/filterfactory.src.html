@@ -1,0 +1,1000 @@
+<html><head><style>
+	.KEYW {color: #933;}
+	.COMM {color: #bbb; font-style: italic;}
+	.NUMB {color: #393;}
+	.STRN {color: #393;}
+	.REGX {color: #339;}
+	.linenumber {border-right: 1px dotted #666; color: #666; font-style: normal;}
+	</style></head><body><pre><span class='linenumber'>  1</span> <span class="COMM">// Copyright 2009 Google Inc. All Rights Reserved.</span><span class="WHIT">
+<span class='linenumber'>  2</span> </span><span class="COMM">//</span><span class="WHIT">
+<span class='linenumber'>  3</span> </span><span class="COMM">// Licensed under the Apache License, Version 2.0 (the "License");</span><span class="WHIT">
+<span class='linenumber'>  4</span> </span><span class="COMM">// you may not use this file except in compliance with the License.</span><span class="WHIT">
+<span class='linenumber'>  5</span> </span><span class="COMM">// You may obtain a copy of the License at</span><span class="WHIT">
+<span class='linenumber'>  6</span> </span><span class="COMM">//</span><span class="WHIT">
+<span class='linenumber'>  7</span> </span><span class="COMM">//      http://www.apache.org/licenses/LICENSE-2.0</span><span class="WHIT">
+<span class='linenumber'>  8</span> </span><span class="COMM">//</span><span class="WHIT">
+<span class='linenumber'>  9</span> </span><span class="COMM">// Unless required by applicable law or agreed to in writing, software</span><span class="WHIT">
+<span class='linenumber'> 10</span> </span><span class="COMM">// distributed under the License is distributed on an "AS-IS" BASIS,</span><span class="WHIT">
+<span class='linenumber'> 11</span> </span><span class="COMM">// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.</span><span class="WHIT">
+<span class='linenumber'> 12</span> </span><span class="COMM">// See the License for the specific language governing permissions and</span><span class="WHIT">
+<span class='linenumber'> 13</span> </span><span class="COMM">// limitations under the License.</span><span class="WHIT">
+<span class='linenumber'> 14</span> 
+<span class='linenumber'> 15</span> </span><span class="COMM">/**
+<span class='linenumber'> 16</span>  * @fileoverview Factory for constructing filters from deserialized objects.
+<span class='linenumber'> 17</span>  * In this file, filters (whether their static factory methods or their class
+<span class='linenumber'> 18</span>  * definitions) are ordered alphabetically.
+<span class='linenumber'> 19</span>  */</span><span class="WHIT">
+<span class='linenumber'> 20</span> 
+<span class='linenumber'> 21</span> 
+<span class='linenumber'> 22</span> </span><span class="NAME">goog.provide</span><span class="PUNC">(</span><span class="STRN">'bidichecker.FilterFactory'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'> 23</span> 
+<span class='linenumber'> 24</span> </span><span class="NAME">goog.require</span><span class="PUNC">(</span><span class="STRN">'bidichecker.Filter'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'> 25</span> </span><span class="NAME">goog.require</span><span class="PUNC">(</span><span class="STRN">'goog.json'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'> 26</span> 
+<span class='linenumber'> 27</span> 
+<span class='linenumber'> 28</span> </span><span class="COMM">/**
+<span class='linenumber'> 29</span>  * Factory class that constructs error-suppression filters from bare objects
+<span class='linenumber'> 30</span>  * deserialized from JSON.
+<span class='linenumber'> 31</span>  * @constructor
+<span class='linenumber'> 32</span>  * @export
+<span class='linenumber'> 33</span>  */</span><span class="WHIT">
+<span class='linenumber'> 34</span> </span><span class="NAME">bidichecker.FilterFactory</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'> 35</span> 
+<span class='linenumber'> 36</span> 
+<span class='linenumber'> 37</span> </span><span class="COMM">/**
+<span class='linenumber'> 38</span>  * Abstract base class for custom filter classes, providing them with {@code
+<span class='linenumber'> 39</span>  * and()}, <code>or()</code> and {@code not()} methods.
+<span class='linenumber'> 40</span>  * @constructor
+<span class='linenumber'> 41</span>  * @implements {bidichecker.Filter}
+<span class='linenumber'> 42</span>  * @private
+<span class='linenumber'> 43</span>  * @export
+<span class='linenumber'> 44</span>  */</span><span class="WHIT">
+<span class='linenumber'> 45</span> </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'> 46</span> 
+<span class='linenumber'> 47</span> 
+<span class='linenumber'> 48</span> </span><span class="COMM">/** @inheritDoc */</span><span class="WHIT">
+<span class='linenumber'> 49</span> </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter_.prototype.isSuppressed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">
+<span class='linenumber'> 50</span>     </span><span class="NAME">goog.abstractMethod</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'> 51</span> 
+<span class='linenumber'> 52</span> 
+<span class='linenumber'> 53</span> </span><span class="COMM">/**
+<span class='linenumber'> 54</span>  * Create a filter which ands this filter with another.
+<span class='linenumber'> 55</span>  * @param {!bidichecker.Filter} other The second subfilter.
+<span class='linenumber'> 56</span>  * @return {!bidichecker.FilterFactory.ComposableFilter_} A filter object.
+<span class='linenumber'> 57</span>  * @export
+<span class='linenumber'> 58</span>  */</span><span class="WHIT">
+<span class='linenumber'> 59</span> </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter_.prototype.and</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">other</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'> 60</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.and</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">other</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'> 61</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'> 62</span> 
+<span class='linenumber'> 63</span> 
+<span class='linenumber'> 64</span> </span><span class="COMM">/**
+<span class='linenumber'> 65</span>  * Create a filter which inverts this filter.
+<span class='linenumber'> 66</span>  * @return {!bidichecker.FilterFactory.ComposableFilter_} A filter object.
+<span class='linenumber'> 67</span>  * @export
+<span class='linenumber'> 68</span>  */</span><span class="WHIT">
+<span class='linenumber'> 69</span> </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter_.prototype.not</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'> 70</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.not</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'> 71</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'> 72</span> 
+<span class='linenumber'> 73</span> 
+<span class='linenumber'> 74</span> </span><span class="COMM">/**
+<span class='linenumber'> 75</span>  * Create a filter which ors this filter with another.
+<span class='linenumber'> 76</span>  * @param {!bidichecker.Filter} other The second subfilter.
+<span class='linenumber'> 77</span>  * @return {!bidichecker.FilterFactory.ComposableFilter_} A filter object.
+<span class='linenumber'> 78</span>  * @export
+<span class='linenumber'> 79</span>  */</span><span class="WHIT">
+<span class='linenumber'> 80</span> </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter_.prototype.or</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">other</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'> 81</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.or</span><span class="PUNC">(</span><span class="KEYW">this</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">other</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'> 82</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'> 83</span> 
+<span class='linenumber'> 84</span> 
+<span class='linenumber'> 85</span> </span><span class="COMM">/**
+<span class='linenumber'> 86</span>  * Constructs a suppression filter from a bare object with suitable contents.
+<span class='linenumber'> 87</span>  * For use in deserializing filters from JSON. Throws a string exception if an
+<span class='linenumber'> 88</span>  * invalid filter is encountered.
+<span class='linenumber'> 89</span>  * @param {!Object} bareFilter The object representing the filter. Must contain
+<span class='linenumber'> 90</span>  *     an <code>'opcode'</code> field with a string indicating the filter type.
+<span class='linenumber'> 91</span>  *     Other supported field names and types are dependent on the filter type.
+<span class='linenumber'> 92</span>  * @return {!bidichecker.FilterFactory.ComposableFilter_} The new filter.
+<span class='linenumber'> 93</span>  */</span><span class="WHIT">
+<span class='linenumber'> 94</span> </span><span class="NAME">bidichecker.FilterFactory.constructFilter</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">bareFilter</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'> 95</span>   </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">opcode</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">bareFilter</span><span class="PUNC">[</span><span class="STRN">'opcode'</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'> 96</span>   </span><span class="KEYW">switch</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">opcode</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'> 97</span>     </span><span class="KEYW">case</span><span class="WHIT"> </span><span class="STRN">'AND'</span><span class="PUNC">:</span><span class="WHIT">
+<span class='linenumber'> 98</span>       </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.AndFilter_</span><span class="PUNC">(</span><span class="NAME">bareFilter</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'> 99</span> 
+<span class='linenumber'>100</span>     </span><span class="KEYW">case</span><span class="WHIT"> </span><span class="STRN">'AT_TEXT'</span><span class="PUNC">:</span><span class="WHIT">
+<span class='linenumber'>101</span>       </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.AtTextFilter_</span><span class="PUNC">(</span><span class="NAME">bareFilter</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>102</span> 
+<span class='linenumber'>103</span>     </span><span class="KEYW">case</span><span class="WHIT"> </span><span class="STRN">'AT_TEXT_REGEXP'</span><span class="PUNC">:</span><span class="WHIT">
+<span class='linenumber'>104</span>       </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.AtTextRegexpFilter_</span><span class="PUNC">(</span><span class="NAME">bareFilter</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>105</span> 
+<span class='linenumber'>106</span>     </span><span class="KEYW">case</span><span class="WHIT"> </span><span class="STRN">'FOLLOWED_BY_TEXT'</span><span class="PUNC">:</span><span class="WHIT">
+<span class='linenumber'>107</span>       </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.FollowedByTextFilter_</span><span class="PUNC">(</span><span class="NAME">bareFilter</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>108</span> 
+<span class='linenumber'>109</span>     </span><span class="KEYW">case</span><span class="WHIT"> </span><span class="STRN">'FOLLOWED_BY_TEXT_REGEXP'</span><span class="PUNC">:</span><span class="WHIT">
+<span class='linenumber'>110</span>       </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.FollowedByTextRegexpFilter_</span><span class="PUNC">(</span><span class="WHIT">
+<span class='linenumber'>111</span>           </span><span class="NAME">bareFilter</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>112</span> 
+<span class='linenumber'>113</span>     </span><span class="KEYW">case</span><span class="WHIT"> </span><span class="STRN">'LOCATION_CLASS'</span><span class="PUNC">:</span><span class="WHIT">
+<span class='linenumber'>114</span>       </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.LocationClassFilter_</span><span class="PUNC">(</span><span class="NAME">bareFilter</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>115</span> 
+<span class='linenumber'>116</span>     </span><span class="KEYW">case</span><span class="WHIT"> </span><span class="STRN">'LOCATION_CLASS_REGEXP'</span><span class="PUNC">:</span><span class="WHIT">
+<span class='linenumber'>117</span>       </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.LocationClassRegexpFilter_</span><span class="PUNC">(</span><span class="WHIT">
+<span class='linenumber'>118</span>           </span><span class="NAME">bareFilter</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>119</span> 
+<span class='linenumber'>120</span>     </span><span class="KEYW">case</span><span class="WHIT"> </span><span class="STRN">'LOCATION_ID'</span><span class="PUNC">:</span><span class="WHIT">
+<span class='linenumber'>121</span>       </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.LocationIdFilter_</span><span class="PUNC">(</span><span class="NAME">bareFilter</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>122</span> 
+<span class='linenumber'>123</span>     </span><span class="KEYW">case</span><span class="WHIT"> </span><span class="STRN">'LOCATION_ID_REGEXP'</span><span class="PUNC">:</span><span class="WHIT">
+<span class='linenumber'>124</span>       </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.LocationIdRegexpFilter_</span><span class="PUNC">(</span><span class="WHIT">
+<span class='linenumber'>125</span>           </span><span class="NAME">bareFilter</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>126</span> 
+<span class='linenumber'>127</span>     </span><span class="KEYW">case</span><span class="WHIT"> </span><span class="STRN">'NOT'</span><span class="PUNC">:</span><span class="WHIT">
+<span class='linenumber'>128</span>       </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.NotFilter_</span><span class="PUNC">(</span><span class="NAME">bareFilter</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>129</span> 
+<span class='linenumber'>130</span>     </span><span class="KEYW">case</span><span class="WHIT"> </span><span class="STRN">'OR'</span><span class="PUNC">:</span><span class="WHIT">
+<span class='linenumber'>131</span>       </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.OrFilter_</span><span class="PUNC">(</span><span class="NAME">bareFilter</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>132</span> 
+<span class='linenumber'>133</span>     </span><span class="KEYW">case</span><span class="WHIT"> </span><span class="STRN">'PRECEDED_BY_TEXT'</span><span class="PUNC">:</span><span class="WHIT">
+<span class='linenumber'>134</span>       </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.PrecededByTextFilter_</span><span class="PUNC">(</span><span class="NAME">bareFilter</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>135</span> 
+<span class='linenumber'>136</span>     </span><span class="KEYW">case</span><span class="WHIT"> </span><span class="STRN">'PRECEDED_BY_TEXT_REGEXP'</span><span class="PUNC">:</span><span class="WHIT">
+<span class='linenumber'>137</span>       </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.PrecededByTextRegexpFilter_</span><span class="PUNC">(</span><span class="WHIT">
+<span class='linenumber'>138</span>           </span><span class="NAME">bareFilter</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>139</span> 
+<span class='linenumber'>140</span>     </span><span class="KEYW">case</span><span class="WHIT"> </span><span class="STRN">'SEVERITY'</span><span class="PUNC">:</span><span class="WHIT">
+<span class='linenumber'>141</span>       </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.SeverityFilter_</span><span class="PUNC">(</span><span class="NAME">bareFilter</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>142</span> 
+<span class='linenumber'>143</span>     </span><span class="KEYW">case</span><span class="WHIT"> </span><span class="STRN">'TYPE'</span><span class="PUNC">:</span><span class="WHIT">
+<span class='linenumber'>144</span>       </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.TypeFilter_</span><span class="PUNC">(</span><span class="NAME">bareFilter</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>145</span> 
+<span class='linenumber'>146</span>     </span><span class="KEYW">default</span><span class="PUNC">:</span><span class="WHIT">
+<span class='linenumber'>147</span>       </span><span class="KEYW">throw</span><span class="WHIT"> </span><span class="STRN">'Unknown filter opcode: \''</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">opcode</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'\''</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>148</span>   </span><span class="PUNC">}</span><span class="WHIT">
+<span class='linenumber'>149</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>150</span> 
+<span class='linenumber'>151</span> 
+<span class='linenumber'>152</span> </span><span class="COMM">/**
+<span class='linenumber'>153</span>  * Deserializes a list of suppression filters from a JSON-format string.
+<span class='linenumber'>154</span>  * Throws a string exception if an unknown filter is encountered.
+<span class='linenumber'>155</span>  * @param {string=} opt_filtersJson The input string, if provided.
+<span class='linenumber'>156</span>  * @return {Array.&lt;!bidichecker.Filter>} The error suppression filters.
+<span class='linenumber'>157</span>  */</span><span class="WHIT">
+<span class='linenumber'>158</span> </span><span class="NAME">bidichecker.FilterFactory.readFiltersFromJson</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">opt_filtersJson</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>159</span>   </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">opt_filtersJson</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>160</span>     </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">null</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>161</span>   </span><span class="PUNC">}</span><span class="WHIT">
+<span class='linenumber'>162</span> 
+<span class='linenumber'>163</span>   </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">bareFilters</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">
+<span class='linenumber'>164</span>       </span><span class="PUNC">(</span><span class="COMM">/** @type {Array.&lt;!Object>} */</span><span class="WHIT"> </span><span class="NAME">goog.json.parse</span><span class="PUNC">(</span><span class="NAME">opt_filtersJson</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>165</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">goog.array.map</span><span class="PUNC">(</span><span class="NAME">bareFilters</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">bareFilter</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>166</span>     </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.constructFilter</span><span class="PUNC">(</span><span class="NAME">bareFilter</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>167</span>   </span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>168</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>169</span> 
+<span class='linenumber'>170</span> 
+<span class='linenumber'>171</span> </span><span class="COMM">/**
+<span class='linenumber'>172</span>  * Create a filter which suppresses errors by and-ing component filters.
+<span class='linenumber'>173</span>  * @param {!bidichecker.Filter} filter1 The first subfilter.
+<span class='linenumber'>174</span>  * @param {!bidichecker.Filter} filter2 The second subfilter.
+<span class='linenumber'>175</span>  * @return {!bidichecker.FilterFactory.ComposableFilter_} A filter object.
+<span class='linenumber'>176</span>  * @export
+<span class='linenumber'>177</span>  */</span><span class="WHIT">
+<span class='linenumber'>178</span> </span><span class="NAME">bidichecker.FilterFactory.and</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">filter1</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">filter2</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>179</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.AndFilter_</span><span class="PUNC">(</span><span class="WHIT">
+<span class='linenumber'>180</span>       </span><span class="PUNC">{</span><span class="STRN">'filter1'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">filter1</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'filter2'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">filter2</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>181</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>182</span> 
+<span class='linenumber'>183</span> 
+<span class='linenumber'>184</span> </span><span class="COMM">/**
+<span class='linenumber'>185</span>  * Create a filter which suppresses errors based on a literal match of their
+<span class='linenumber'>186</span>  * <code>atText</code> fields.
+<span class='linenumber'>187</span>  * @param {?string} atText A string which must match the entire <code>atText</code>
+<span class='linenumber'>188</span>  *     field. If empty or null, will only match an empty or null <code>atText</code>.
+<span class='linenumber'>189</span>  * @return {!bidichecker.FilterFactory.ComposableFilter_} A filter object.
+<span class='linenumber'>190</span>  * @export
+<span class='linenumber'>191</span>  */</span><span class="WHIT">
+<span class='linenumber'>192</span> </span><span class="NAME">bidichecker.FilterFactory.atText</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">atText</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>193</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.AtTextFilter_</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="STRN">'atText'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">atText</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="STRN">''</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>194</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>195</span> 
+<span class='linenumber'>196</span> 
+<span class='linenumber'>197</span> </span><span class="COMM">/**
+<span class='linenumber'>198</span>  * Create a filter which suppresses errors by applying a regular expression to
+<span class='linenumber'>199</span>  * their <code>atText</code> fields.
+<span class='linenumber'>200</span>  * @param {string|RegExp} atTextRegexp A regular expression, which must match
+<span class='linenumber'>201</span>  *     the entire <code>atText</code> field. If empty or null, will only match an
+<span class='linenumber'>202</span>  *     empty or null <code>atText</code>.
+<span class='linenumber'>203</span>  * @return {!bidichecker.FilterFactory.ComposableFilter_} A filter object.
+<span class='linenumber'>204</span>  * @export
+<span class='linenumber'>205</span>  */</span><span class="WHIT">
+<span class='linenumber'>206</span> </span><span class="NAME">bidichecker.FilterFactory.atTextRegexp</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">atTextRegexp</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>207</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.AtTextRegexpFilter_</span><span class="PUNC">(</span><span class="WHIT">
+<span class='linenumber'>208</span>       </span><span class="PUNC">{</span><span class="STRN">'atTextRegexp'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">atTextRegexp</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="STRN">''</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>209</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>210</span> 
+<span class='linenumber'>211</span> 
+<span class='linenumber'>212</span> </span><span class="COMM">/**
+<span class='linenumber'>213</span>  * Create a filter which suppresses errors based on a literal match of their
+<span class='linenumber'>214</span>  * <code>followedByText</code> fields.
+<span class='linenumber'>215</span>  * @param {?string} followedByText A string which must match the entire {@code
+<span class='linenumber'>216</span>  *     followedByText} field. If empty or null, will only match an empty or null
+<span class='linenumber'>217</span>  *     <code>followedByText</code>.
+<span class='linenumber'>218</span>  * @return {!bidichecker.FilterFactory.ComposableFilter_} A filter object.
+<span class='linenumber'>219</span>  * @export
+<span class='linenumber'>220</span>  */</span><span class="WHIT">
+<span class='linenumber'>221</span> </span><span class="NAME">bidichecker.FilterFactory.followedByText</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">followedByText</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>222</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.FollowedByTextFilter_</span><span class="PUNC">(</span><span class="WHIT">
+<span class='linenumber'>223</span>       </span><span class="PUNC">{</span><span class="STRN">'followedByText'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">followedByText</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="STRN">''</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>224</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>225</span> 
+<span class='linenumber'>226</span> 
+<span class='linenumber'>227</span> </span><span class="COMM">/**
+<span class='linenumber'>228</span>  * Create a filter which suppresses errors by applying a regular expression to
+<span class='linenumber'>229</span>  * their <code>followedByText</code> fields.
+<span class='linenumber'>230</span>  * @param {string|RegExp} followedByTextRegexp A regular expression, which must
+<span class='linenumber'>231</span>  *     match the entire <code>followedByText</code> field. If empty or null, will
+<span class='linenumber'>232</span>  *     only match an empty or null <code>followedByText</code>.
+<span class='linenumber'>233</span>  * @return {!bidichecker.FilterFactory.ComposableFilter_} A filter object.
+<span class='linenumber'>234</span>  * @export
+<span class='linenumber'>235</span>  */</span><span class="WHIT">
+<span class='linenumber'>236</span> </span><span class="NAME">bidichecker.FilterFactory.followedByTextRegexp</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT">
+<span class='linenumber'>237</span>     </span><span class="NAME">followedByTextRegexp</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>238</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.FollowedByTextRegexpFilter_</span><span class="PUNC">(</span><span class="WHIT">
+<span class='linenumber'>239</span>       </span><span class="PUNC">{</span><span class="STRN">'followedByTextRegexp'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">followedByTextRegexp</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="STRN">''</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>240</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>241</span> 
+<span class='linenumber'>242</span> 
+<span class='linenumber'>243</span> </span><span class="COMM">/**
+<span class='linenumber'>244</span>  * Create a filter which suppresses errors based on a literal match of one of
+<span class='linenumber'>245</span>  * the class names of any parent node of the error location in the DOM.
+<span class='linenumber'>246</span>  * @param {string} className A string which must match one of the class names in
+<span class='linenumber'>247</span>  *     the <code>class</code> attribute of the location or one of its ancestors. Must
+<span class='linenumber'>248</span>  *     not be empty or null.
+<span class='linenumber'>249</span>  * @return {!bidichecker.FilterFactory.ComposableFilter_} A filter object.
+<span class='linenumber'>250</span>  * @export
+<span class='linenumber'>251</span>  */</span><span class="WHIT">
+<span class='linenumber'>252</span> </span><span class="NAME">bidichecker.FilterFactory.locationClass</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">className</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>253</span>   </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">className</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NAME">className</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="STRN">''</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>254</span>     </span><span class="KEYW">throw</span><span class="WHIT"> </span><span class="STRN">'Empty or null argument to bidichecker.FilterFactory.locationClass'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>255</span>   </span><span class="PUNC">}</span><span class="WHIT">
+<span class='linenumber'>256</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.LocationClassFilter_</span><span class="PUNC">(</span><span class="WHIT">
+<span class='linenumber'>257</span>       </span><span class="PUNC">{</span><span class="STRN">'className'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">className</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>258</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>259</span> 
+<span class='linenumber'>260</span> 
+<span class='linenumber'>261</span> </span><span class="COMM">/**
+<span class='linenumber'>262</span>  * Create a filter which suppresses errors based on a regular expression match
+<span class='linenumber'>263</span>  * of one of the class names of any parent node of the error location in the
+<span class='linenumber'>264</span>  * DOM.
+<span class='linenumber'>265</span>  * @param {string|RegExp} classRegexp A regular expression, which must match
+<span class='linenumber'>266</span>  *     one of the class names in the <code>class</code> attribute of the location or
+<span class='linenumber'>267</span>  *     one of its ancestors. Must not be empty or null.
+<span class='linenumber'>268</span>  * @return {!bidichecker.FilterFactory.ComposableFilter_} A filter object.
+<span class='linenumber'>269</span>  * @export
+<span class='linenumber'>270</span>  */</span><span class="WHIT">
+<span class='linenumber'>271</span> </span><span class="NAME">bidichecker.FilterFactory.locationClassRegexp</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">classRegexp</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>272</span>   </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">classRegexp</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NAME">classRegexp</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="STRN">''</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>273</span>     </span><span class="KEYW">throw</span><span class="WHIT"> </span><span class="STRN">'Empty or null argument to '</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT">
+<span class='linenumber'>274</span>         </span><span class="STRN">'bidichecker.FilterFactory.locationClassRegexp'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>275</span>   </span><span class="PUNC">}</span><span class="WHIT">
+<span class='linenumber'>276</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.LocationClassRegexpFilter_</span><span class="PUNC">(</span><span class="WHIT">
+<span class='linenumber'>277</span>       </span><span class="PUNC">{</span><span class="STRN">'classRegexp'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">classRegexp</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>278</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>279</span> 
+<span class='linenumber'>280</span> 
+<span class='linenumber'>281</span> </span><span class="COMM">/**
+<span class='linenumber'>282</span>  * Create a filter which suppresses errors based on a literal match of the error
+<span class='linenumber'>283</span>  * location's (or one of its DOM ancestors') <code>id</code> attribute.
+<span class='linenumber'>284</span>  * @param {string} id A string which must match the entire <code>id</code> attribute
+<span class='linenumber'>285</span>  *     of the location or one of its ancestors. Must not be empty or null.
+<span class='linenumber'>286</span>  * @return {!bidichecker.FilterFactory.ComposableFilter_} A filter object.
+<span class='linenumber'>287</span>  * @export
+<span class='linenumber'>288</span>  */</span><span class="WHIT">
+<span class='linenumber'>289</span> </span><span class="NAME">bidichecker.FilterFactory.locationId</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">id</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>290</span>   </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">id</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NAME">id</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="STRN">''</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>291</span>     </span><span class="KEYW">throw</span><span class="WHIT"> </span><span class="STRN">'Empty or null argument to bidichecker.FilterFactory.locationId'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>292</span>   </span><span class="PUNC">}</span><span class="WHIT">
+<span class='linenumber'>293</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.LocationIdFilter_</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="STRN">'id'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">id</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>294</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>295</span> 
+<span class='linenumber'>296</span> 
+<span class='linenumber'>297</span> </span><span class="COMM">/**
+<span class='linenumber'>298</span>  * Create a filter which suppresses errors by applying a regular expression to
+<span class='linenumber'>299</span>  * the error location's (or one of its DOM ancestors') <code>id</code> attribute.
+<span class='linenumber'>300</span>  * @param {string|RegExp} idRegexp A regular expression, which must match the
+<span class='linenumber'>301</span>  *     entire <code>id</code> attribute of the location or one of its ancestors. Must
+<span class='linenumber'>302</span>  *     not be empty or null.
+<span class='linenumber'>303</span>  * @return {!bidichecker.FilterFactory.ComposableFilter_} A filter object.
+<span class='linenumber'>304</span>  * @export
+<span class='linenumber'>305</span>  */</span><span class="WHIT">
+<span class='linenumber'>306</span> </span><span class="NAME">bidichecker.FilterFactory.locationIdRegexp</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">idRegexp</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>307</span>   </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="NAME">idRegexp</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="NAME">idRegexp</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="STRN">''</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>308</span>     </span><span class="KEYW">throw</span><span class="WHIT"> </span><span class="STRN">'Empty or null argument to '</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT">
+<span class='linenumber'>309</span>         </span><span class="STRN">'bidichecker.FilterFactory.locationIdRegexp'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>310</span>   </span><span class="PUNC">}</span><span class="WHIT">
+<span class='linenumber'>311</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.LocationIdRegexpFilter_</span><span class="PUNC">(</span><span class="WHIT">
+<span class='linenumber'>312</span>       </span><span class="PUNC">{</span><span class="STRN">'idRegexp'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">idRegexp</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>313</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>314</span> 
+<span class='linenumber'>315</span> 
+<span class='linenumber'>316</span> </span><span class="COMM">/**
+<span class='linenumber'>317</span>  * Create a filter which suppresses errors by inverting another filter.
+<span class='linenumber'>318</span>  * @param {!bidichecker.Filter} filter The subfilter.
+<span class='linenumber'>319</span>  * @return {!bidichecker.FilterFactory.ComposableFilter_} A filter object.
+<span class='linenumber'>320</span>  * @export
+<span class='linenumber'>321</span>  */</span><span class="WHIT">
+<span class='linenumber'>322</span> </span><span class="NAME">bidichecker.FilterFactory.not</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">filter</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>323</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.NotFilter_</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="STRN">'filter'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">filter</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>324</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>325</span> 
+<span class='linenumber'>326</span> 
+<span class='linenumber'>327</span> </span><span class="COMM">/**
+<span class='linenumber'>328</span>  * Create a filter which suppresses errors by or-ing component filters.
+<span class='linenumber'>329</span>  * @param {!bidichecker.Filter} filter1 The first subfilter.
+<span class='linenumber'>330</span>  * @param {!bidichecker.Filter} filter2 The second subfilter.
+<span class='linenumber'>331</span>  * @return {!bidichecker.FilterFactory.ComposableFilter_} A filter object.
+<span class='linenumber'>332</span>  * @export
+<span class='linenumber'>333</span>  */</span><span class="WHIT">
+<span class='linenumber'>334</span> </span><span class="NAME">bidichecker.FilterFactory.or</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">filter1</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">filter2</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>335</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.OrFilter_</span><span class="PUNC">(</span><span class="WHIT">
+<span class='linenumber'>336</span>       </span><span class="PUNC">{</span><span class="STRN">'filter1'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">filter1</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'filter2'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">filter2</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>337</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>338</span> 
+<span class='linenumber'>339</span> 
+<span class='linenumber'>340</span> </span><span class="COMM">/**
+<span class='linenumber'>341</span>  * Create a filter which suppresses errors based on a literal match of their
+<span class='linenumber'>342</span>  * <code>precededByText</code> fields.
+<span class='linenumber'>343</span>  * @param {?string} precededByText A string which must match the entire {@code
+<span class='linenumber'>344</span>  *     precededByText} field. If empty or null, will only match an empty or null
+<span class='linenumber'>345</span>  *     <code>precededByText</code>.
+<span class='linenumber'>346</span>  * @return {!bidichecker.FilterFactory.ComposableFilter_} A filter object.
+<span class='linenumber'>347</span>  * @export
+<span class='linenumber'>348</span>  */</span><span class="WHIT">
+<span class='linenumber'>349</span> </span><span class="NAME">bidichecker.FilterFactory.precededByText</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">precededByText</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>350</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.PrecededByTextFilter_</span><span class="PUNC">(</span><span class="WHIT">
+<span class='linenumber'>351</span>       </span><span class="PUNC">{</span><span class="STRN">'precededByText'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">precededByText</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="STRN">''</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>352</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>353</span> 
+<span class='linenumber'>354</span> 
+<span class='linenumber'>355</span> </span><span class="COMM">/**
+<span class='linenumber'>356</span>  * Create a filter which suppresses errors by applying a regular expression to
+<span class='linenumber'>357</span>  * their <code>precededByText</code> fields.
+<span class='linenumber'>358</span>  * @param {string|RegExp} precededByTextRegexp A regular expression, which must
+<span class='linenumber'>359</span>  *     match the entire <code>precededByText</code> field. If empty or null, will
+<span class='linenumber'>360</span>  *     only match an empty or null <code>precededByText</code>.
+<span class='linenumber'>361</span>  * @return {!bidichecker.FilterFactory.ComposableFilter_} A filter object.
+<span class='linenumber'>362</span>  * @export
+<span class='linenumber'>363</span>  */</span><span class="WHIT">
+<span class='linenumber'>364</span> </span><span class="NAME">bidichecker.FilterFactory.precededByTextRegexp</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT">
+<span class='linenumber'>365</span>     </span><span class="NAME">precededByTextRegexp</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>366</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.PrecededByTextRegexpFilter_</span><span class="PUNC">(</span><span class="WHIT">
+<span class='linenumber'>367</span>       </span><span class="PUNC">{</span><span class="STRN">'precededByTextRegexp'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">precededByTextRegexp</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="STRN">''</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>368</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>369</span> 
+<span class='linenumber'>370</span> 
+<span class='linenumber'>371</span> </span><span class="COMM">/**
+<span class='linenumber'>372</span>  * Create a filter which suppresses errors based on their severity levels.
+<span class='linenumber'>373</span>  * @param {number} severityThreshold the severity level from which errors should
+<span class='linenumber'>374</span>  *     be suppressed. At level 1, all messages will be filtered out. Note that
+<span class='linenumber'>375</span>  *     higher values indicate lower severities.
+<span class='linenumber'>376</span>  * @return {!bidichecker.FilterFactory.ComposableFilter_} A filter object.
+<span class='linenumber'>377</span>  * @export
+<span class='linenumber'>378</span>  */</span><span class="WHIT">
+<span class='linenumber'>379</span> </span><span class="NAME">bidichecker.FilterFactory.severityFrom</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">severityThreshold</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>380</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.SeverityFilter_</span><span class="PUNC">(</span><span class="WHIT">
+<span class='linenumber'>381</span>       </span><span class="PUNC">{</span><span class="STRN">'severityThreshold'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">severityThreshold</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>382</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>383</span> 
+<span class='linenumber'>384</span> 
+<span class='linenumber'>385</span> </span><span class="COMM">/**
+<span class='linenumber'>386</span>  * Create a filter which suppresses errors based on their type fields.
+<span class='linenumber'>387</span>  * @param {string} type The error type name to be matched exactly.
+<span class='linenumber'>388</span>  * @return {!bidichecker.FilterFactory.ComposableFilter_} A filter object.
+<span class='linenumber'>389</span>  * @export
+<span class='linenumber'>390</span>  */</span><span class="WHIT">
+<span class='linenumber'>391</span> </span><span class="NAME">bidichecker.FilterFactory.type</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">type</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>392</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.TypeFilter_</span><span class="PUNC">(</span><span class="PUNC">{</span><span class="STRN">'type'</span><span class="PUNC">:</span><span class="WHIT"> </span><span class="NAME">type</span><span class="PUNC">}</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>393</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>394</span> 
+<span class='linenumber'>395</span> 
+<span class='linenumber'>396</span> </span><span class="COMM">/**
+<span class='linenumber'>397</span>  * Checks that a required field exists in an object representing a filter, or
+<span class='linenumber'>398</span>  * else throws a string exception.
+<span class='linenumber'>399</span>  * @param {!Object} bareObject The object representing the filter.
+<span class='linenumber'>400</span>  * @param {string} field The name of the field.
+<span class='linenumber'>401</span>  * @private
+<span class='linenumber'>402</span>  */</span><span class="WHIT">
+<span class='linenumber'>403</span> </span><span class="NAME">bidichecker.FilterFactory.checkParamExists_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">field</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>404</span>   </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="PUNC">!</span><span class="PUNC">(</span><span class="NAME">field</span><span class="WHIT"> </span><span class="KEYW">in</span><span class="WHIT"> </span><span class="NAME">bareObject</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>405</span>     </span><span class="KEYW">throw</span><span class="WHIT"> </span><span class="STRN">'No \''</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">field</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'\' parameter found for \''</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT">
+<span class='linenumber'>406</span>         </span><span class="NAME">bareObject</span><span class="PUNC">[</span><span class="STRN">'opcode'</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'\' filter'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>407</span>   </span><span class="PUNC">}</span><span class="WHIT">
+<span class='linenumber'>408</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>409</span> 
+<span class='linenumber'>410</span> 
+<span class='linenumber'>411</span> </span><span class="COMM">/**
+<span class='linenumber'>412</span>  * Checks that a required field of a given type exists in an object representing
+<span class='linenumber'>413</span>  * a filter, or else throws a string exception.
+<span class='linenumber'>414</span>  * @param {!Object} bareObject The object representing the filter.
+<span class='linenumber'>415</span>  * @param {string} field The name of the field.
+<span class='linenumber'>416</span>  * @param {string} type The required type of the field.
+<span class='linenumber'>417</span>  * @private
+<span class='linenumber'>418</span>  */</span><span class="WHIT">
+<span class='linenumber'>419</span> </span><span class="NAME">bidichecker.FilterFactory.checkParam_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">field</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">type</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>420</span>   </span><span class="NAME">bidichecker.FilterFactory.checkParamExists_</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">field</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>421</span>   </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">bareObject</span><span class="PUNC">[</span><span class="NAME">field</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">!=</span><span class="WHIT"> </span><span class="NAME">type</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>422</span>     </span><span class="KEYW">throw</span><span class="WHIT"> </span><span class="STRN">'Wrong type for \''</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">field</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'\' parameter of \''</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT">
+<span class='linenumber'>423</span>         </span><span class="NAME">bareObject</span><span class="PUNC">[</span><span class="STRN">'opcode'</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'\' filter; expected '</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">type</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>424</span>   </span><span class="PUNC">}</span><span class="WHIT">
+<span class='linenumber'>425</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>426</span> 
+<span class='linenumber'>427</span> 
+<span class='linenumber'>428</span> </span><span class="COMM">/**
+<span class='linenumber'>429</span>  * Reads a string-valued field from an object representing a filter.
+<span class='linenumber'>430</span>  * @param {!Object} bareObject The object representing the filter.
+<span class='linenumber'>431</span>  * @param {string} field The name of the field.
+<span class='linenumber'>432</span>  * @return {string} The field value.
+<span class='linenumber'>433</span>  * @private
+<span class='linenumber'>434</span>  */</span><span class="WHIT">
+<span class='linenumber'>435</span> </span><span class="NAME">bidichecker.FilterFactory.getStringParam_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">field</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>436</span>   </span><span class="NAME">bidichecker.FilterFactory.checkParam_</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">field</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'string'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>437</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="COMM">/** @type {string} */</span><span class="WHIT"> </span><span class="NAME">bareObject</span><span class="PUNC">[</span><span class="NAME">field</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>438</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>439</span> 
+<span class='linenumber'>440</span> 
+<span class='linenumber'>441</span> </span><span class="COMM">/**
+<span class='linenumber'>442</span>  * Reads a number-valued field from an object representing a filter.
+<span class='linenumber'>443</span>  * @param {!Object} bareObject The object representing the filter.
+<span class='linenumber'>444</span>  * @param {string} field The name of the field.
+<span class='linenumber'>445</span>  * @return {number} The field value.
+<span class='linenumber'>446</span>  * @private
+<span class='linenumber'>447</span>  */</span><span class="WHIT">
+<span class='linenumber'>448</span> </span><span class="NAME">bidichecker.FilterFactory.getNumberParam_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">field</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>449</span>   </span><span class="NAME">bidichecker.FilterFactory.checkParam_</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">field</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'number'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>450</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="COMM">/** @type {number} */</span><span class="WHIT"> </span><span class="NAME">bareObject</span><span class="PUNC">[</span><span class="NAME">field</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>451</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>452</span> 
+<span class='linenumber'>453</span> 
+<span class='linenumber'>454</span> </span><span class="COMM">/**
+<span class='linenumber'>455</span>  * Reads a regular expression field from an object representing a filter.
+<span class='linenumber'>456</span>  * The field contents must be a string or a RegExp object.
+<span class='linenumber'>457</span>  * @param {!Object} bareObject The object representing the filter.
+<span class='linenumber'>458</span>  * @param {string} fieldName The name of the field.
+<span class='linenumber'>459</span>  * @return {!RegExp} A regular expression anchored at both ends of the string.
+<span class='linenumber'>460</span>  * @private
+<span class='linenumber'>461</span>  */</span><span class="WHIT">
+<span class='linenumber'>462</span> </span><span class="NAME">bidichecker.FilterFactory.getRegexpParam_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">fieldName</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>463</span>   </span><span class="NAME">bidichecker.FilterFactory.checkParamExists_</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">fieldName</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>464</span>   </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">field</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">bareObject</span><span class="PUNC">[</span><span class="NAME">fieldName</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>465</span>   </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">pattern</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>466</span>   </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">field</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="STRN">'string'</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>467</span>     </span><span class="NAME">pattern</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="COMM">/** @type {string} */</span><span class="WHIT"> </span><span class="NAME">field</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>468</span>   </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">field</span><span class="WHIT"> </span><span class="KEYW">instanceof</span><span class="WHIT"> </span><span class="NAME">RegExp</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>469</span>     </span><span class="NAME">pattern</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">field.source</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>470</span>   </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>471</span>     </span><span class="KEYW">throw</span><span class="WHIT"> </span><span class="STRN">'Wrong type for \''</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">fieldName</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'\' parameter of \''</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT">
+<span class='linenumber'>472</span>         </span><span class="NAME">bareObject</span><span class="PUNC">[</span><span class="STRN">'opcode'</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'\' filter; expected string or RegExp'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>473</span>   </span><span class="PUNC">}</span><span class="WHIT">
+<span class='linenumber'>474</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">new</span><span class="WHIT"> </span><span class="NAME">RegExp</span><span class="PUNC">(</span><span class="STRN">'^('</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">pattern</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">')$'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>475</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>476</span> 
+<span class='linenumber'>477</span> 
+<span class='linenumber'>478</span> </span><span class="COMM">/**
+<span class='linenumber'>479</span>  * Reads a field representing a subfilter from an object representing a filter.
+<span class='linenumber'>480</span>  * The field contents can either be a bare object representing a serialized
+<span class='linenumber'>481</span>  * filter, or an object supporting an <code>isSuppressed()</code> method.
+<span class='linenumber'>482</span>  * @param {!Object} bareObject The object representing the filter.
+<span class='linenumber'>483</span>  * @param {string} field The name of the field.
+<span class='linenumber'>484</span>  * @return {!bidichecker.FilterFactory.ComposableFilter_} A filter constructed
+<span class='linenumber'>485</span>  *     from the field's contents.
+<span class='linenumber'>486</span>  * @private
+<span class='linenumber'>487</span>  */</span><span class="WHIT">
+<span class='linenumber'>488</span> </span><span class="NAME">bidichecker.FilterFactory.getFilterParam_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT">
+<span class='linenumber'>489</span>     </span><span class="NAME">bareObject</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">field</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>490</span>   </span><span class="NAME">bidichecker.FilterFactory.checkParam_</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">field</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'object'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>491</span> 
+<span class='linenumber'>492</span>   </span><span class="COMM">// Recursively build any subfilters referred to by this one.</span><span class="WHIT">
+<span class='linenumber'>493</span>   </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">subfilterObject</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">bareObject</span><span class="PUNC">[</span><span class="NAME">field</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>494</span>   </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">subfilterObject</span><span class="WHIT"> </span><span class="KEYW">instanceof</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter_</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>495</span>     </span><span class="COMM">// Found a constructed filter object.</span><span class="WHIT">
+<span class='linenumber'>496</span>     </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">subfilterObject</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>497</span>   </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">typeof</span><span class="WHIT"> </span><span class="NAME">subfilterObject</span><span class="PUNC">[</span><span class="STRN">'opcode'</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="STRN">'string'</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>498</span>     </span><span class="COMM">// Found a raw filter object.</span><span class="WHIT">
+<span class='linenumber'>499</span>     </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.constructFilter</span><span class="PUNC">(</span><span class="NAME">subfilterObject</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>500</span>   </span><span class="PUNC">}</span><span class="WHIT"> </span><span class="KEYW">else</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>501</span>     </span><span class="KEYW">throw</span><span class="WHIT"> </span><span class="STRN">'Can\'t make a filter out of the \''</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="NAME">field</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'\' parameter of \''</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT">
+<span class='linenumber'>502</span>         </span><span class="NAME">bareObject</span><span class="PUNC">[</span><span class="STRN">'opcode'</span><span class="PUNC">]</span><span class="WHIT"> </span><span class="PUNC">+</span><span class="WHIT"> </span><span class="STRN">'\' filter'</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>503</span>   </span><span class="PUNC">}</span><span class="WHIT">
+<span class='linenumber'>504</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>505</span> 
+<span class='linenumber'>506</span> 
+<span class='linenumber'>507</span> </span><span class="COMM">/**
+<span class='linenumber'>508</span>  * A filter which suppresses errors by and-ing component filters.
+<span class='linenumber'>509</span>  * @param {!Object} bareObject An object containing 'filter1' and 'filter2'
+<span class='linenumber'>510</span>  *     fields, each containing a bare object representing a component filter.
+<span class='linenumber'>511</span>  * @constructor
+<span class='linenumber'>512</span>  * @extends {bidichecker.FilterFactory.ComposableFilter_}
+<span class='linenumber'>513</span>  * @private
+<span class='linenumber'>514</span>  */</span><span class="WHIT">
+<span class='linenumber'>515</span> </span><span class="NAME">bidichecker.FilterFactory.AndFilter_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>516</span>   </span><span class="COMM">/**
+<span class='linenumber'>517</span>    * @type {!bidichecker.Filter}
+<span class='linenumber'>518</span>    * @private
+<span class='linenumber'>519</span>    */</span><span class="WHIT">
+<span class='linenumber'>520</span>   </span><span class="NAME">this.filter1_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">
+<span class='linenumber'>521</span>       </span><span class="NAME">bidichecker.FilterFactory.getFilterParam_</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'filter1'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>522</span> 
+<span class='linenumber'>523</span>   </span><span class="COMM">/**
+<span class='linenumber'>524</span>    * @type {!bidichecker.Filter}
+<span class='linenumber'>525</span>    * @private
+<span class='linenumber'>526</span>    */</span><span class="WHIT">
+<span class='linenumber'>527</span>   </span><span class="NAME">this.filter2_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">
+<span class='linenumber'>528</span>       </span><span class="NAME">bidichecker.FilterFactory.getFilterParam_</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'filter2'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>529</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>530</span> </span><span class="NAME">goog.inherits</span><span class="PUNC">(</span><span class="NAME">bidichecker.FilterFactory.AndFilter_</span><span class="PUNC">,</span><span class="WHIT">
+<span class='linenumber'>531</span>     </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter_</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>532</span> 
+<span class='linenumber'>533</span> 
+<span class='linenumber'>534</span> </span><span class="COMM">/** @inheritDoc */</span><span class="WHIT">
+<span class='linenumber'>535</span> </span><span class="NAME">bidichecker.FilterFactory.AndFilter_.prototype.isSuppressed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT">
+<span class='linenumber'>536</span>     </span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>537</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.filter1_.isSuppressed</span><span class="PUNC">(</span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT">
+<span class='linenumber'>538</span>       </span><span class="NAME">this.filter2_.isSuppressed</span><span class="PUNC">(</span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>539</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>540</span> 
+<span class='linenumber'>541</span> 
+<span class='linenumber'>542</span> </span><span class="COMM">/**
+<span class='linenumber'>543</span>  * A filter which suppresses errors by a literal match of their <code>atText</code>
+<span class='linenumber'>544</span>  * fields.
+<span class='linenumber'>545</span>  * @param {!Object} bareObject An object containing an 'atText' field, which
+<span class='linenumber'>546</span>  *      must match the entire <code>atText</code> field value. If empty, will only
+<span class='linenumber'>547</span>  *      match an empty or null <code>atText</code>.
+<span class='linenumber'>548</span>  * @constructor
+<span class='linenumber'>549</span>  * @extends {bidichecker.FilterFactory.ComposableFilter_}
+<span class='linenumber'>550</span>  * @private
+<span class='linenumber'>551</span>  */</span><span class="WHIT">
+<span class='linenumber'>552</span> </span><span class="NAME">bidichecker.FilterFactory.AtTextFilter_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>553</span>   </span><span class="COMM">/**
+<span class='linenumber'>554</span>    * @type {string}
+<span class='linenumber'>555</span>    * @private
+<span class='linenumber'>556</span>    */</span><span class="WHIT">
+<span class='linenumber'>557</span>   </span><span class="NAME">this.atText_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">
+<span class='linenumber'>558</span>       </span><span class="NAME">bidichecker.FilterFactory.getStringParam_</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'atText'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>559</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>560</span> </span><span class="NAME">goog.inherits</span><span class="PUNC">(</span><span class="NAME">bidichecker.FilterFactory.AtTextFilter_</span><span class="PUNC">,</span><span class="WHIT">
+<span class='linenumber'>561</span>     </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter_</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>562</span> 
+<span class='linenumber'>563</span> 
+<span class='linenumber'>564</span> </span><span class="COMM">/** @inheritDoc */</span><span class="WHIT">
+<span class='linenumber'>565</span> </span><span class="NAME">bidichecker.FilterFactory.AtTextFilter_.prototype.isSuppressed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT">
+<span class='linenumber'>566</span>     </span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>567</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.atText_</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">error.getAtText</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="STRN">''</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>568</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>569</span> 
+<span class='linenumber'>570</span> 
+<span class='linenumber'>571</span> </span><span class="COMM">/**
+<span class='linenumber'>572</span>  * A filter which suppresses errors by applying a regular expression to their
+<span class='linenumber'>573</span>  * <code>atText</code> fields.
+<span class='linenumber'>574</span>  * @param {!Object} bareObject An object containing an 'atTextRegexp' field
+<span class='linenumber'>575</span>  *     containing a regular expression, which must match the entire {@code
+<span class='linenumber'>576</span>  *     atText} field value. If empty, will only match an empty or null {@code
+<span class='linenumber'>577</span>  *     atText}.
+<span class='linenumber'>578</span>  * @constructor
+<span class='linenumber'>579</span>  * @extends {bidichecker.FilterFactory.ComposableFilter_}
+<span class='linenumber'>580</span>  * @private
+<span class='linenumber'>581</span>  */</span><span class="WHIT">
+<span class='linenumber'>582</span> </span><span class="NAME">bidichecker.FilterFactory.AtTextRegexpFilter_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>583</span>   </span><span class="COMM">/**
+<span class='linenumber'>584</span>    * @type {!RegExp}
+<span class='linenumber'>585</span>    * @private
+<span class='linenumber'>586</span>    */</span><span class="WHIT">
+<span class='linenumber'>587</span>   </span><span class="NAME">this.atTextRegexp_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">
+<span class='linenumber'>588</span>       </span><span class="NAME">bidichecker.FilterFactory.getRegexpParam_</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'atTextRegexp'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>589</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>590</span> </span><span class="NAME">goog.inherits</span><span class="PUNC">(</span><span class="NAME">bidichecker.FilterFactory.AtTextRegexpFilter_</span><span class="PUNC">,</span><span class="WHIT">
+<span class='linenumber'>591</span>     </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter_</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>592</span> 
+<span class='linenumber'>593</span> 
+<span class='linenumber'>594</span> </span><span class="COMM">/** @inheritDoc */</span><span class="WHIT">
+<span class='linenumber'>595</span> </span><span class="NAME">bidichecker.FilterFactory.AtTextRegexpFilter_.prototype.isSuppressed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT">
+<span class='linenumber'>596</span>     </span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>597</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.atTextRegexp_.test</span><span class="PUNC">(</span><span class="NAME">error.getAtText</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="STRN">''</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>598</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>599</span> 
+<span class='linenumber'>600</span> 
+<span class='linenumber'>601</span> </span><span class="COMM">/**
+<span class='linenumber'>602</span>  * A filter which suppresses errors by a literal match of their {@code
+<span class='linenumber'>603</span>  * followedByText} fields.
+<span class='linenumber'>604</span>  * @param {!Object} bareObject An object containing a 'followedByText' field,
+<span class='linenumber'>605</span>  *     which must match the entire <code>followedByText</code> field value. If empty,
+<span class='linenumber'>606</span>  *     will only match an empty or null <code>followedByText</code>.
+<span class='linenumber'>607</span>  * @constructor
+<span class='linenumber'>608</span>  * @extends {bidichecker.FilterFactory.ComposableFilter_}
+<span class='linenumber'>609</span>  * @private
+<span class='linenumber'>610</span>  */</span><span class="WHIT">
+<span class='linenumber'>611</span> </span><span class="NAME">bidichecker.FilterFactory.FollowedByTextFilter_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>612</span>   </span><span class="COMM">/**
+<span class='linenumber'>613</span>    * @type {string}
+<span class='linenumber'>614</span>    * @private
+<span class='linenumber'>615</span>    */</span><span class="WHIT">
+<span class='linenumber'>616</span>   </span><span class="NAME">this.followedByText_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">
+<span class='linenumber'>617</span>       </span><span class="NAME">bidichecker.FilterFactory.getStringParam_</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'followedByText'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>618</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>619</span> </span><span class="NAME">goog.inherits</span><span class="PUNC">(</span><span class="NAME">bidichecker.FilterFactory.FollowedByTextFilter_</span><span class="PUNC">,</span><span class="WHIT">
+<span class='linenumber'>620</span>     </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter_</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>621</span> 
+<span class='linenumber'>622</span> 
+<span class='linenumber'>623</span> </span><span class="COMM">/** @inheritDoc */</span><span class="WHIT">
+<span class='linenumber'>624</span> </span><span class="NAME">bidichecker.FilterFactory.FollowedByTextFilter_.prototype.isSuppressed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">
+<span class='linenumber'>625</span>     </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>626</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.followedByText_</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">error.getFollowedByText</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="STRN">''</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>627</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>628</span> 
+<span class='linenumber'>629</span> 
+<span class='linenumber'>630</span> </span><span class="COMM">/**
+<span class='linenumber'>631</span>  * A filter which suppresses errors by applying a regular expression to their
+<span class='linenumber'>632</span>  * <code>followedByText</code> fields.
+<span class='linenumber'>633</span>  * @param {!Object} bareObject An object containing a 'followedByTextRegexp'
+<span class='linenumber'>634</span>  *     field containing a regular expression, which must match the entire {@code
+<span class='linenumber'>635</span>  *     followedByText} field value. If empty, will only match an empty or null
+<span class='linenumber'>636</span>  *     <code>followedByText</code>.
+<span class='linenumber'>637</span>  * @constructor
+<span class='linenumber'>638</span>  * @extends {bidichecker.FilterFactory.ComposableFilter_}
+<span class='linenumber'>639</span>  * @private
+<span class='linenumber'>640</span>  */</span><span class="WHIT">
+<span class='linenumber'>641</span> </span><span class="NAME">bidichecker.FilterFactory.FollowedByTextRegexpFilter_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>642</span>   </span><span class="COMM">/**
+<span class='linenumber'>643</span>    * @type {!RegExp}
+<span class='linenumber'>644</span>    * @private
+<span class='linenumber'>645</span>    */</span><span class="WHIT">
+<span class='linenumber'>646</span>   </span><span class="NAME">this.followedByTextRegexp_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">
+<span class='linenumber'>647</span>       </span><span class="NAME">bidichecker.FilterFactory.getRegexpParam_</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">,</span><span class="WHIT">
+<span class='linenumber'>648</span>                                                 </span><span class="STRN">'followedByTextRegexp'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>649</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>650</span> </span><span class="NAME">goog.inherits</span><span class="PUNC">(</span><span class="NAME">bidichecker.FilterFactory.FollowedByTextRegexpFilter_</span><span class="PUNC">,</span><span class="WHIT">
+<span class='linenumber'>651</span>     </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter_</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>652</span> 
+<span class='linenumber'>653</span> 
+<span class='linenumber'>654</span> </span><span class="COMM">/** @inheritDoc */</span><span class="WHIT">
+<span class='linenumber'>655</span> </span><span class="NAME">bidichecker.FilterFactory.FollowedByTextRegexpFilter_.prototype.isSuppressed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">
+<span class='linenumber'>656</span>     </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>657</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.followedByTextRegexp_.test</span><span class="PUNC">(</span><span class="NAME">error.getFollowedByText</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="STRN">''</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>658</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>659</span> 
+<span class='linenumber'>660</span> 
+<span class='linenumber'>661</span> </span><span class="COMM">/**
+<span class='linenumber'>662</span>  * A filter which suppresses errors by a literal match of the error location's
+<span class='linenumber'>663</span>  * (or one of its DOM ancestors') <code>class</code> name.
+<span class='linenumber'>664</span>  * @param {!Object} bareObject An object containing a 'className' field, which
+<span class='linenumber'>665</span>  *     must match one of the class names in the <code>class</code> attribute of the
+<span class='linenumber'>666</span>  *     location or one of its ancestors.
+<span class='linenumber'>667</span>  * @constructor
+<span class='linenumber'>668</span>  * @extends {bidichecker.FilterFactory.ComposableFilter_}
+<span class='linenumber'>669</span>  * @private
+<span class='linenumber'>670</span>  */</span><span class="WHIT">
+<span class='linenumber'>671</span> </span><span class="NAME">bidichecker.FilterFactory.LocationClassFilter_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>672</span>   </span><span class="COMM">/**
+<span class='linenumber'>673</span>    * @type {string}
+<span class='linenumber'>674</span>    * @private
+<span class='linenumber'>675</span>    */</span><span class="WHIT">
+<span class='linenumber'>676</span>   </span><span class="NAME">this.className_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">
+<span class='linenumber'>677</span>       </span><span class="NAME">bidichecker.FilterFactory.getStringParam_</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'className'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>678</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>679</span> </span><span class="NAME">goog.inherits</span><span class="PUNC">(</span><span class="NAME">bidichecker.FilterFactory.LocationClassFilter_</span><span class="PUNC">,</span><span class="WHIT">
+<span class='linenumber'>680</span>     </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter_</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>681</span> 
+<span class='linenumber'>682</span> 
+<span class='linenumber'>683</span> </span><span class="COMM">/** @inheritDoc */</span><span class="WHIT">
+<span class='linenumber'>684</span> </span><span class="NAME">bidichecker.FilterFactory.LocationClassFilter_.prototype.isSuppressed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">
+<span class='linenumber'>685</span>     </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>686</span>   </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">locationElements.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="PUNC">++</span><span class="NAME">i</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>687</span>     </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">current</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">current</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>688</span>          </span><span class="NAME">current</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">current.parentNode</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>689</span>       </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">current.className</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>690</span>         </span><span class="COMM">// Match each whitespace-separated class name separately.</span><span class="WHIT">
+<span class='linenumber'>691</span>         </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">classNames</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">current.className.split</span><span class="PUNC">(</span><span class="REGX">/\s/</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>692</span>         </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">j</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">j</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">classNames.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="PUNC">++</span><span class="NAME">j</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>693</span>           </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.className_</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="NAME">classNames</span><span class="PUNC">[</span><span class="NAME">j</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>694</span>             </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>695</span>           </span><span class="PUNC">}</span><span class="WHIT">
+<span class='linenumber'>696</span>         </span><span class="PUNC">}</span><span class="WHIT">
+<span class='linenumber'>697</span>       </span><span class="PUNC">}</span><span class="WHIT">
+<span class='linenumber'>698</span>     </span><span class="PUNC">}</span><span class="WHIT">
+<span class='linenumber'>699</span>   </span><span class="PUNC">}</span><span class="WHIT">
+<span class='linenumber'>700</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>701</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>702</span> 
+<span class='linenumber'>703</span> 
+<span class='linenumber'>704</span> </span><span class="COMM">/**
+<span class='linenumber'>705</span>  * A filter which suppresses errors by applying a regular expression to the
+<span class='linenumber'>706</span>  * error location's (or one of its DOM ancestors') <code>class</code> name.
+<span class='linenumber'>707</span>  * @param {!Object} bareObject An object containing a 'classRegexp' field,
+<span class='linenumber'>708</span>  *     containing a regular expression which must match one of the class names
+<span class='linenumber'>709</span>  *     in the <code>class</code> attribute of the location or one of its ancestors.
+<span class='linenumber'>710</span>  * @constructor
+<span class='linenumber'>711</span>  * @extends {bidichecker.FilterFactory.ComposableFilter_}
+<span class='linenumber'>712</span>  * @private
+<span class='linenumber'>713</span>  */</span><span class="WHIT">
+<span class='linenumber'>714</span> </span><span class="NAME">bidichecker.FilterFactory.LocationClassRegexpFilter_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>715</span>   </span><span class="COMM">/**
+<span class='linenumber'>716</span>    * @type {!RegExp}
+<span class='linenumber'>717</span>    * @private
+<span class='linenumber'>718</span>    */</span><span class="WHIT">
+<span class='linenumber'>719</span>   </span><span class="NAME">this.classRegexp_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">
+<span class='linenumber'>720</span>       </span><span class="NAME">bidichecker.FilterFactory.getRegexpParam_</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'classRegexp'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>721</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>722</span> </span><span class="NAME">goog.inherits</span><span class="PUNC">(</span><span class="NAME">bidichecker.FilterFactory.LocationClassRegexpFilter_</span><span class="PUNC">,</span><span class="WHIT">
+<span class='linenumber'>723</span>     </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter_</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>724</span> 
+<span class='linenumber'>725</span> 
+<span class='linenumber'>726</span> </span><span class="COMM">/** @inheritDoc */</span><span class="WHIT">
+<span class='linenumber'>727</span> </span><span class="NAME">bidichecker.FilterFactory.LocationClassRegexpFilter_.prototype.isSuppressed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">
+<span class='linenumber'>728</span>     </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>729</span>   </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">locationElements.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="PUNC">++</span><span class="NAME">i</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>730</span>     </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">current</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">current</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>731</span>          </span><span class="NAME">current</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">current.parentNode</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>732</span>       </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">current.className</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>733</span>         </span><span class="COMM">// Match each whitespace-separated class name separately.</span><span class="WHIT">
+<span class='linenumber'>734</span>         </span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">classNames</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">current.className.split</span><span class="PUNC">(</span><span class="REGX">/\s/</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>735</span>         </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">j</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">j</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">classNames.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="PUNC">++</span><span class="NAME">j</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>736</span>           </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">this.classRegexp_.test</span><span class="PUNC">(</span><span class="NAME">classNames</span><span class="PUNC">[</span><span class="NAME">j</span><span class="PUNC">]</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>737</span>             </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>738</span>           </span><span class="PUNC">}</span><span class="WHIT">
+<span class='linenumber'>739</span>         </span><span class="PUNC">}</span><span class="WHIT">
+<span class='linenumber'>740</span>       </span><span class="PUNC">}</span><span class="WHIT">
+<span class='linenumber'>741</span>     </span><span class="PUNC">}</span><span class="WHIT">
+<span class='linenumber'>742</span>   </span><span class="PUNC">}</span><span class="WHIT">
+<span class='linenumber'>743</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>744</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>745</span> 
+<span class='linenumber'>746</span> 
+<span class='linenumber'>747</span> </span><span class="COMM">/**
+<span class='linenumber'>748</span>  * A filter which suppresses errors by a literal match of the error location's
+<span class='linenumber'>749</span>  * (or one of its DOM ancestors') <code>id</code> attribute.
+<span class='linenumber'>750</span>  * @param {!Object} bareObject An object containing an 'id' field, which must
+<span class='linenumber'>751</span>  *     match the <code>id</code> attribute of the location or one of its ancestors.
+<span class='linenumber'>752</span>  * @constructor
+<span class='linenumber'>753</span>  * @extends {bidichecker.FilterFactory.ComposableFilter_}
+<span class='linenumber'>754</span>  * @private
+<span class='linenumber'>755</span>  */</span><span class="WHIT">
+<span class='linenumber'>756</span> </span><span class="NAME">bidichecker.FilterFactory.LocationIdFilter_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>757</span>   </span><span class="COMM">/**
+<span class='linenumber'>758</span>    * @type {string}
+<span class='linenumber'>759</span>    * @private
+<span class='linenumber'>760</span>    */</span><span class="WHIT">
+<span class='linenumber'>761</span>   </span><span class="NAME">this.id_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.getStringParam_</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'id'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>762</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>763</span> </span><span class="NAME">goog.inherits</span><span class="PUNC">(</span><span class="NAME">bidichecker.FilterFactory.LocationIdFilter_</span><span class="PUNC">,</span><span class="WHIT">
+<span class='linenumber'>764</span>     </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter_</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>765</span> 
+<span class='linenumber'>766</span> 
+<span class='linenumber'>767</span> </span><span class="COMM">/** @inheritDoc */</span><span class="WHIT">
+<span class='linenumber'>768</span> </span><span class="NAME">bidichecker.FilterFactory.LocationIdFilter_.prototype.isSuppressed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT">
+<span class='linenumber'>769</span>     </span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>770</span>   </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">locationElements.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="PUNC">++</span><span class="NAME">i</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>771</span>     </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">current</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">current</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>772</span>          </span><span class="NAME">current</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">current.parentNode</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>773</span>       </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">current.id</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">this.id_</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="NAME">current.id</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>774</span>         </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>775</span>       </span><span class="PUNC">}</span><span class="WHIT">
+<span class='linenumber'>776</span>     </span><span class="PUNC">}</span><span class="WHIT">
+<span class='linenumber'>777</span>   </span><span class="PUNC">}</span><span class="WHIT">
+<span class='linenumber'>778</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>779</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>780</span> 
+<span class='linenumber'>781</span> 
+<span class='linenumber'>782</span> </span><span class="COMM">/**
+<span class='linenumber'>783</span>  * A filter which suppresses errors by applying a regular expression to the
+<span class='linenumber'>784</span>  * error location's (or one of its DOM ancestors') <code>id</code> attribute.
+<span class='linenumber'>785</span>  * @param {!Object} bareObject An object containing an 'idRegexp' field
+<span class='linenumber'>786</span>  *     containing a regular expression, which must match the <code>id</code>
+<span class='linenumber'>787</span>  *     attribute of the location or one of its ancestors.
+<span class='linenumber'>788</span>  * @constructor
+<span class='linenumber'>789</span>  * @extends {bidichecker.FilterFactory.ComposableFilter_}
+<span class='linenumber'>790</span>  * @private
+<span class='linenumber'>791</span>  */</span><span class="WHIT">
+<span class='linenumber'>792</span> </span><span class="NAME">bidichecker.FilterFactory.LocationIdRegexpFilter_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>793</span>   </span><span class="COMM">/**
+<span class='linenumber'>794</span>    * @type {!RegExp}
+<span class='linenumber'>795</span>    * @private
+<span class='linenumber'>796</span>    */</span><span class="WHIT">
+<span class='linenumber'>797</span>   </span><span class="NAME">this.idRegexp_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">
+<span class='linenumber'>798</span>       </span><span class="NAME">bidichecker.FilterFactory.getRegexpParam_</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'idRegexp'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>799</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>800</span> </span><span class="NAME">goog.inherits</span><span class="PUNC">(</span><span class="NAME">bidichecker.FilterFactory.LocationIdRegexpFilter_</span><span class="PUNC">,</span><span class="WHIT">
+<span class='linenumber'>801</span>     </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter_</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>802</span> 
+<span class='linenumber'>803</span> 
+<span class='linenumber'>804</span> </span><span class="COMM">/** @inheritDoc */</span><span class="WHIT">
+<span class='linenumber'>805</span> </span><span class="NAME">bidichecker.FilterFactory.LocationIdRegexpFilter_.prototype.isSuppressed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">
+<span class='linenumber'>806</span>     </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>807</span>   </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">locationElements.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="PUNC">++</span><span class="NAME">i</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>808</span>     </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">current</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">[</span><span class="NAME">i</span><span class="PUNC">]</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">current</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>809</span>          </span><span class="NAME">current</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">current.parentNode</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>810</span>       </span><span class="KEYW">if</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">current.id</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT"> </span><span class="NAME">this.idRegexp_.test</span><span class="PUNC">(</span><span class="NAME">current.id</span><span class="PUNC">)</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>811</span>         </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">true</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>812</span>       </span><span class="PUNC">}</span><span class="WHIT">
+<span class='linenumber'>813</span>     </span><span class="PUNC">}</span><span class="WHIT">
+<span class='linenumber'>814</span>   </span><span class="PUNC">}</span><span class="WHIT">
+<span class='linenumber'>815</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="KEYW">false</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>816</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>817</span> 
+<span class='linenumber'>818</span> 
+<span class='linenumber'>819</span> </span><span class="COMM">/**
+<span class='linenumber'>820</span>  * A filter which suppresses errors by inverting another filter.
+<span class='linenumber'>821</span>  * @param {!Object} bareObject An object containing a 'filter' field, containing
+<span class='linenumber'>822</span>  *     a bare object representing a component filter.
+<span class='linenumber'>823</span>  * @constructor
+<span class='linenumber'>824</span>  * @extends {bidichecker.FilterFactory.ComposableFilter_}
+<span class='linenumber'>825</span>  * @private
+<span class='linenumber'>826</span>  */</span><span class="WHIT">
+<span class='linenumber'>827</span> </span><span class="NAME">bidichecker.FilterFactory.NotFilter_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>828</span>   </span><span class="COMM">/**
+<span class='linenumber'>829</span>    * @type {!bidichecker.Filter}
+<span class='linenumber'>830</span>    * @private
+<span class='linenumber'>831</span>    */</span><span class="WHIT">
+<span class='linenumber'>832</span>   </span><span class="NAME">this.filter_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">
+<span class='linenumber'>833</span>       </span><span class="NAME">bidichecker.FilterFactory.getFilterParam_</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'filter'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>834</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>835</span> </span><span class="NAME">goog.inherits</span><span class="PUNC">(</span><span class="NAME">bidichecker.FilterFactory.NotFilter_</span><span class="PUNC">,</span><span class="WHIT">
+<span class='linenumber'>836</span>     </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter_</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>837</span> 
+<span class='linenumber'>838</span> 
+<span class='linenumber'>839</span> </span><span class="COMM">/** @inheritDoc */</span><span class="WHIT">
+<span class='linenumber'>840</span> </span><span class="NAME">bidichecker.FilterFactory.NotFilter_.prototype.isSuppressed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT">
+<span class='linenumber'>841</span>     </span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>842</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">this.filter_.isSuppressed</span><span class="PUNC">(</span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>843</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>844</span> 
+<span class='linenumber'>845</span> 
+<span class='linenumber'>846</span> </span><span class="COMM">/**
+<span class='linenumber'>847</span>  * A filter which suppresses errors by or-ing component filters.
+<span class='linenumber'>848</span>  * @param {!Object} bareObject An object containing 'filter1' and 'filter2'
+<span class='linenumber'>849</span>  *     fields, each containing a bare object representing a component filter.
+<span class='linenumber'>850</span>  * @constructor
+<span class='linenumber'>851</span>  * @extends {bidichecker.FilterFactory.ComposableFilter_}
+<span class='linenumber'>852</span>  * @private
+<span class='linenumber'>853</span>  */</span><span class="WHIT">
+<span class='linenumber'>854</span> </span><span class="NAME">bidichecker.FilterFactory.OrFilter_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>855</span>   </span><span class="COMM">/**
+<span class='linenumber'>856</span>    * @type {!bidichecker.Filter}
+<span class='linenumber'>857</span>    * @private
+<span class='linenumber'>858</span>    */</span><span class="WHIT">
+<span class='linenumber'>859</span>   </span><span class="NAME">this.filter1_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">
+<span class='linenumber'>860</span>       </span><span class="NAME">bidichecker.FilterFactory.getFilterParam_</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'filter1'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>861</span> 
+<span class='linenumber'>862</span>   </span><span class="COMM">/**
+<span class='linenumber'>863</span>    * @type {!bidichecker.Filter}
+<span class='linenumber'>864</span>    * @private
+<span class='linenumber'>865</span>    */</span><span class="WHIT">
+<span class='linenumber'>866</span>   </span><span class="NAME">this.filter2_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">
+<span class='linenumber'>867</span>       </span><span class="NAME">bidichecker.FilterFactory.getFilterParam_</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'filter2'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>868</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>869</span> </span><span class="NAME">goog.inherits</span><span class="PUNC">(</span><span class="NAME">bidichecker.FilterFactory.OrFilter_</span><span class="PUNC">,</span><span class="WHIT">
+<span class='linenumber'>870</span>     </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter_</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>871</span> 
+<span class='linenumber'>872</span> 
+<span class='linenumber'>873</span> </span><span class="COMM">/** @inheritDoc */</span><span class="WHIT">
+<span class='linenumber'>874</span> </span><span class="NAME">bidichecker.FilterFactory.OrFilter_.prototype.isSuppressed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT">
+<span class='linenumber'>875</span>     </span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>876</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.filter1_.isSuppressed</span><span class="PUNC">(</span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT">
+<span class='linenumber'>877</span>       </span><span class="NAME">this.filter2_.isSuppressed</span><span class="PUNC">(</span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>878</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>879</span> 
+<span class='linenumber'>880</span> 
+<span class='linenumber'>881</span> </span><span class="COMM">/**
+<span class='linenumber'>882</span>  * A filter which suppresses errors by a literal match of their {@code
+<span class='linenumber'>883</span>  * precededByText} fields.
+<span class='linenumber'>884</span>  * @param {!Object} bareObject An object containing a 'precededByText' field,
+<span class='linenumber'>885</span>  *     which must match the entire <code>precededByText</code> field value. If empty,
+<span class='linenumber'>886</span>  *     will only match an empty or null <code>precededByText</code>.
+<span class='linenumber'>887</span>  * @constructor
+<span class='linenumber'>888</span>  * @extends {bidichecker.FilterFactory.ComposableFilter_}
+<span class='linenumber'>889</span>  * @private
+<span class='linenumber'>890</span>  */</span><span class="WHIT">
+<span class='linenumber'>891</span> </span><span class="NAME">bidichecker.FilterFactory.PrecededByTextFilter_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>892</span>   </span><span class="COMM">/**
+<span class='linenumber'>893</span>    * @type {string}
+<span class='linenumber'>894</span>    * @private
+<span class='linenumber'>895</span>    */</span><span class="WHIT">
+<span class='linenumber'>896</span>   </span><span class="NAME">this.precededByText_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">
+<span class='linenumber'>897</span>       </span><span class="NAME">bidichecker.FilterFactory.getStringParam_</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'precededByText'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>898</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>899</span> </span><span class="NAME">goog.inherits</span><span class="PUNC">(</span><span class="NAME">bidichecker.FilterFactory.PrecededByTextFilter_</span><span class="PUNC">,</span><span class="WHIT">
+<span class='linenumber'>900</span>     </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter_</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>901</span> 
+<span class='linenumber'>902</span> 
+<span class='linenumber'>903</span> </span><span class="COMM">/** @inheritDoc */</span><span class="WHIT">
+<span class='linenumber'>904</span> </span><span class="NAME">bidichecker.FilterFactory.PrecededByTextFilter_.prototype.isSuppressed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">
+<span class='linenumber'>905</span>     </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>906</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.precededByText_</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">error.getPrecededByText</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="STRN">''</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>907</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>908</span> 
+<span class='linenumber'>909</span> 
+<span class='linenumber'>910</span> </span><span class="COMM">/**
+<span class='linenumber'>911</span>  * A filter which suppresses errors  by applying a regular expression to their
+<span class='linenumber'>912</span>  * <code>precededByText</code> fields.
+<span class='linenumber'>913</span>  * @param {!Object} bareObject An object containing a 'precededByTextRegexp'
+<span class='linenumber'>914</span>  *     field containing a regular expression, which must match the entire
+<span class='linenumber'>915</span>  *     precededByText field value. If empty, will only match an empty or null
+<span class='linenumber'>916</span>  *     <code>precededByText</code>.
+<span class='linenumber'>917</span>  * @constructor
+<span class='linenumber'>918</span>  * @extends {bidichecker.FilterFactory.ComposableFilter_}
+<span class='linenumber'>919</span>  * @private
+<span class='linenumber'>920</span>  */</span><span class="WHIT">
+<span class='linenumber'>921</span> </span><span class="NAME">bidichecker.FilterFactory.PrecededByTextRegexpFilter_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>922</span>   </span><span class="COMM">/**
+<span class='linenumber'>923</span>    * @type {!RegExp}
+<span class='linenumber'>924</span>    * @private
+<span class='linenumber'>925</span>    */</span><span class="WHIT">
+<span class='linenumber'>926</span>   </span><span class="NAME">this.precededByTextRegexp_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">
+<span class='linenumber'>927</span>       </span><span class="NAME">bidichecker.FilterFactory.getRegexpParam_</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">,</span><span class="WHIT">
+<span class='linenumber'>928</span>                                                 </span><span class="STRN">'precededByTextRegexp'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>929</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>930</span> </span><span class="NAME">goog.inherits</span><span class="PUNC">(</span><span class="NAME">bidichecker.FilterFactory.PrecededByTextRegexpFilter_</span><span class="PUNC">,</span><span class="WHIT">
+<span class='linenumber'>931</span>     </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter_</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>932</span> 
+<span class='linenumber'>933</span> 
+<span class='linenumber'>934</span> </span><span class="COMM">/** @inheritDoc */</span><span class="WHIT">
+<span class='linenumber'>935</span> </span><span class="NAME">bidichecker.FilterFactory.PrecededByTextRegexpFilter_.prototype.isSuppressed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">
+<span class='linenumber'>936</span>     </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>937</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.precededByTextRegexp_.test</span><span class="PUNC">(</span><span class="NAME">error.getPrecededByText</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="STRN">''</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>938</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>939</span> 
+<span class='linenumber'>940</span> 
+<span class='linenumber'>941</span> </span><span class="COMM">/**
+<span class='linenumber'>942</span>  * A filter which suppresses errors based on their severity fields.
+<span class='linenumber'>943</span>  * @param {!Object} bareObject An object containing an integer-valued
+<span class='linenumber'>944</span>  *     'severityThreshold' field representing the threshold severity value for
+<span class='linenumber'>945</span>  *     suppression.
+<span class='linenumber'>946</span>  * @constructor
+<span class='linenumber'>947</span>  * @extends {bidichecker.FilterFactory.ComposableFilter_}
+<span class='linenumber'>948</span>  * @private
+<span class='linenumber'>949</span>  */</span><span class="WHIT">
+<span class='linenumber'>950</span> </span><span class="NAME">bidichecker.FilterFactory.SeverityFilter_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>951</span>   </span><span class="COMM">/**
+<span class='linenumber'>952</span>    * @type {number}
+<span class='linenumber'>953</span>    * @private
+<span class='linenumber'>954</span>    */</span><span class="WHIT">
+<span class='linenumber'>955</span>   </span><span class="NAME">this.severityThreshold_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.getNumberParam_</span><span class="PUNC">(</span><span class="WHIT">
+<span class='linenumber'>956</span>       </span><span class="NAME">bareObject</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'severityThreshold'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>957</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>958</span> </span><span class="NAME">goog.inherits</span><span class="PUNC">(</span><span class="NAME">bidichecker.FilterFactory.SeverityFilter_</span><span class="PUNC">,</span><span class="WHIT">
+<span class='linenumber'>959</span>     </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter_</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>960</span> 
+<span class='linenumber'>961</span> 
+<span class='linenumber'>962</span> </span><span class="COMM">/** @inheritDoc */</span><span class="WHIT">
+<span class='linenumber'>963</span> </span><span class="NAME">bidichecker.FilterFactory.SeverityFilter_.prototype.isSuppressed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT">
+<span class='linenumber'>964</span>     </span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>965</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.severityThreshold_</span><span class="WHIT"> </span><span class="PUNC">&lt;=</span><span class="WHIT"> </span><span class="NAME">error.getSeverity</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>966</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>967</span> 
+<span class='linenumber'>968</span> 
+<span class='linenumber'>969</span> </span><span class="COMM">/**
+<span class='linenumber'>970</span>  * A filter which suppresses errors based on their type fields.
+<span class='linenumber'>971</span>  * @param {!Object} bareObject An object containing a string-valued 'type' field
+<span class='linenumber'>972</span>  *     which must exactly match the error type value.
+<span class='linenumber'>973</span>  * @constructor
+<span class='linenumber'>974</span>  * @extends {bidichecker.FilterFactory.ComposableFilter_}
+<span class='linenumber'>975</span>  * @private
+<span class='linenumber'>976</span>  */</span><span class="WHIT">
+<span class='linenumber'>977</span> </span><span class="NAME">bidichecker.FilterFactory.TypeFilter_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>978</span>   </span><span class="COMM">/**
+<span class='linenumber'>979</span>    * @type {string}
+<span class='linenumber'>980</span>    * @private
+<span class='linenumber'>981</span>    */</span><span class="WHIT">
+<span class='linenumber'>982</span>   </span><span class="NAME">this.type_</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NAME">bidichecker.FilterFactory.getStringParam_</span><span class="PUNC">(</span><span class="NAME">bareObject</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="STRN">'type'</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>983</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>984</span> </span><span class="NAME">goog.inherits</span><span class="PUNC">(</span><span class="NAME">bidichecker.FilterFactory.TypeFilter_</span><span class="PUNC">,</span><span class="WHIT">
+<span class='linenumber'>985</span>     </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter_</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>986</span> 
+<span class='linenumber'>987</span> 
+<span class='linenumber'>988</span> </span><span class="COMM">/** @inheritDoc */</span><span class="WHIT">
+<span class='linenumber'>989</span> </span><span class="NAME">bidichecker.FilterFactory.TypeFilter_.prototype.isSuppressed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT">
+<span class='linenumber'>990</span>     </span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
+<span class='linenumber'>991</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.type_</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="NAME">error.getType</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>992</span> </span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
+<span class='linenumber'>993</span> </span></pre></body></html>

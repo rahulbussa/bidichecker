@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <!--
+    Copyright 2009 Google Inc. All Rights Reserved.
+
+    Use of this source code is governed by an Apache 2.0 License.
+    See the COPYING file for details.
+  -->
+
+  <!--
+  Unit tests for highlightableelement.js.
+  -->
+  <head>
+    <title>bidichecker - Javascript Unit Tests</title>
+    <script type="text/javascript" src="../third_party/closure-library/closure/goog/base.js">
+    </script>
+
+    <!-- Include the generated deps.js which enables goog.require of
+         the modules under test.
+    -->
+    <script type="text/javascript" src="deps.js"></script>
+    <script type="text/javascript" src="testutils.js"></script>
+
+    <script type="text/javascript">
+// This in turn pulls in the rest of the files.
+goog.require('bidichecker.HighlightableElement');
+
+goog.require('goog.color');
+goog.require('goog.testing.jsunit');
+    </script>
+
+  </head>
+  <body>
+    <script type="text/javascript">
+
+function testErrorHighlightableElement_HighlightOnPage() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  testDiv.innerHTML = '<p>Shalom</p>';
+
+  var original = goog.style.getBackgroundColor(testDiv);
+
+  // Highlight the div element by changing its background color
+  var location = new bidichecker.HighlightableElement(testDiv);
+  location.highlightOnPage();
+
+  // Check that the background color has been changed.
+  assertEquals('#ffff00',
+      goog.color.parse(goog.style.getBackgroundColor(testDiv)).hex);
+
+  // Revert the background color.
+  location.unhighlightOnPage();
+  assertEquals(original, goog.style.getBackgroundColor(testDiv));
+}
+
+    </script>
+
+  </body>
+</html>

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html>
+  <!--
+    Copyright 2009 Google Inc. All Rights Reserved.
+
+    Use of this source code is governed by an Apache 2.0 License.
+    See the COPYING file for details.
+  -->
+
+  <!--
+  Unit tests for undeclaredtextdetector.js.
+  -->
+  <head>
+    <title>bidichecker - Javascript Unit Tests</title>
+    <script type="text/javascript" src="../third_party/closure-library/closure/goog/base.js">
+    </script>
+
+    <!-- Include the generated deps.js which enables goog.require of
+         the modules under test.
+    -->
+    <script type="text/javascript" src="deps.js"></script>
+    <script type="text/javascript">
+// This in turn pulls in the rest of the files.
+goog.require('bidichecker');
+
+goog.require('goog.testing.jsunit');
+    </script>
+    <script type="text/javascript" src="testutils.js"></script>
+
+  </head>
+  <body>
+    <script type="text/javascript">
+
+/**
+ * Runs the undeclared text checker on the contents of a DOM element.
+ * @param {!Element} rootElement The root element of the DOM to be checked.
+ * @return {!Array.<!bidichecker.Error>} List of error messages.
+ */
+function runUndeclaredTextDetector(rootElement) {
+  var errorCollector =
+      new bidichecker.ErrorCollector(new bidichecker.FrameStack());
+
+  var scanner = new bidichecker.Scanner(/* opt_filters */ null,
+      /* opt_needDirChunkWalker */ true);
+  // Override the buildDetectors method to build only one detector.
+  scanner.buildDetectors = function(element, shouldBeRtl) {
+    return [new bidichecker.UndeclaredTextDetector(errorCollector)];
+  };
+
+  scanner.scan(rootElement);
+  return errorCollector.getErrors();
+}
+
+
+function testUndeclaredTextDetector_RtlTextInLtrPageError() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  // Hebrew text for "Shalom"
+  testDiv.innerHTML = '<p>\u05e9\u05dc\u05d5\u05dd<\/p>';
+  var errors = runUndeclaredTextDetector(testDiv);
+  var expected = [{'type': 'Undeclared RTL text',
+                   'severity': 3,
+                   'atText': '\u05e9\u05dc\u05d5\u05dd',
+                   'locationDescription': '<div id=\'test\'><p>'}
+                 ];
+  assertErrorFields(expected, errors);
+
+  // The error is located in characters 0-4 of the text node.
+  var textNode = testDiv.firstChild.firstChild;
+  var highlightableArea = new bidichecker.HighlightableText([textNode], 0, 4);
+  assertObjectEquals(highlightableArea, errors[0].getHighlightableArea());
+}
+
+
+function testUndeclaredTextDetector_LtrTextInLtrPageOkay() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<p>Shalom!<\/p>';
+  var errors = runUndeclaredTextDetector(testDiv);
+  assertErrorFields([], errors);
+}
+
+
+function testUndeclaredTextDetector_LtrTextInRtlPageError() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<p>Shalom<\/p>';
+  var errors = runUndeclaredTextDetector(testDiv);
+  var expected = [{'type': 'Undeclared LTR text',
+                   'severity': 3,
+                   'atText': 'Shalom',
+                   'locationDescription': '<div dir=\'rtl\' id=\'test\'><p>'}
+                 ];
+  assertErrorFields(expected, errors);
+}
+
+
+function testUndeclaredTextDetector_RlmCharInRtlTextInLtrPageError() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  // Hebrew text for "Shalom"
+  testDiv.innerHTML = '<p>\u05e9\u05dc\u05d5\u05dd' +
+      goog.i18n.bidi.Format.RLM + '<\/p>';
+  var errors = runUndeclaredTextDetector(testDiv);
+  var expected = [{'type': 'Undeclared RTL text',
+                   'severity': 3,
+                   'atText': '\u05e9\u05dc\u05d5\u05dd' +
+                   goog.i18n.bidi.Format.RLM,
+                   'locationDescription': '<div id=\'test\'><p>'}];
+  assertErrorFields(expected, errors);
+}
+
+
+function testUndeclaredTextDetector_SingleRlmCharInLtrPageOkay() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<p>Shalom!' + goog.i18n.bidi.Format.RLM + '<\/p>';
+  var errors = runUndeclaredTextDetector(testDiv);
+  assertErrorFields([], errors);
+}
+
+
+function testUndeclaredTextDetector_LrmCharInLtrTextInRtlPageError() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<p>Shalom' + goog.i18n.bidi.Format.LRM + '<\/p>';
+  var errors = runUndeclaredTextDetector(testDiv);
+  var expected = [{'type': 'Undeclared LTR text',
+                   'severity': 3,
+                   'atText': 'Shalom' + goog.i18n.bidi.Format.LRM,
+                   'locationDescription': '<div dir=\'rtl\' id=\'test\'><p>'}];
+  assertErrorFields(expected, errors);
+}
+
+
+function testUndeclaredTextDetector_SingleLrmCharInRtlPageOkay() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  goog.dom.appendChild(document.body, testDiv);
+  // Hebrew text for "Shalom"
+  testDiv.innerHTML = '<p>\u05e9\u05dc\u05d5\u05dd' +
+      goog.i18n.bidi.Format.LRM + '<\/p>';
+  var errors = runUndeclaredTextDetector(testDiv);
+  assertErrorFields([], errors);
+}
+
+
+function testUndeclaredTextDetector_LtrTextInRtlParagraphErrorLowSeverity() {
+  // Two paragraphs, one with the wrong direction tag. Since the declared
+  // directionality changes under the root element, any 'undeclared' errors
+  // below that point are of low severity.
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<p dir=\'rtl\'>Shalom<\/p><p>Okay?<\/p>';
+  var errors = runUndeclaredTextDetector(testDiv);
+  var expected = [{'type': 'Undeclared LTR text',
+                   'severity': 4,
+                   'atText': 'Shalom',
+                   'locationDescription': '<div id=\'test\'><p dir=\'rtl\'>'}];
+  assertErrorFields(expected, errors);
+}
+
+
+function testUndeclaredTextDetector_ErrorSpansMultipleTextNodes() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML =
+      '<p dir=\'rtl\'>* Shalom <b>Okay?<\/b> <i>Done.<\/i><\/p>';
+  var errors = runUndeclaredTextDetector(testDiv);
+  var expected = [{'type': 'Undeclared LTR text',
+                   'severity': 4,
+                   'atText': 'Shalom Okay? Done',
+                   'locationDescription': '<div id=\'test\'><p dir=\'rtl\'>',
+                   'precededByText': '* ',
+                   'followedByText': '.'}];
+  assertErrorFields(expected, errors);
+
+  // The error crosses four text nodes. It starts at the third character of the
+  // first text node and continues until the fourth character of the third node.
+  var textNode1 = testDiv.firstChild.firstChild;  // * Shalom
+  var textNode2 = testDiv.firstChild.childNodes[1].firstChild;  // Okay?
+  var textNode3 = testDiv.firstChild.childNodes[2];  // Blank space
+  var textNode4 = testDiv.firstChild.childNodes[3].firstChild;  // Done.
+  var highlightableArea = new bidichecker.HighlightableText(
+      [textNode1, textNode2, textNode3, textNode4], 2, 4);
+  assertObjectEquals(highlightableArea, errors[0].getHighlightableArea());
+}
+
+
+function testUndeclaredTextDetector_RtlTextInPartOfLtrParagraphError() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  // Hebrew text for "Shalom"
+  testDiv.innerHTML =
+      '<p>This is Shalom \u05e9\u05dc\u05d5\u05dd did you know that?<\/p>';
+  var errors = runUndeclaredTextDetector(testDiv);
+
+  // The error should only report the wrong-directional text, not the entire
+  // paragraph.
+  var expected = [{'type': 'Undeclared RTL text',
+                   'severity': 3,
+                   'atText': '\u05e9\u05dc\u05d5\u05dd',
+                   'locationDescription': '<div id=\'test\'><p>'}];
+  assertErrorFields(expected, errors);
+
+  // The error is located in characters 15-19 of the text node.
+  var textNode = testDiv.firstChild.firstChild;
+  var highlightableArea = new bidichecker.HighlightableText([textNode], 15, 19);
+  assertObjectEquals(highlightableArea, errors[0].getHighlightableArea());
+}
+
+
+function testUndeclaredTextDetector_RlmCharacterNotUndeclaredError() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  // Unicode RLM, then some text.
+  testDiv.innerHTML = '<p>\u200F Shalom<\/p>';
+  var errors = runUndeclaredTextDetector(testDiv);
+
+  // RLM marks are presumably inserted intentionally and should not be errors.
+  assertErrorFields([], errors);
+}
+
+
+function testUndeclaredTextDetector_LrmCharacterNotUndeclaredError() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  goog.dom.appendChild(document.body, testDiv);
+  // Unicode LRM, then Hebrew text for "Shalom"
+  testDiv.innerHTML = '<p>\u200E \u05e9\u05dc\u05d5\u05dd<\/p>';
+  var errors = runUndeclaredTextDetector(testDiv);
+
+  // LRM marks are presumably inserted intentionally and should not be errors.
+  assertErrorFields([], errors);
+}
+
+
+function testUndeclaredTextDetector_LtrTextInRtlParagraphErrorLowSeverity() {
+  // Since the declared directionality changes under the root element, any
+  // 'undeclared' errors below that point are of low severity.
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  // Hebrew text for "Shalom"
+  testDiv.innerHTML = '<p dir=\'rtl\'>This is Shalom ' +
+      '\u05e9\u05dc\u05d5\u05dd did you know<\/p>';
+  var errors = runUndeclaredTextDetector(testDiv);
+
+  // The errors should only report the wrong-directional text, not the entire
+  // paragraph.
+  var expected = [{'type': 'Undeclared LTR text',
+                   'severity': 4,
+                   'atText': 'This is Shalom',
+                   'locationDescription': '<div id=\'test\'><p dir=\'rtl\'>'
+                  },
+                  {'type': 'Undeclared LTR text',
+                   'severity': 4,
+                   'atText': 'did you know',
+                   'locationDescription': '<div id=\'test\'><p dir=\'rtl\'>'
+  }];
+  assertErrorFields(expected, errors);
+}
+
+
+function testUndeclaredTextDetector_RtlTextFollowedByNeutralsHighSeverity() {
+  // Since the undeclared opposite-directionality text is followed by neutral
+  // characters, it's a higher-severity error.
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<p>This is Shalom ' +
+      // Hebrew text for "Shalom!"
+      '\u05e9\u05dc\u05d5\u05dd!' +
+      ' [@] did you know that?<\/p>';
+  var errors = runUndeclaredTextDetector(testDiv);
+
+  var expected = [{'type': 'Undeclared RTL text',
+                   'severity': 2,
+                   'atText': '\u05e9\u05dc\u05d5\u05dd',
+                   'followedByText': '! [@]',
+                   'locationDescription': '<div id=\'test\'><p>'}];
+  assertErrorFields(expected, errors);
+}
+
+
+function testUndeclaredTextDetector_RtlTextPrecededByNeutralsHighSeverity() {
+  // Since the undeclared opposite-directionality text is followed by neutral
+  // characters, it's a higher-severity error.
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<p>This is Shalom: ' +
+      // Hebrew text for "Shalom"
+      '\u05e9\u05dc\u05d5\u05dd' +
+      ' did you know that?<\/p>';
+  var errors = runUndeclaredTextDetector(testDiv);
+
+  var expected = [{'type': 'Undeclared RTL text',
+                   'atText': '\u05e9\u05dc\u05d5\u05dd',
+                   'precededByText': ': ',
+                   'severity': 2,
+                   'locationDescription': '<div id=\'test\'><p>'}];
+  assertErrorFields(expected, errors);
+}
+
+
+function testUndeclaredTextDetector_NumbersTreatedAsNeutralsForSeverity() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<p>This is Shalom 123' +
+      // Hebrew text for "Shalom"
+      '\u05e9\u05dc\u05d5\u05dd' +
+      '456 did you know that?<\/p>';
+  var errors = runUndeclaredTextDetector(testDiv);
+
+  var expected = [{'type': 'Undeclared RTL text',
+                   'atText': '\u05e9\u05dc\u05d5\u05dd',
+                   'precededByText': '123',
+                   'followedByText': '456',
+                   'severity': 2,
+                   'locationDescription': '<div id=\'test\'><p>'}];
+  assertErrorFields(expected, errors);
+}
+
+
+function testUndeclaredTextDetector_AdjacentNeutralsAtEndsOfChunk() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<p>**[' +
+      // Hebrew text for "Shalom"
+      '\u05e9\u05dc\u05d5\u05dd' +
+      ']?<\/p>';
+  var errors = runUndeclaredTextDetector(testDiv);
+
+  var expected = [{'type': 'Undeclared RTL text',
+                   'atText': '\u05e9\u05dc\u05d5\u05dd',
+                   'precededByText': '**[',
+                   'followedByText': ']?',
+                   'severity': 2,
+                   'locationDescription': '<div id=\'test\'><p>'}];
+  assertErrorFields(expected, errors);
+}
+
+
+function testUndeclaredTextDetector_AdjacentNeutralsLowSeverityInDeclared() {
+  // As above, but since the enclosing block has declared directionality, it
+  // remains low severity despite the adjacent neutral characters.
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<p dir=\'ltr\'>This is Shalom: ' +
+      // Hebrew text for "Shalom"
+      '\u05e9\u05dc\u05d5\u05dd' +
+      ' did you know that?<\/p>';
+  var errors = runUndeclaredTextDetector(testDiv);
+
+  var expected = [{'type': 'Undeclared RTL text',
+                   'atText': '\u05e9\u05dc\u05d5\u05dd',
+                   'precededByText': ': ',
+                   'severity': 4,
+                   'locationDescription': '<div id=\'test\'><p dir=\'ltr\'>'}];
+  assertErrorFields(expected, errors);
+}
+
+    </script>
+
+  </body>
+</html>

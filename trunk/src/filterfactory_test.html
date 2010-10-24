@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html>
+  <!--
+    Copyright 2009 Google Inc. All Rights Reserved.
+
+    Use of this source code is governed by an Apache 2.0 License.
+    See the COPYING file for details.
+  -->
+
+  <!--
+  Unit tests for filterfactory.js.
+  -->
+  <head>
+    <title>bidichecker - Javascript Unit Tests</title>
+    <script type="text/javascript" src="../third_party/closure-library/closure/goog/base.js">
+    </script>
+
+    <!-- Include the generated deps.js which enables goog.require of
+         the modules under test.
+    -->
+    <script type="text/javascript" src="deps.js"></script>
+    <script type="text/javascript" src="testutils.js"></script>
+
+    <script type="text/javascript">
+// This in turn pulls in the rest of the files.
+goog.require('bidichecker.FilterFactory');
+
+goog.require('goog.testing.jsunit');
+    </script>
+
+  </head>
+  <body>
+
+    <script type="text/javascript">
+function testFilterFactory_AndFilterConstruct() {
+  var actual = bidichecker.FilterFactory.constructFilter(
+      {'filter1': new bidichecker.FilterFactory.atText('friends'),
+       'filter2': new bidichecker.FilterFactory.locationId('friends'),
+       'opcode': 'AND'});
+  var expected = bidichecker.FilterFactory.and(
+      bidichecker.FilterFactory.atText('friends'),
+      bidichecker.FilterFactory.locationId('friends'));
+  assertObjectEquals(expected, actual);
+}
+
+
+function testFilterFactory_AndFilterBothFalse() {
+  var filter = bidichecker.FilterFactory.and(
+      bidichecker.FilterFactory.atText('abc'),
+      bidichecker.FilterFactory.atText('ghi'));
+  var error = new bidichecker.Error('my_type', 2, null, 'def');
+  assertFalse(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_AndFilterFirstTrue() {
+  var filter = bidichecker.FilterFactory.and(
+      bidichecker.FilterFactory.atText('def'),
+      bidichecker.FilterFactory.atText('abc'));
+  var error = new bidichecker.Error('my_type', 2, null, 'def');
+  assertFalse(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_AndFilterSecondTrue() {
+  var filter = bidichecker.FilterFactory.and(
+      bidichecker.FilterFactory.atText('abc'),
+      bidichecker.FilterFactory.atText('def'));
+  var error = new bidichecker.Error('my_type', 2, null, 'def');
+  assertFalse(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_AndFilterBothTrue() {
+  var filter = bidichecker.FilterFactory.and(
+      bidichecker.FilterFactory.atTextRegexp('d.*f'),
+      bidichecker.FilterFactory.atText('def'));
+  var error = new bidichecker.Error('my_type', 2, null, 'def');
+  assertTrue(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_AndMethodOnFilterObject() {
+  var actual = bidichecker.FilterFactory.atTextRegexp('d.*f').and(
+      bidichecker.FilterFactory.atText('def'));
+  var expected = bidichecker.FilterFactory.and(
+      bidichecker.FilterFactory.atTextRegexp('d.*f'),
+      bidichecker.FilterFactory.atText('def'));
+  assertObjectEquals(expected, actual);
+}
+
+
+function testFilterFactory_AtTextFilterConstruct() {
+  var actual = bidichecker.FilterFactory.constructFilter(
+      {'atText': 'friends', 'opcode': 'AT_TEXT'});
+  var expected = bidichecker.FilterFactory.atText('friends');
+  assertObjectEquals(expected, actual);
+}
+
+
+function testFilterFactory_AtTextFilterNoMatch() {
+  var filter = bidichecker.FilterFactory.atText('abc');
+  var error = new bidichecker.Error('my_type', 2, null, 'def');
+  assertFalse(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_AtTextFilterNullValues() {
+  // Non-null filter doesn't match null field value.
+  var filter = bidichecker.FilterFactory.atText('abc');
+  var error = new bidichecker.Error('my_type', 2);
+  assertFalse(filter.isSuppressed(error, []));
+
+  // Null filter matches null field value.
+  filter = bidichecker.FilterFactory.atText(null);
+  assertTrue(filter.isSuppressed(error, []));
+
+  // Empty filter value matches null field value.
+  filter = bidichecker.FilterFactory.atText('');
+  assertTrue(filter.isSuppressed(error, []));
+
+  // Empty filter value matches empty field value.
+  error = new bidichecker.Error('my_type', 2, null, '');
+  assertTrue(filter.isSuppressed(error, []));
+
+  // Null filter matches empty field value.
+  filter = bidichecker.FilterFactory.atText(null);
+  assertTrue(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_AtTextFilterTextMatch() {
+  var filter = bidichecker.FilterFactory.atText('def');
+  var error = new bidichecker.Error('my_type', 2, null, 'def');
+  assertTrue(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_AtTextFilterPartialMatchFails() {
+  var filter = bidichecker.FilterFactory.atText('def');
+  var error = new bidichecker.Error('my_type', 2, null, 'def1');
+  assertFalse(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_AtTextFilterRegexpMatchFails() {
+  var filter = bidichecker.FilterFactory.atText('de*f+g');
+  var error = new bidichecker.Error('my_type', 2, null, 'dffffg');
+  assertFalse(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_AtTextRegexpFilterConstruct() {
+  var actual = bidichecker.FilterFactory.constructFilter(
+      {'atTextRegexp': 'friends', 'opcode': 'AT_TEXT_REGEXP'});
+  var expected = bidichecker.FilterFactory.atTextRegexp('friends');
+  assertObjectEquals(expected, actual);
+}
+
+
+function testFilterFactory_AtTextRegexpFilterNoMatch() {
+  var filter = bidichecker.FilterFactory.atTextRegexp('abc');
+  var error = new bidichecker.Error('my_type', 2, null, 'def');
+  assertFalse(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_AtTextRegexpFilterNullValues() {
+  // Non-null filter doesn't match null field value.
+  var filter = bidichecker.FilterFactory.atTextRegexp('abc');
+  var error = new bidichecker.Error('my_type', 2);
+  assertFalse(filter.isSuppressed(error, []));
+
+  // Null filter matches null field value.
+  filter = bidichecker.FilterFactory.atTextRegexp(null);
+  assertTrue(filter.isSuppressed(error, []));
+
+  // Empty filter pattern matches null field value.
+  filter = bidichecker.FilterFactory.atTextRegexp('');
+  assertTrue(filter.isSuppressed(error, []));
+
+  // Empty filter pattern matches empty field value.
+  error = new bidichecker.Error('my_type', 2, null, '');
+  assertTrue(filter.isSuppressed(error, []));
+
+  // Null filter matches empty field value.
+  filter = bidichecker.FilterFactory.atTextRegexp(null);
+  assertTrue(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_AtTextRegexpFilterTextMatch() {
+  var filter = bidichecker.FilterFactory.atTextRegexp('def');
+  var error = new bidichecker.Error('my_type', 2, null, 'def');
+  assertTrue(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_AtTextRegexpFilterPartialMatchFails() {
+  var filter = bidichecker.FilterFactory.atTextRegexp('def');
+  var error = new bidichecker.Error('my_type', 2, null, 'def1');
+  assertFalse(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_AtTextRegexpFilterRegexpMatch() {
+  // String literal argument.
+  var filter = bidichecker.FilterFactory.atTextRegexp('de*f+g');
+  var error = new bidichecker.Error('my_type', 2, null, 'dffffg');
+  assertTrue(filter.isSuppressed(error, []));
+
+  // Must match entire field.
+  error = new bidichecker.Error('my_type', 2, null, 'adffffgz');
+  assertFalse(filter.isSuppressed(error, []));
+
+  // RegExp literal argument.
+  filter = bidichecker.FilterFactory.atTextRegexp(/de*f+g/);
+  error = new bidichecker.Error('my_type', 2, null, 'dffffg');
+  assertTrue(filter.isSuppressed(error, []));
+
+  // Must match entire field.
+  error = new bidichecker.Error('my_type', 2, null, 'adffffgz');
+  assertFalse(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_FollowedByTextFilterConstruct() {
+  var actual = bidichecker.FilterFactory.constructFilter(
+      {'followedByText': 'friends', 'opcode': 'FOLLOWED_BY_TEXT'});
+  var expected = bidichecker.FilterFactory.followedByText('friends');
+  assertObjectEquals(expected, actual);
+}
+
+
+function testFilterFactory_FollowedByTextFilterNoMatch() {
+  var filter = bidichecker.FilterFactory.followedByText('abc');
+  var error = new bidichecker.Error('my_type', 2);
+  error.setFollowedByText('def');
+  assertFalse(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_FollowedByTextFilterNullValues() {
+  // Non-null filter doesn't match null field value.
+  var filter = bidichecker.FilterFactory.followedByText('abc');
+  var error = new bidichecker.Error('my_type', 2);
+  assertFalse(filter.isSuppressed(error, []));
+
+  // Null filter matches null field value.
+  filter = bidichecker.FilterFactory.followedByText(null);
+  assertTrue(filter.isSuppressed(error, []));
+
+  // Empty filter value matches null field value.
+  filter = bidichecker.FilterFactory.followedByText('');
+  assertTrue(filter.isSuppressed(error, []));
+
+  // Empty filter value matches empty field value.
+  error.setFollowedByText('');
+  assertTrue(filter.isSuppressed(error, []));
+
+  // Null filter matches empty field value.
+  filter = bidichecker.FilterFactory.followedByText(null);
+  assertTrue(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_FollowedByTextFilterTextMatch() {
+  var filter = bidichecker.FilterFactory.followedByText('def');
+  var error = new bidichecker.Error('my_type', 2);
+  error.setFollowedByText('def');
+  assertTrue(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_FollowedByTextFilterPartialMatchFails() {
+  var filter = bidichecker.FilterFactory.followedByText('def');
+  var error = new bidichecker.Error('my_type', 2);
+  error.setFollowedByText('def1');
+  assertFalse(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_FollowedByTextFilterRegexpMatchFails() {
+  var filter = bidichecker.FilterFactory.followedByText('de*f+g');
+  var error = new bidichecker.Error('my_type', 2);
+  error.setFollowedByText('dffffg');
+  assertFalse(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_FollowedByTextRegexpFilterConstruct() {
+  var actual = bidichecker.FilterFactory.constructFilter(
+      {'followedByTextRegexp': 'friends',
+       'opcode': 'FOLLOWED_BY_TEXT_REGEXP'});
+  var expected = bidichecker.FilterFactory.followedByTextRegexp('friends');
+  assertObjectEquals(expected, actual);
+}
+
+
+function testFilterFactory_FollowedByTextRegexpFilterNoMatch() {
+  var filter = bidichecker.FilterFactory.followedByTextRegexp('abc');
+  var error = new bidichecker.Error('my_type', 2);
+  error.setFollowedByText('def');
+  assertFalse(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_FollowedByTextRegexpFilterNullValues() {
+  // Non-null filter doesn't match null field value.
+  var filter = bidichecker.FilterFactory.followedByTextRegexp('abc');
+  var error = new bidichecker.Error('my_type', 2);
+  assertFalse(filter.isSuppressed(error, []));
+
+  // Null filter matches null field value.
+  filter = bidichecker.FilterFactory.followedByTextRegexp(null);
+  assertTrue(filter.isSuppressed(error, []));
+
+  // Empty filter pattern matches null field value.
+  filter = bidichecker.FilterFactory.followedByTextRegexp('');
+  assertTrue(filter.isSuppressed(error, []));
+
+  // Empty filter pattern matches empty field value.
+  error.setFollowedByText('');
+  assertTrue(filter.isSuppressed(error, []));
+
+  // Null filter matches empty field value.
+  filter = bidichecker.FilterFactory.followedByTextRegexp(null);
+  assertTrue(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_FollowedByTextRegexpFilterTextMatch() {
+  var filter = bidichecker.FilterFactory.followedByTextRegexp('def');
+  var error = new bidichecker.Error('my_type', 2);
+  error.setFollowedByText('def');
+  assertTrue(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_FollowedByTextRegexpFilterPartialMatchFails() {
+  var filter = bidichecker.FilterFactory.followedByTextRegexp('def');
+  var error = new bidichecker.Error('my_type', 2);
+  error.setFollowedByText('def1');
+  assertFalse(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_FollowedByTextRegexpFilterRegexpMatch() {
+  // String literal argument.
+  var filter = bidichecker.FilterFactory.followedByTextRegexp('de*f+g');
+  var error = new bidichecker.Error('my_type', 2);
+  error.setFollowedByText('dffffg');
+  assertTrue(filter.isSuppressed(error, []));
+
+  // Must match entire field.
+  error.setFollowedByText('adffffgz');
+  assertFalse(filter.isSuppressed(error, []));
+
+  // RegExp literal argument.
+  filter = bidichecker.FilterFactory.followedByTextRegexp(/de*f+g/);
+  error.setFollowedByText('dffffg');
+  assertTrue(filter.isSuppressed(error, []));
+
+  // Must match entire field.
+  error.setFollowedByText('adffffgz');
+  assertFalse(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_LocationClassFilterConstruct() {
+  var actual = bidichecker.FilterFactory.constructFilter(
+      {'className': 'friends', 'opcode': 'LOCATION_CLASS'});
+  var expected = bidichecker.FilterFactory.locationClass('friends');
+  assertObjectEquals(expected, actual);
+}
+
+
+function testFilterFactory_LocationClassFilterConstructThrows() {
+  assertThrows(function() {
+    bidichecker.FilterFactory.locationClass('');
+  });
+  assertThrows(function() {
+    bidichecker.FilterFactory.locationClass(null);
+  });
+}
+
+
+function testFilterFactory_LocationClassFilterNoLocationElement() {
+  var filter = bidichecker.FilterFactory.locationClass('abc');
+  var error = new bidichecker.Error('my_type', 2);
+  assertFalse(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_LocationClassFilterNoMatch() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  testDiv.innerHTML = '<div class=\'nomatch\'><p>Okay?<\/p><\/div>';
+
+  var filter = bidichecker.FilterFactory.locationClass('abc');
+  var error = new bidichecker.Error('my_type', 2);
+  assertFalse(filter.isSuppressed(error, [testDiv.firstChild]));
+}
+
+
+function testFilterFactory_LocationClassFilterMatch() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  testDiv.innerHTML = '<div class=\'abc\'><p>Okay?<\/p><\/div>';
+
+  var filter = bidichecker.FilterFactory.locationClass('abc');
+  var error = new bidichecker.Error('my_type', 2);
+  assertTrue(filter.isSuppressed(error, [testDiv.firstChild]));
+}
+
+
+function testFilterFactory_LocationClassFilterAncestorMatch() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  testDiv.innerHTML = '<div class=\'abc\'><p class=\'def\'>Okay?<\/p><\/div>';
+
+  var filter = bidichecker.FilterFactory.locationClass('abc');
+  var error = new bidichecker.Error('my_type', 2);
+  assertTrue(filter.isSuppressed(error, [testDiv.firstChild]));
+}
+
+
+function testFilterFactory_LocationClassFilterRegexpMatchFails() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  testDiv.innerHTML = '<div class=\'abcdef\'><p>Okay?<\/p><\/div>';
+
+  var filter = bidichecker.FilterFactory.locationClass('abc.*f');
+  var error = new bidichecker.Error('my_type', 2);
+  assertFalse(filter.isSuppressed(error, [testDiv.firstChild]));
+}
+
+
+function testFilterFactory_LocationClassRegexpFilterConstruct() {
+  var actual = bidichecker.FilterFactory.constructFilter(
+      {'classRegexp': 'friends', 'opcode': 'LOCATION_CLASS_REGEXP'});
+  var expected = bidichecker.FilterFactory.locationClassRegexp('friends');
+  assertObjectEquals(expected, actual);
+}
+
+
+function testFilterFactory_LocationClassRegexpFilterConstructThrows() {
+  assertThrows(function() {
+    bidichecker.FilterFactory.locationClassRegexp('');
+  });
+  assertThrows(function() {
+    bidichecker.FilterFactory.locationClassRegexp(null);
+  });
+}
+
+
+function testFilterFactory_LocationClassRegexpFilterNoLocationElement() {
+  var filter = bidichecker.FilterFactory.locationClassRegexp('abc');
+  var error = new bidichecker.Error('my_type', 2);
+  assertFalse(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_LocationClassRegexpFilterNoMatch() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  testDiv.innerHTML = '<div class=\'nomatch\'><p>Okay?<\/p><\/div>';
+
+  var filter = bidichecker.FilterFactory.locationClassRegexp('abc');
+  var error = new bidichecker.Error('my_type', 2);
+  assertFalse(filter.isSuppressed(error, [testDiv.firstChild]));
+}
+
+
+function testFilterFactory_LocationClassRegexpFilterMatch() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  testDiv.innerHTML = '<div class=\'abc\'><p>Okay?<\/p><\/div>';
+
+  var filter = bidichecker.FilterFactory.locationClassRegexp('abc');
+  var error = new bidichecker.Error('my_type', 2);
+  assertTrue(filter.isSuppressed(error, [testDiv.firstChild]));
+}
+
+
+function testFilterFactory_LocationClassRegexpFilterAncestorMatch() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  testDiv.innerHTML = '<div class=\'abc\'><p class=\'def\'>Okay?<\/p><\/div>';
+
+  var filter = bidichecker.FilterFactory.locationClassRegexp('abc');
+  var error = new bidichecker.Error('my_type', 2);
+  assertTrue(filter.isSuppressed(error, [testDiv.firstChild]));
+}
+
+
+function testFilterFactory_LocationClassRegexpFilterRegexpMatch() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  testDiv.innerHTML = '<div class=\'abcdef\'><p>Okay?<\/p><\/div>';
+
+  var filter = bidichecker.FilterFactory.locationClassRegexp('abc.*f');
+  var error = new bidichecker.Error('my_type', 2);
+  assertTrue(filter.isSuppressed(error, [testDiv.firstChild]));
+}
+
+
+function testFilterFactory_LocationIdFilterConstruct() {
+  var actual = bidichecker.FilterFactory.constructFilter(
+      {'id': 'friends', 'opcode': 'LOCATION_ID'});
+  var expected = bidichecker.FilterFactory.locationId('friends');
+  assertObjectEquals(expected, actual);
+}
+
+
+function testFilterFactory_LocationIdFilterConstructThrows() {
+  assertThrows(function() {
+    bidichecker.FilterFactory.locationId('');
+  });
+  assertThrows(function() {
+    bidichecker.FilterFactory.locationId(null);
+  });
+}
+
+function testFilterFactory_LocationIdFilterNoLocationElement() {
+  var filter = bidichecker.FilterFactory.locationId('abc');
+  var error = new bidichecker.Error('my_type', 2);
+  assertFalse(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_LocationIdFilterNoMatch() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  testDiv.innerHTML = '<div id=\'nomatch\'><p>Okay?<\/p><\/div>';
+
+  var filter = bidichecker.FilterFactory.locationId('abc');
+  var error = new bidichecker.Error('my_type', 2);
+  assertFalse(filter.isSuppressed(error, [testDiv.firstChild]));
+}
+
+
+function testFilterFactory_LocationIdFilterMatch() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  testDiv.innerHTML = '<div id=\'abc\'><p>Okay?<\/p><\/div>';
+
+  var filter = bidichecker.FilterFactory.locationId('abc');
+  var error = new bidichecker.Error('my_type', 2);
+  assertTrue(filter.isSuppressed(error, [testDiv.firstChild]));
+}
+
+
+function testFilterFactory_LocationIdFilterAncestorMatch() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  testDiv.innerHTML = '<div id=\'abc\'><p id=\'def\'>Okay?<\/p><\/div>';
+
+  var filter = bidichecker.FilterFactory.locationId('abc');
+  var error = new bidichecker.Error('my_type', 2);
+  assertTrue(filter.isSuppressed(error, [testDiv.firstChild]));
+}
+
+
+function testFilterFactory_LocationIdFilterRegexpMatchFails() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  testDiv.innerHTML = '<div id=\'abcdef\'><p>Okay?<\/p><\/div>';
+
+  var filter = bidichecker.FilterFactory.locationId('abc.*f');
+  var error = new bidichecker.Error('my_type', 2);
+  assertFalse(filter.isSuppressed(error, [testDiv.firstChild]));
+}
+
+
+
+function testFilterFactory_LocationIdRegexpFilterConstruct() {
+  var actual = bidichecker.FilterFactory.constructFilter(
+      {'idRegexp': 'friends', 'opcode': 'LOCATION_ID_REGEXP'});
+  var expected = bidichecker.FilterFactory.locationIdRegexp('friends');
+  assertObjectEquals(expected, actual);
+}
+
+
+function testFilterFactory_LocationIdRegexpFilterConstructThrows() {
+  assertThrows(function() {
+    bidichecker.FilterFactory.locationIdRegexp('');
+  });
+  assertThrows(function() {
+    bidichecker.FilterFactory.locationIdRegexp(null);
+  });
+}
+
+function testFilterFactory_LocationIdRegexpFilterNoLocationElement() {
+  var filter = bidichecker.FilterFactory.locationIdRegexp('abc');
+  var error = new bidichecker.Error('my_type', 2);
+  assertFalse(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_LocationIdRegexpFilterNoMatch() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  testDiv.innerHTML = '<div id=\'nomatch\'><p>Okay?<\/p><\/div>';
+
+  var filter = bidichecker.FilterFactory.locationIdRegexp('abc');
+  var error = new bidichecker.Error('my_type', 2);
+  assertFalse(filter.isSuppressed(error, [testDiv.firstChild]));
+}
+
+
+function testFilterFactory_LocationIdRegexpFilterMatch() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  testDiv.innerHTML = '<div id=\'abc\'><p>Okay?<\/p><\/div>';
+
+  var filter = bidichecker.FilterFactory.locationIdRegexp('abc');
+  var error = new bidichecker.Error('my_type', 2);
+  assertTrue(filter.isSuppressed(error, [testDiv.firstChild]));
+}
+
+
+function testFilterFactory_LocationIdRegexpFilterAncestorMatch() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  testDiv.innerHTML = '<div id=\'abc\'><p id=\'def\'>Okay?<\/p><\/div>';
+
+  var filter = bidichecker.FilterFactory.locationIdRegexp('abc');
+  var error = new bidichecker.Error('my_type', 2);
+  assertTrue(filter.isSuppressed(error, [testDiv.firstChild]));
+}
+
+
+function testFilterFactory_LocationIdRegexpFilterRegexpMatch() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  testDiv.innerHTML = '<div id=\'abcdef\'><p>Okay?<\/p><\/div>';
+
+  var filter = bidichecker.FilterFactory.locationIdRegexp('abc.*f');
+  var error = new bidichecker.Error('my_type', 2);
+  assertTrue(filter.isSuppressed(error, [testDiv.firstChild]));
+}
+
+
+function testFilterFactory_NotFilterConstruct() {
+  var actual = bidichecker.FilterFactory.constructFilter(
+      {'filter': new bidichecker.FilterFactory.atText('friends'),
+       'opcode': 'NOT'});
+  var expected = bidichecker.FilterFactory.not(
+      bidichecker.FilterFactory.atText('friends'));
+  assertObjectEquals(expected, actual);
+}
+
+
+function testFilterFactory_NotFilterTargetFalse() {
+  var filter = bidichecker.FilterFactory.not(
+      bidichecker.FilterFactory.atText('abc'));
+  var error = new bidichecker.Error('my_type', 2, null, 'def');
+  assertTrue(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_NotFilterTargetTrue() {
+  var filter = bidichecker.FilterFactory.not(
+      bidichecker.FilterFactory.atText('abc'));
+  var error = new bidichecker.Error('my_type', 2, null, 'abc');
+  assertFalse(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_NotMethodOnFilterObject() {
+  var actual = bidichecker.FilterFactory.atTextRegexp('d.*f').not();
+  var expected = bidichecker.FilterFactory.not(
+      bidichecker.FilterFactory.atTextRegexp('d.*f'));
+  assertObjectEquals(expected, actual);
+}
+
+
+function testFilterFactory_OrFilterConstruct() {
+  var actual = bidichecker.FilterFactory.constructFilter(
+      {'filter1': new bidichecker.FilterFactory.atText('friends'),
+       'filter2': new bidichecker.FilterFactory.locationId('friends'),
+       'opcode': 'OR'});
+  var expected = bidichecker.FilterFactory.or(
+      bidichecker.FilterFactory.atText('friends'),
+      bidichecker.FilterFactory.locationId('friends'));
+  assertObjectEquals(expected, actual);
+}
+
+
+function testFilterFactory_OrFilterBothFalse() {
+  var filter = bidichecker.FilterFactory.or(
+      bidichecker.FilterFactory.atText('abc'),
+      bidichecker.FilterFactory.atText('ghi'));
+  var error = new bidichecker.Error('my_type', 2, null, 'def');
+  assertFalse(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_OrFilterFirstTrue() {
+  var filter = bidichecker.FilterFactory.or(
+      bidichecker.FilterFactory.atText('def'),
+      bidichecker.FilterFactory.atText('abc'));
+  var error = new bidichecker.Error('my_type', 2, null, 'def');
+  assertTrue(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_OrFilterSecondTrue() {
+  var filter = bidichecker.FilterFactory.or(
+      bidichecker.FilterFactory.atText('abc'),
+      bidichecker.FilterFactory.atText('def'));
+  var error = new bidichecker.Error('my_type', 2, null, 'def');
+  assertTrue(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_OrFilterBothTrue() {
+  var filter = bidichecker.FilterFactory.or(
+      bidichecker.FilterFactory.atTextRegexp('d.*f'),
+      bidichecker.FilterFactory.atText('def'));
+  var error = new bidichecker.Error('my_type', 2, null, 'def');
+  assertTrue(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_OrMethodOnFilterObject() {
+  var actual = bidichecker.FilterFactory.locationId('abc').or(
+      bidichecker.FilterFactory.locationId('def'));
+  var expected = bidichecker.FilterFactory.or(
+      bidichecker.FilterFactory.locationId('abc'),
+      bidichecker.FilterFactory.locationId('def'));
+  assertObjectEquals(expected, actual);
+}
+
+
+function testFilterFactory_OrMethodOnAndFilterObject() {
+  var actual = bidichecker.FilterFactory.locationId('abc').or(
+      bidichecker.FilterFactory.atTextRegexp('d.*f').and(
+      bidichecker.FilterFactory.atText('def')));
+  var expected = bidichecker.FilterFactory.or(
+      bidichecker.FilterFactory.locationId('abc'),
+      bidichecker.FilterFactory.and(
+          bidichecker.FilterFactory.atTextRegexp('d.*f'),
+          bidichecker.FilterFactory.atText('def')));
+  assertObjectEquals(expected, actual);
+}
+
+
+function testFilterFactory_PrecededByTextFilterConstruct() {
+  var actual = bidichecker.FilterFactory.constructFilter(
+      {'precededByText': 'friends', 'opcode': 'PRECEDED_BY_TEXT'});
+  var expected = bidichecker.FilterFactory.precededByText('friends');
+  assertObjectEquals(expected, actual);
+}
+
+
+function testFilterFactory_PrecededByTextFilterNoMatch() {
+  var filter = bidichecker.FilterFactory.precededByText('abc');
+  var error = new bidichecker.Error('my_type', 2);
+  error.setPrecededByText('def');
+  assertFalse(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_PrecededByTextFilterNullValues() {
+  // Non-null filter doesn't match null field value.
+  var filter = bidichecker.FilterFactory.precededByText('abc');
+  var error = new bidichecker.Error('my_type', 2);
+  assertFalse(filter.isSuppressed(error, []));
+
+  // Null filter matches null field value.
+  filter = bidichecker.FilterFactory.precededByText(null);
+  assertTrue(filter.isSuppressed(error, []));
+
+  // Empty filter value matches null field value.
+  filter = bidichecker.FilterFactory.precededByText('');
+  assertTrue(filter.isSuppressed(error, []));
+
+  // Empty filter value matches empty field value.
+  error.setPrecededByText('');
+  assertTrue(filter.isSuppressed(error, []));
+
+  // Null filter matches empty field value.
+  filter = bidichecker.FilterFactory.precededByText(null);
+  assertTrue(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_PrecededByTextFilterTextMatch() {
+  var filter = bidichecker.FilterFactory.precededByText('def');
+  var error = new bidichecker.Error('my_type', 2);
+  error.setPrecededByText('def');
+  assertTrue(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_PrecededByTextFilterPartialMatchFails() {
+  var filter = bidichecker.FilterFactory.precededByText('def');
+  var error = new bidichecker.Error('my_type', 2);
+  error.setPrecededByText('def1');
+  assertFalse(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_PrecededByTextFilterRegexpMatchFails() {
+  var filter = bidichecker.FilterFactory.precededByText('de*f+g');
+  var error = new bidichecker.Error('my_type', 2);
+  error.setPrecededByText('dffffg');
+  assertFalse(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_PrecededByTextRegexpFilterConstruct() {
+  var actual = bidichecker.FilterFactory.constructFilter(
+      {'precededByTextRegexp': 'friends', 'opcode': 'PRECEDED_BY_TEXT_REGEXP'});
+  var expected = bidichecker.FilterFactory.precededByTextRegexp('friends');
+  assertObjectEquals(expected, actual);
+}
+
+
+function testFilterFactory_PrecededByTextRegexpFilterNoMatch() {
+  var filter = bidichecker.FilterFactory.precededByTextRegexp('abc');
+  var error = new bidichecker.Error('my_type', 2);
+  error.setPrecededByText('def');
+  assertFalse(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_PrecededByTextRegexpFilterNullValues() {
+  // Non-null filter doesn't match null field value.
+  var filter = bidichecker.FilterFactory.precededByTextRegexp('abc');
+  var error = new bidichecker.Error('my_type', 2);
+  assertFalse(filter.isSuppressed(error, []));
+
+  // Null filter matches null field value.
+  filter = bidichecker.FilterFactory.precededByTextRegexp(null);
+  assertTrue(filter.isSuppressed(error, []));
+
+  // Empty filter pattern matches null field value.
+  filter = bidichecker.FilterFactory.precededByTextRegexp('');
+  assertTrue(filter.isSuppressed(error, []));
+
+  // Empty filter pattern matches empty field value.
+  error.setPrecededByText('');
+  assertTrue(filter.isSuppressed(error, []));
+
+  // Null filter matches empty field value.
+  filter = bidichecker.FilterFactory.precededByTextRegexp(null);
+  assertTrue(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_PrecededByTextRegexpFilterTextMatch() {
+  var filter = bidichecker.FilterFactory.precededByTextRegexp('def');
+  var error = new bidichecker.Error('my_type', 2);
+  error.setPrecededByText('def');
+  assertTrue(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_PrecededByTextRegexpFilterPartialMatchFails() {
+  var filter = bidichecker.FilterFactory.precededByTextRegexp('def');
+  var error = new bidichecker.Error('my_type', 2);
+  error.setPrecededByText('def1');
+  assertFalse(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_PrecededByTextRegexpFilterRegexpMatch() {
+  var filter = bidichecker.FilterFactory.precededByTextRegexp('de*f+g');
+  var error = new bidichecker.Error('my_type', 2);
+  error.setPrecededByText('dffffg');
+  assertTrue(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_SeverityFilterConstruct() {
+  var actual = bidichecker.FilterFactory.constructFilter(
+      {'severityThreshold': 2, 'opcode': 'SEVERITY'});
+  var expected = bidichecker.FilterFactory.severityFrom(2);
+  assertObjectEquals(expected, actual);
+}
+
+
+function testFilterFactory_SeverityFilterNoMatch() {
+  var filter = bidichecker.FilterFactory.severityFrom(4);
+  var error = new bidichecker.Error('my_type', 2);
+  assertFalse(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_SeverityFilterEqualMatch() {
+  var filter = bidichecker.FilterFactory.severityFrom(2);
+  var error = new bidichecker.Error('my_type', 2);
+  assertTrue(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_SeverityFilterThresholdMatch() {
+  var filter = bidichecker.FilterFactory.severityFrom(2);
+  var error = new bidichecker.Error('my_type', 3);
+  assertTrue(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_TypeFilterConstruct() {
+  var actual = bidichecker.FilterFactory.constructFilter(
+      {'type': 'friends', 'opcode': 'TYPE'});
+  var expected = bidichecker.FilterFactory.type('friends');
+  assertObjectEquals(expected, actual);
+}
+
+
+function testFilterFactory_TypeFilterNoMatch() {
+  var filter = bidichecker.FilterFactory.type('some_type');
+  var error = new bidichecker.Error('my_type', 2);
+  assertFalse(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_TypeFilterMatch() {
+  var filter = bidichecker.FilterFactory.type('some_type');
+  var error = new bidichecker.Error('some_type', 2);
+  assertTrue(filter.isSuppressed(error, []));
+}
+
+    </script>
+
+  </body>
+</html>

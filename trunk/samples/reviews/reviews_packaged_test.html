@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+  <!--
+    Copyright 2010 Google Inc. All Rights Reserved.
+
+    Use of this source code is governed by an Apache 2.0 License.
+    See the COPYING file for details.
+  -->
+
+  <!--
+  Sample tests of reviews.js using BidiChecker in its packaged form.
+  -->
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>reviews.js example - BidiChecker Unit Tests</title>
+
+    <script type="text/javascript" src="reviews.js"></script>
+    <script type="text/javascript" src="i18n.js"></script>
+
+    <!-- Include BidiChecker's precompiled JS API file, bidichecker_packaged.js.
+    -->
+    <script type="text/javascript" src="../../lib/bidichecker_packaged.js">
+    </script>
+
+    <script type="text/javascript" src="minitestrunner.js"></script>
+  </head>
+  <body onload="runTests()">
+
+    <!-- The test runner will render its output in this div -->
+    <div id="test_runner"></div>
+
+    <script type="text/javascript">
+
+/** Common initializations before each unit test. */
+function setUp() {
+  // Some of the unit tests add content to the page by creating a div with
+  // id="test". We remove it before each test to make way for the next one.
+  var testDiv = document.getElementById('test');
+  if (testDiv) {
+    testDiv.parentNode.removeChild(testDiv);
+  }
+}
+
+// Test that English data is correctly rendered in an English UI.
+function testReviews_EnglishDataEnglishUi() {
+  // Reviews data to display - all in English.
+  var reviewsData = [
+      {'title': '20,000 Leagues Under the Sea',
+       'reviews': '27'}
+  ];
+
+  var testDiv = document.createElement('div');
+  testDiv.setAttribute('id', 'test');
+  document.body.appendChild(testDiv);
+
+  // Render the reviews in an English UI.
+  var app = new ReviewsApp(reviewsData, testDiv);
+  app.setLanguage('English');
+  app.render();
+
+  // Run BidiChecker on the application's element. (To run it on the entire web
+  // page, use document.body instead of testDiv.)
+  var errors = bidichecker.checkPage(/* shouldBeRtl= */ false, testDiv);
+
+  // No BiDi errors should be found.
+  assertArrayEquals([], errors);
+}
+
+
+// Test that Hebrew data is correctly rendered in a Hebrew UI.
+function testReviews_HebrewDataHebrewUi() {
+  // Reviews data to display - all in Hebrew.
+  var reviewsData = [
+    {'title': 'דירה להשכיר',
+     'reviews': '52'}
+  ];
+
+  var testDiv = document.createElement('div');
+  testDiv.setAttribute('id', 'test');
+  document.body.appendChild(testDiv);
+
+  // Render the reviews in a Hebrew UI.
+  var app = new ReviewsApp(reviewsData, testDiv);
+  app.setLanguage('Hebrew');
+  app.render();
+
+  // Run BidiChecker on the application's element.
+  var errors = bidichecker.checkPage(/* shouldBeRtl= */ true, testDiv);
+
+  // No BiDi errors should be found.
+  assertArrayEquals([], errors);
+}
+
+
+// Render English data in a Hebrew UI. Demonstrates use of error suppression
+// filters.
+function testReviews_EnglishDataHebrewUi() {
+  // Reviews data to display - all in English.
+  var reviewsData = [
+      {'title': '20,000 Leagues Under the Sea',
+       'reviews': '30'}
+  ];
+
+  var testDiv = document.createElement('div');
+  testDiv.setAttribute('id', 'test');
+  document.body.appendChild(testDiv);
+
+  // Render the reviews in a Hebrew UI.
+  var app = new ReviewsApp(reviewsData, testDiv);
+  app.setLanguage('Hebrew');
+  app.render();
+
+  // Run BidiChecker on the application's element.
+  // We know this is buggy, but we're not ready to fix it yet, so we'll filter
+  // out the known BiDi errors. Specifically, we'll filter out "undeclared LTR
+  // text" errors in the reviews panel.
+  var filters = [ bidichecker.FilterFactory.type('Undeclared LTR text').and(
+                      bidichecker.FilterFactory.locationId('reviews')) ];
+  var errors = bidichecker.checkPage(/* shouldBeRtl= */ true, testDiv, filters);
+
+  // No unexpected BiDi errors should be found.
+  assertArrayEquals([], errors);
+}
+
+
+// As before, but render Hebrew data in an English UI.
+function testReviews_HebrewDataEnglishUi() {
+  // Reviews data to display - all in Hebrew.
+  var reviewsData = [
+    {'title': 'דירה להשכיר',
+     'reviews': '52'}
+  ];
+
+  var testDiv = document.createElement('div');
+  testDiv.setAttribute('id', 'test');
+  document.body.appendChild(testDiv);
+
+  // Render the reviews in an English UI.
+  var app = new ReviewsApp(reviewsData, testDiv);
+  app.setLanguage('English');
+  app.render();
+
+  // Run BidiChecker on the application's element.
+  // As before, we'll filter out the known BiDi errors; specifically,
+  // "undeclared RTL text" errors in the reviews panel.
+  var filters = [ bidichecker.FilterFactory.type('Undeclared RTL text').and(
+                      bidichecker.FilterFactory.locationId('reviews')) ];
+  var errors =
+      bidichecker.checkPage(/* shouldBeRtl= */ false, testDiv, filters);
+
+  // No unexpected BiDi errors should be found.
+  assertArrayEquals([], errors);
+}
+
+
+// Demonstrate in-browser error GUI. This test *would fail* if the assertion
+// were enabled. Instead, it has been modified to run the BidiChecker error GUI.
+// It will display a dialog box allowing the user to browse the bidi errors,
+// highlighting each where it appears on the page. (Note that depending on your
+// browser window size, you may have to drag the dialog box to see the error
+// locations.)
+//
+// The function name is chosen to be last alphabetically so it's run last and
+// its results remain in the browser.
+//
+// In practice, you probably wouldn't run the GUI from an automated test suite,
+// but you might activate it manually for specific tests that are failing for
+// unclear reasons.
+function testReviews_RunGui() {
+  // Reviews data to display - all in English.
+  var reviewsData = [
+      {'title': '20,000 Leagues Under the Sea',
+       'reviews': '12'}
+  ];
+
+  var testDiv = document.createElement('div');
+  testDiv.setAttribute('id', 'test');
+  document.body.appendChild(testDiv);
+
+  // Render the reviews in a Hebrew UI.
+  var app = new ReviewsApp(reviewsData, testDiv);
+  app.setLanguage('Hebrew');
+  app.render();
+
+  // Run BidiChecker on the application's element.
+  // We know this is buggy, so the error list will be non-empty.
+  var errors = bidichecker.checkPage(/* shouldBeRtl= */ true, testDiv);
+
+  // Run the in-browser error GUI.
+  if (errors.length != 0) {
+    bidichecker.runGui(errors);
+  }
+
+  // This assertion would fail!
+//  assertArrayEquals([], errors);
+}
+    </script>
+
+  </body>
+</html>

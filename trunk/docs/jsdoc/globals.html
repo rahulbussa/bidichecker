@@ -1,0 +1,982 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+	"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<title>JsDoc: GLOBALS</title>
+	<style type="text/css">
+		body { background-color: #FFFFFF; }
+		.TableHeadingColor { background: #CCCCFF; }
+		.TableSubHeadingColor { background: #EEEEFF; }
+		.TableRowColor { background: #FFFFFF; }
+		
+		.FrameTitleFont
+		{
+			font-size: 10pts;
+			font-family: Helvetica, Arial, san-serif;
+		}
+		
+		.FrameHeadingFont
+		{
+			font-size: 10pts;
+			font-family: Helvetica, Arial, san-serif;
+		}
+		
+		.FrameItemFont
+		{
+			font-size: 10pts;
+			font-family: Helvetica, Arial, san-serif;
+		}
+		
+		.NavBar
+		{
+			font-family: Arial, Helvetica, sans-serif;
+			background-color: #FFFFFF;
+		}
+		
+		.jsdoc_ctime
+		{
+			font-family: Arial, Helvetica, sans-serif;
+			font-size: 9pt;
+			text-align: right;
+		}
+	</style>
+</head>
+
+<body>
+
+<table style="width: 100%">
+<tr>
+<td class="NavBar" valign="top"><font size="-2">SUMMARY:&nbsp;<a href="#field_summary">FIELD</a>&nbsp;|&nbsp;<a href="#constructor_summary">CONSTR</a>&nbsp;|&nbsp;<a href="#method_summary">METHOD</a></font></td>
+<td class="NavBar" valign="top"><font size="-2">DETAIL:&nbsp;<a href="#field_detail">FIELD</a>&nbsp;|&nbsp;<a href="#constructor_detail">CONSTR</a>&nbsp;|&nbsp;<a href="#method_detail">METHOD</a></font></td>
+</tr>
+</table>
+
+<hr>
+
+<h2>Static Class GLOBALS</h2>
+
+
+
+
+
+<hr>
+
+<!-- =========== FIELD SUMMARY =========== -->
+
+<!-- =========== END FIELD SUMMARY =========== -->
+
+
+
+<!-- ========== METHOD SUMMARY =========== -->
+
+<a name="method_summary"> </a> 
+<table border="1" cellpadding="3" cellspacing="0" width="100%">
+	<tr bgcolor="#CCCCFF" class="TableHeadingColor">
+		<td colspan=2>
+			<font size="+2"> <b>Method Summary</b></font>
+		</td>
+	</tr>
+	
+		<tr bgcolor="white" class="TableRowColor">
+			<td align="right" valign="top" width="1%">
+				<font size="-1"><code>&lt;static&gt; 
+				&nbsp;!Array.<!bidichecker.Error>
+				</code></font> 
+			</td>
+			<td>
+				<code> <b> <a href="#bidichecker.checkPage">bidichecker.checkPage</a></b>(shouldBeRtl, opt_element, opt_filters) </code> 
+				<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Checks the contents of the current web page, including all nested frames, for
+BiDi-related errors.
+ 
+			</td>
+		</tr>
+	
+		<tr bgcolor="white" class="TableRowColor">
+			<td align="right" valign="top" width="1%">
+				<font size="-1"><code>&lt;static&gt; 
+				&nbsp;string
+				</code></font> 
+			</td>
+			<td>
+				<code> <b> <a href="#bidichecker.checkPageToJson">bidichecker.checkPageToJson</a></b>(shouldBeRtl, opt_element, opt_filtersJson) </code> 
+				<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; JSON interface to <code>checkPage</code>.
+ 
+			</td>
+		</tr>
+	
+		<tr bgcolor="white" class="TableRowColor">
+			<td align="right" valign="top" width="1%">
+				<font size="-1"><code>&lt;static&gt; 
+				&nbsp;!bidichecker.FilterFactory.ComposableFilter_
+				</code></font> 
+			</td>
+			<td>
+				<code> <b> <a href="#bidichecker.FilterFactory.and">bidichecker.FilterFactory.and</a></b>(filter1, filter2) </code> 
+				<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Create a filter which suppresses errors by and-ing component filters.
+ 
+			</td>
+		</tr>
+	
+		<tr bgcolor="white" class="TableRowColor">
+			<td align="right" valign="top" width="1%">
+				<font size="-1"><code>&lt;static&gt; 
+				&nbsp;!bidichecker.FilterFactory.ComposableFilter_
+				</code></font> 
+			</td>
+			<td>
+				<code> <b> <a href="#bidichecker.FilterFactory.atText">bidichecker.FilterFactory.atText</a></b>(atText) </code> 
+				<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Create a filter which suppresses errors based on a literal match of their
+<code>atText</code> fields.
+ 
+			</td>
+		</tr>
+	
+		<tr bgcolor="white" class="TableRowColor">
+			<td align="right" valign="top" width="1%">
+				<font size="-1"><code>&lt;static&gt; 
+				&nbsp;!bidichecker.FilterFactory.ComposableFilter_
+				</code></font> 
+			</td>
+			<td>
+				<code> <b> <a href="#bidichecker.FilterFactory.atTextRegexp">bidichecker.FilterFactory.atTextRegexp</a></b>(atTextRegexp) </code> 
+				<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Create a filter which suppresses errors by applying a regular expression to
+their <code>atText</code> fields.
+ 
+			</td>
+		</tr>
+	
+		<tr bgcolor="white" class="TableRowColor">
+			<td align="right" valign="top" width="1%">
+				<font size="-1"><code>&lt;static&gt; 
+				&nbsp;!bidichecker.FilterFactory.ComposableFilter_
+				</code></font> 
+			</td>
+			<td>
+				<code> <b> <a href="#bidichecker.FilterFactory.constructFilter">bidichecker.FilterFactory.constructFilter</a></b>(bareFilter) </code> 
+				<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Constructs a suppression filter from a bare object with suitable contents.
+ 
+			</td>
+		</tr>
+	
+		<tr bgcolor="white" class="TableRowColor">
+			<td align="right" valign="top" width="1%">
+				<font size="-1"><code>&lt;static&gt; 
+				&nbsp;!bidichecker.FilterFactory.ComposableFilter_
+				</code></font> 
+			</td>
+			<td>
+				<code> <b> <a href="#bidichecker.FilterFactory.followedByText">bidichecker.FilterFactory.followedByText</a></b>(followedByText) </code> 
+				<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Create a filter which suppresses errors based on a literal match of their
+<code>followedByText</code> fields.
+ 
+			</td>
+		</tr>
+	
+		<tr bgcolor="white" class="TableRowColor">
+			<td align="right" valign="top" width="1%">
+				<font size="-1"><code>&lt;static&gt; 
+				&nbsp;!bidichecker.FilterFactory.ComposableFilter_
+				</code></font> 
+			</td>
+			<td>
+				<code> <b> <a href="#bidichecker.FilterFactory.followedByTextRegexp">bidichecker.FilterFactory.followedByTextRegexp</a></b>(followedByTextRegexp) </code> 
+				<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Create a filter which suppresses errors by applying a regular expression to
+their <code>followedByText</code> fields.
+ 
+			</td>
+		</tr>
+	
+		<tr bgcolor="white" class="TableRowColor">
+			<td align="right" valign="top" width="1%">
+				<font size="-1"><code>&lt;static&gt; 
+				&nbsp;!bidichecker.FilterFactory.ComposableFilter_
+				</code></font> 
+			</td>
+			<td>
+				<code> <b> <a href="#bidichecker.FilterFactory.locationClass">bidichecker.FilterFactory.locationClass</a></b>(className) </code> 
+				<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Create a filter which suppresses errors based on a literal match of one of
+the class names of any parent node of the error location in the DOM.
+ 
+			</td>
+		</tr>
+	
+		<tr bgcolor="white" class="TableRowColor">
+			<td align="right" valign="top" width="1%">
+				<font size="-1"><code>&lt;static&gt; 
+				&nbsp;!bidichecker.FilterFactory.ComposableFilter_
+				</code></font> 
+			</td>
+			<td>
+				<code> <b> <a href="#bidichecker.FilterFactory.locationClassRegexp">bidichecker.FilterFactory.locationClassRegexp</a></b>(classRegexp) </code> 
+				<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Create a filter which suppresses errors based on a regular expression match
+of one of the class names of any parent node of the error location in the
+DOM.
+ 
+			</td>
+		</tr>
+	
+		<tr bgcolor="white" class="TableRowColor">
+			<td align="right" valign="top" width="1%">
+				<font size="-1"><code>&lt;static&gt; 
+				&nbsp;!bidichecker.FilterFactory.ComposableFilter_
+				</code></font> 
+			</td>
+			<td>
+				<code> <b> <a href="#bidichecker.FilterFactory.locationId">bidichecker.FilterFactory.locationId</a></b>(id) </code> 
+				<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Create a filter which suppresses errors based on a literal match of the error
+location's (or one of its DOM ancestors') <code>id</code> attribute.
+ 
+			</td>
+		</tr>
+	
+		<tr bgcolor="white" class="TableRowColor">
+			<td align="right" valign="top" width="1%">
+				<font size="-1"><code>&lt;static&gt; 
+				&nbsp;!bidichecker.FilterFactory.ComposableFilter_
+				</code></font> 
+			</td>
+			<td>
+				<code> <b> <a href="#bidichecker.FilterFactory.locationIdRegexp">bidichecker.FilterFactory.locationIdRegexp</a></b>(idRegexp) </code> 
+				<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Create a filter which suppresses errors by applying a regular expression to
+the error location's (or one of its DOM ancestors') <code>id</code> attribute.
+ 
+			</td>
+		</tr>
+	
+		<tr bgcolor="white" class="TableRowColor">
+			<td align="right" valign="top" width="1%">
+				<font size="-1"><code>&lt;static&gt; 
+				&nbsp;!bidichecker.FilterFactory.ComposableFilter_
+				</code></font> 
+			</td>
+			<td>
+				<code> <b> <a href="#bidichecker.FilterFactory.not">bidichecker.FilterFactory.not</a></b>(filter) </code> 
+				<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Create a filter which suppresses errors by inverting another filter.
+ 
+			</td>
+		</tr>
+	
+		<tr bgcolor="white" class="TableRowColor">
+			<td align="right" valign="top" width="1%">
+				<font size="-1"><code>&lt;static&gt; 
+				&nbsp;!bidichecker.FilterFactory.ComposableFilter_
+				</code></font> 
+			</td>
+			<td>
+				<code> <b> <a href="#bidichecker.FilterFactory.or">bidichecker.FilterFactory.or</a></b>(filter1, filter2) </code> 
+				<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Create a filter which suppresses errors by or-ing component filters.
+ 
+			</td>
+		</tr>
+	
+		<tr bgcolor="white" class="TableRowColor">
+			<td align="right" valign="top" width="1%">
+				<font size="-1"><code>&lt;static&gt; 
+				&nbsp;!bidichecker.FilterFactory.ComposableFilter_
+				</code></font> 
+			</td>
+			<td>
+				<code> <b> <a href="#bidichecker.FilterFactory.precededByText">bidichecker.FilterFactory.precededByText</a></b>(precededByText) </code> 
+				<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Create a filter which suppresses errors based on a literal match of their
+<code>precededByText</code> fields.
+ 
+			</td>
+		</tr>
+	
+		<tr bgcolor="white" class="TableRowColor">
+			<td align="right" valign="top" width="1%">
+				<font size="-1"><code>&lt;static&gt; 
+				&nbsp;!bidichecker.FilterFactory.ComposableFilter_
+				</code></font> 
+			</td>
+			<td>
+				<code> <b> <a href="#bidichecker.FilterFactory.precededByTextRegexp">bidichecker.FilterFactory.precededByTextRegexp</a></b>(precededByTextRegexp) </code> 
+				<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Create a filter which suppresses errors by applying a regular expression to
+their <code>precededByText</code> fields.
+ 
+			</td>
+		</tr>
+	
+		<tr bgcolor="white" class="TableRowColor">
+			<td align="right" valign="top" width="1%">
+				<font size="-1"><code>&lt;static&gt; 
+				&nbsp;Array.<!bidichecker.Filter>
+				</code></font> 
+			</td>
+			<td>
+				<code> <b> <a href="#bidichecker.FilterFactory.readFiltersFromJson">bidichecker.FilterFactory.readFiltersFromJson</a></b>(opt_filtersJson) </code> 
+				<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Deserializes a list of suppression filters from a JSON-format string.
+ 
+			</td>
+		</tr>
+	
+		<tr bgcolor="white" class="TableRowColor">
+			<td align="right" valign="top" width="1%">
+				<font size="-1"><code>&lt;static&gt; 
+				&nbsp;!bidichecker.FilterFactory.ComposableFilter_
+				</code></font> 
+			</td>
+			<td>
+				<code> <b> <a href="#bidichecker.FilterFactory.severityFrom">bidichecker.FilterFactory.severityFrom</a></b>(severityThreshold) </code> 
+				<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Create a filter which suppresses errors based on their severity levels.
+ 
+			</td>
+		</tr>
+	
+		<tr bgcolor="white" class="TableRowColor">
+			<td align="right" valign="top" width="1%">
+				<font size="-1"><code>&lt;static&gt; 
+				&nbsp;!bidichecker.FilterFactory.ComposableFilter_
+				</code></font> 
+			</td>
+			<td>
+				<code> <b> <a href="#bidichecker.FilterFactory.type">bidichecker.FilterFactory.type</a></b>(type) </code> 
+				<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Create a filter which suppresses errors based on their type fields.
+ 
+			</td>
+		</tr>
+	
+		<tr bgcolor="white" class="TableRowColor">
+			<td align="right" valign="top" width="1%">
+				<font size="-1"><code>&lt;static&gt; </code></font> 
+			</td>
+			<td>
+				<code> <b> <a href="#bidichecker.runGui">bidichecker.runGui</a></b>(errors) </code> 
+				<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Runs the interactive visual error browsing mode.
+ 
+			</td>
+		</tr>
+	
+		<tr bgcolor="white" class="TableRowColor">
+			<td align="right" valign="top" width="1%">
+				<font size="-1"><code>&lt;static&gt; </code></font> 
+			</td>
+			<td>
+				<code> <b> <a href="#bidichecker.runGuiFromJson">bidichecker.runGuiFromJson</a></b>(errorsJson) </code> 
+				<br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; JSON interface to <code>runGui</code>.
+ 
+			</td>
+		</tr>
+	
+</table>
+&nbsp;
+
+<!-- ========== EVENT SUMMARY =========== -->
+
+<!-- ========== INHERITED METHODS SUMMARY =========== -->
+
+<br/>
+
+<!-- ========== END INHERITED METHODS SUMMARY =========== -->
+
+<!-- ============ FIELD DETAIL START ========= -->
+
+<!-- ============ FIELD DETAIL END ========== -->
+
+
+
+<!-- ============ METHOD DETAIL START ======= -->
+
+<a name="method_detail"> </a> 
+<table border="1" cellpadding="3" cellspacing="0" width="100%">
+	<tr bgcolor="#CCCCFF" class="TableHeadingColor">
+		<td colspan=1>
+			<font size="+2"> <b>Method Detail</b></font> 
+		</td>
+	</tr>
+</table>
+
+
+	<a name="bidichecker.checkPage"> </a> <h3>bidichecker.checkPage</h3>
+		<pre>&lt;static&gt;&nbsp;!Array.<!bidichecker.Error>&nbsp;<b>bidichecker.checkPage</b>(shouldBeRtl, opt_element, opt_filters)</pre> 
+	<ul>
+		Checks the contents of the current web page, including all nested frames, for
+BiDi-related errors. If <code>opt_element</code> is specified, checks only within
+the given element of the DOM (including any nested frames). This is the main
+entry point for the Javascript API.
+	</ul>
+	<!-- METHOD PARAMETERS START -->
+	<ul>
+		<b>Parameters:</b>
+		<ul>
+			<code><i>boolean</i>&nbsp;shouldBeRtl </code> - Is the root expected to be right-to-left? 
+		</ul>
+		<ul>
+			<code><i>Element=</i>&nbsp;opt_element </code> - The root element of the DOM subtree to be
+    checked; if null, checks the entire current web page. 
+		</ul>
+		<ul>
+			<code><i>Array.<!bidichecker.Filter>=</i>&nbsp;opt_filters </code> - Error suppression filters. 
+		</ul>
+	</ul>
+	<!-- METHOD PARAMETERS END -->
+	<!-- ADDITIONAL ATTRIBUTES START -->
+	<ul>
+		<b>Returns:</b>
+		<ul>
+			<code><i>!Array.<!bidichecker.Error></i>&nbsp;</code>Array of error objects for all failing
+    checks. 
+		</ul>
+	</ul>
+	
+	<!-- ADDITIONAL ATTRIBUTES  END -->
+	<hr>
+
+	<a name="bidichecker.checkPageToJson"> </a> <h3>bidichecker.checkPageToJson</h3>
+		<pre>&lt;static&gt;&nbsp;string&nbsp;<b>bidichecker.checkPageToJson</b>(shouldBeRtl, opt_element, opt_filtersJson)</pre> 
+	<ul>
+		JSON interface to <code>checkPage</code>.
+	</ul>
+	<!-- METHOD PARAMETERS START -->
+	<ul>
+		<b>Parameters:</b>
+		<ul>
+			<code><i>boolean</i>&nbsp;shouldBeRtl </code> - Is the element/page expected to be
+    right-to-left? 
+		</ul>
+		<ul>
+			<code><i>Element=</i>&nbsp;opt_element </code> - The root element of the DOM subtree to be
+    checked; if null, checks the entire current web page. 
+		</ul>
+		<ul>
+			<code><i>string=</i>&nbsp;opt_filtersJson </code> - Error suppression filters in a JSON string. 
+		</ul>
+	</ul>
+	<!-- METHOD PARAMETERS END -->
+	<!-- ADDITIONAL ATTRIBUTES START -->
+	<ul>
+		<b>Returns:</b>
+		<ul>
+			<code><i>string</i>&nbsp;</code>Array of <code>bidichecker.Error</code> objects for all failing
+    checks, in JSON format. If no errors were found, returns an empty array
+    ("[]"). 
+		</ul>
+	</ul>
+	
+	<!-- ADDITIONAL ATTRIBUTES  END -->
+	<hr>
+
+	<a name="bidichecker.FilterFactory.and"> </a> <h3>bidichecker.FilterFactory.and</h3>
+		<pre>&lt;static&gt;&nbsp;!bidichecker.FilterFactory.ComposableFilter_&nbsp;<b>bidichecker.FilterFactory.and</b>(filter1, filter2)</pre> 
+	<ul>
+		Create a filter which suppresses errors by and-ing component filters.
+	</ul>
+	<!-- METHOD PARAMETERS START -->
+	<ul>
+		<b>Parameters:</b>
+		<ul>
+			<code><i>!bidichecker.Filter</i>&nbsp;filter1 </code> - The first subfilter. 
+		</ul>
+		<ul>
+			<code><i>!bidichecker.Filter</i>&nbsp;filter2 </code> - The second subfilter. 
+		</ul>
+	</ul>
+	<!-- METHOD PARAMETERS END -->
+	<!-- ADDITIONAL ATTRIBUTES START -->
+	<ul>
+		<b>Returns:</b>
+		<ul>
+			<code><i>!bidichecker.FilterFactory.ComposableFilter_</i>&nbsp;</code>A filter object. 
+		</ul>
+	</ul>
+	
+	<!-- ADDITIONAL ATTRIBUTES  END -->
+	<hr>
+
+	<a name="bidichecker.FilterFactory.atText"> </a> <h3>bidichecker.FilterFactory.atText</h3>
+		<pre>&lt;static&gt;&nbsp;!bidichecker.FilterFactory.ComposableFilter_&nbsp;<b>bidichecker.FilterFactory.atText</b>(atText)</pre> 
+	<ul>
+		Create a filter which suppresses errors based on a literal match of their
+<code>atText</code> fields.
+	</ul>
+	<!-- METHOD PARAMETERS START -->
+	<ul>
+		<b>Parameters:</b>
+		<ul>
+			<code><i>?string</i>&nbsp;atText </code> - A string which must match the entire <code>atText</code>
+    field. If empty or null, will only match an empty or null <code>atText</code>. 
+		</ul>
+	</ul>
+	<!-- METHOD PARAMETERS END -->
+	<!-- ADDITIONAL ATTRIBUTES START -->
+	<ul>
+		<b>Returns:</b>
+		<ul>
+			<code><i>!bidichecker.FilterFactory.ComposableFilter_</i>&nbsp;</code>A filter object. 
+		</ul>
+	</ul>
+	
+	<!-- ADDITIONAL ATTRIBUTES  END -->
+	<hr>
+
+	<a name="bidichecker.FilterFactory.atTextRegexp"> </a> <h3>bidichecker.FilterFactory.atTextRegexp</h3>
+		<pre>&lt;static&gt;&nbsp;!bidichecker.FilterFactory.ComposableFilter_&nbsp;<b>bidichecker.FilterFactory.atTextRegexp</b>(atTextRegexp)</pre> 
+	<ul>
+		Create a filter which suppresses errors by applying a regular expression to
+their <code>atText</code> fields.
+	</ul>
+	<!-- METHOD PARAMETERS START -->
+	<ul>
+		<b>Parameters:</b>
+		<ul>
+			<code><i>string, RegExp</i>&nbsp;atTextRegexp </code> - A regular expression, which must match
+    the entire <code>atText</code> field. If empty or null, will only match an
+    empty or null <code>atText</code>. 
+		</ul>
+	</ul>
+	<!-- METHOD PARAMETERS END -->
+	<!-- ADDITIONAL ATTRIBUTES START -->
+	<ul>
+		<b>Returns:</b>
+		<ul>
+			<code><i>!bidichecker.FilterFactory.ComposableFilter_</i>&nbsp;</code>A filter object. 
+		</ul>
+	</ul>
+	
+	<!-- ADDITIONAL ATTRIBUTES  END -->
+	<hr>
+
+	<a name="bidichecker.FilterFactory.constructFilter"> </a> <h3>bidichecker.FilterFactory.constructFilter</h3>
+		<pre>&lt;static&gt;&nbsp;!bidichecker.FilterFactory.ComposableFilter_&nbsp;<b>bidichecker.FilterFactory.constructFilter</b>(bareFilter)</pre> 
+	<ul>
+		Constructs a suppression filter from a bare object with suitable contents.
+For use in deserializing filters from JSON. Throws a string exception if an
+invalid filter is encountered.
+	</ul>
+	<!-- METHOD PARAMETERS START -->
+	<ul>
+		<b>Parameters:</b>
+		<ul>
+			<code><i>!Object</i>&nbsp;bareFilter </code> - The object representing the filter. Must contain
+    an <code>'opcode'</code> field with a string indicating the filter type.
+    Other supported field names and types are dependent on the filter type. 
+		</ul>
+	</ul>
+	<!-- METHOD PARAMETERS END -->
+	<!-- ADDITIONAL ATTRIBUTES START -->
+	<ul>
+		<b>Returns:</b>
+		<ul>
+			<code><i>!bidichecker.FilterFactory.ComposableFilter_</i>&nbsp;</code>The new filter. 
+		</ul>
+	</ul>
+	
+	<!-- ADDITIONAL ATTRIBUTES  END -->
+	<hr>
+
+	<a name="bidichecker.FilterFactory.followedByText"> </a> <h3>bidichecker.FilterFactory.followedByText</h3>
+		<pre>&lt;static&gt;&nbsp;!bidichecker.FilterFactory.ComposableFilter_&nbsp;<b>bidichecker.FilterFactory.followedByText</b>(followedByText)</pre> 
+	<ul>
+		Create a filter which suppresses errors based on a literal match of their
+<code>followedByText</code> fields.
+	</ul>
+	<!-- METHOD PARAMETERS START -->
+	<ul>
+		<b>Parameters:</b>
+		<ul>
+			<code><i>?string</i>&nbsp;followedByText </code> - A string which must match the entire {@code
+    followedByText} field. If empty or null, will only match an empty or null
+    <code>followedByText</code>. 
+		</ul>
+	</ul>
+	<!-- METHOD PARAMETERS END -->
+	<!-- ADDITIONAL ATTRIBUTES START -->
+	<ul>
+		<b>Returns:</b>
+		<ul>
+			<code><i>!bidichecker.FilterFactory.ComposableFilter_</i>&nbsp;</code>A filter object. 
+		</ul>
+	</ul>
+	
+	<!-- ADDITIONAL ATTRIBUTES  END -->
+	<hr>
+
+	<a name="bidichecker.FilterFactory.followedByTextRegexp"> </a> <h3>bidichecker.FilterFactory.followedByTextRegexp</h3>
+		<pre>&lt;static&gt;&nbsp;!bidichecker.FilterFactory.ComposableFilter_&nbsp;<b>bidichecker.FilterFactory.followedByTextRegexp</b>(followedByTextRegexp)</pre> 
+	<ul>
+		Create a filter which suppresses errors by applying a regular expression to
+their <code>followedByText</code> fields.
+	</ul>
+	<!-- METHOD PARAMETERS START -->
+	<ul>
+		<b>Parameters:</b>
+		<ul>
+			<code><i>string, RegExp</i>&nbsp;followedByTextRegexp </code> - A regular expression, which must
+    match the entire <code>followedByText</code> field. If empty or null, will
+    only match an empty or null <code>followedByText</code>. 
+		</ul>
+	</ul>
+	<!-- METHOD PARAMETERS END -->
+	<!-- ADDITIONAL ATTRIBUTES START -->
+	<ul>
+		<b>Returns:</b>
+		<ul>
+			<code><i>!bidichecker.FilterFactory.ComposableFilter_</i>&nbsp;</code>A filter object. 
+		</ul>
+	</ul>
+	
+	<!-- ADDITIONAL ATTRIBUTES  END -->
+	<hr>
+
+	<a name="bidichecker.FilterFactory.locationClass"> </a> <h3>bidichecker.FilterFactory.locationClass</h3>
+		<pre>&lt;static&gt;&nbsp;!bidichecker.FilterFactory.ComposableFilter_&nbsp;<b>bidichecker.FilterFactory.locationClass</b>(className)</pre> 
+	<ul>
+		Create a filter which suppresses errors based on a literal match of one of
+the class names of any parent node of the error location in the DOM.
+	</ul>
+	<!-- METHOD PARAMETERS START -->
+	<ul>
+		<b>Parameters:</b>
+		<ul>
+			<code><i>string</i>&nbsp;className </code> - A string which must match one of the class names in
+    the <code>class</code> attribute of the location or one of its ancestors. Must
+    not be empty or null. 
+		</ul>
+	</ul>
+	<!-- METHOD PARAMETERS END -->
+	<!-- ADDITIONAL ATTRIBUTES START -->
+	<ul>
+		<b>Returns:</b>
+		<ul>
+			<code><i>!bidichecker.FilterFactory.ComposableFilter_</i>&nbsp;</code>A filter object. 
+		</ul>
+	</ul>
+	
+	<!-- ADDITIONAL ATTRIBUTES  END -->
+	<hr>
+
+	<a name="bidichecker.FilterFactory.locationClassRegexp"> </a> <h3>bidichecker.FilterFactory.locationClassRegexp</h3>
+		<pre>&lt;static&gt;&nbsp;!bidichecker.FilterFactory.ComposableFilter_&nbsp;<b>bidichecker.FilterFactory.locationClassRegexp</b>(classRegexp)</pre> 
+	<ul>
+		Create a filter which suppresses errors based on a regular expression match
+of one of the class names of any parent node of the error location in the
+DOM.
+	</ul>
+	<!-- METHOD PARAMETERS START -->
+	<ul>
+		<b>Parameters:</b>
+		<ul>
+			<code><i>string, RegExp</i>&nbsp;classRegexp </code> - A regular expression, which must match
+    one of the class names in the <code>class</code> attribute of the location or
+    one of its ancestors. Must not be empty or null. 
+		</ul>
+	</ul>
+	<!-- METHOD PARAMETERS END -->
+	<!-- ADDITIONAL ATTRIBUTES START -->
+	<ul>
+		<b>Returns:</b>
+		<ul>
+			<code><i>!bidichecker.FilterFactory.ComposableFilter_</i>&nbsp;</code>A filter object. 
+		</ul>
+	</ul>
+	
+	<!-- ADDITIONAL ATTRIBUTES  END -->
+	<hr>
+
+	<a name="bidichecker.FilterFactory.locationId"> </a> <h3>bidichecker.FilterFactory.locationId</h3>
+		<pre>&lt;static&gt;&nbsp;!bidichecker.FilterFactory.ComposableFilter_&nbsp;<b>bidichecker.FilterFactory.locationId</b>(id)</pre> 
+	<ul>
+		Create a filter which suppresses errors based on a literal match of the error
+location's (or one of its DOM ancestors') <code>id</code> attribute.
+	</ul>
+	<!-- METHOD PARAMETERS START -->
+	<ul>
+		<b>Parameters:</b>
+		<ul>
+			<code><i>string</i>&nbsp;id </code> - A string which must match the entire <code>id</code> attribute
+    of the location or one of its ancestors. Must not be empty or null. 
+		</ul>
+	</ul>
+	<!-- METHOD PARAMETERS END -->
+	<!-- ADDITIONAL ATTRIBUTES START -->
+	<ul>
+		<b>Returns:</b>
+		<ul>
+			<code><i>!bidichecker.FilterFactory.ComposableFilter_</i>&nbsp;</code>A filter object. 
+		</ul>
+	</ul>
+	
+	<!-- ADDITIONAL ATTRIBUTES  END -->
+	<hr>
+
+	<a name="bidichecker.FilterFactory.locationIdRegexp"> </a> <h3>bidichecker.FilterFactory.locationIdRegexp</h3>
+		<pre>&lt;static&gt;&nbsp;!bidichecker.FilterFactory.ComposableFilter_&nbsp;<b>bidichecker.FilterFactory.locationIdRegexp</b>(idRegexp)</pre> 
+	<ul>
+		Create a filter which suppresses errors by applying a regular expression to
+the error location's (or one of its DOM ancestors') <code>id</code> attribute.
+	</ul>
+	<!-- METHOD PARAMETERS START -->
+	<ul>
+		<b>Parameters:</b>
+		<ul>
+			<code><i>string, RegExp</i>&nbsp;idRegexp </code> - A regular expression, which must match the
+    entire <code>id</code> attribute of the location or one of its ancestors. Must
+    not be empty or null. 
+		</ul>
+	</ul>
+	<!-- METHOD PARAMETERS END -->
+	<!-- ADDITIONAL ATTRIBUTES START -->
+	<ul>
+		<b>Returns:</b>
+		<ul>
+			<code><i>!bidichecker.FilterFactory.ComposableFilter_</i>&nbsp;</code>A filter object. 
+		</ul>
+	</ul>
+	
+	<!-- ADDITIONAL ATTRIBUTES  END -->
+	<hr>
+
+	<a name="bidichecker.FilterFactory.not"> </a> <h3>bidichecker.FilterFactory.not</h3>
+		<pre>&lt;static&gt;&nbsp;!bidichecker.FilterFactory.ComposableFilter_&nbsp;<b>bidichecker.FilterFactory.not</b>(filter)</pre> 
+	<ul>
+		Create a filter which suppresses errors by inverting another filter.
+	</ul>
+	<!-- METHOD PARAMETERS START -->
+	<ul>
+		<b>Parameters:</b>
+		<ul>
+			<code><i>!bidichecker.Filter</i>&nbsp;filter </code> - The subfilter. 
+		</ul>
+	</ul>
+	<!-- METHOD PARAMETERS END -->
+	<!-- ADDITIONAL ATTRIBUTES START -->
+	<ul>
+		<b>Returns:</b>
+		<ul>
+			<code><i>!bidichecker.FilterFactory.ComposableFilter_</i>&nbsp;</code>A filter object. 
+		</ul>
+	</ul>
+	
+	<!-- ADDITIONAL ATTRIBUTES  END -->
+	<hr>
+
+	<a name="bidichecker.FilterFactory.or"> </a> <h3>bidichecker.FilterFactory.or</h3>
+		<pre>&lt;static&gt;&nbsp;!bidichecker.FilterFactory.ComposableFilter_&nbsp;<b>bidichecker.FilterFactory.or</b>(filter1, filter2)</pre> 
+	<ul>
+		Create a filter which suppresses errors by or-ing component filters.
+	</ul>
+	<!-- METHOD PARAMETERS START -->
+	<ul>
+		<b>Parameters:</b>
+		<ul>
+			<code><i>!bidichecker.Filter</i>&nbsp;filter1 </code> - The first subfilter. 
+		</ul>
+		<ul>
+			<code><i>!bidichecker.Filter</i>&nbsp;filter2 </code> - The second subfilter. 
+		</ul>
+	</ul>
+	<!-- METHOD PARAMETERS END -->
+	<!-- ADDITIONAL ATTRIBUTES START -->
+	<ul>
+		<b>Returns:</b>
+		<ul>
+			<code><i>!bidichecker.FilterFactory.ComposableFilter_</i>&nbsp;</code>A filter object. 
+		</ul>
+	</ul>
+	
+	<!-- ADDITIONAL ATTRIBUTES  END -->
+	<hr>
+
+	<a name="bidichecker.FilterFactory.precededByText"> </a> <h3>bidichecker.FilterFactory.precededByText</h3>
+		<pre>&lt;static&gt;&nbsp;!bidichecker.FilterFactory.ComposableFilter_&nbsp;<b>bidichecker.FilterFactory.precededByText</b>(precededByText)</pre> 
+	<ul>
+		Create a filter which suppresses errors based on a literal match of their
+<code>precededByText</code> fields.
+	</ul>
+	<!-- METHOD PARAMETERS START -->
+	<ul>
+		<b>Parameters:</b>
+		<ul>
+			<code><i>?string</i>&nbsp;precededByText </code> - A string which must match the entire {@code
+    precededByText} field. If empty or null, will only match an empty or null
+    <code>precededByText</code>. 
+		</ul>
+	</ul>
+	<!-- METHOD PARAMETERS END -->
+	<!-- ADDITIONAL ATTRIBUTES START -->
+	<ul>
+		<b>Returns:</b>
+		<ul>
+			<code><i>!bidichecker.FilterFactory.ComposableFilter_</i>&nbsp;</code>A filter object. 
+		</ul>
+	</ul>
+	
+	<!-- ADDITIONAL ATTRIBUTES  END -->
+	<hr>
+
+	<a name="bidichecker.FilterFactory.precededByTextRegexp"> </a> <h3>bidichecker.FilterFactory.precededByTextRegexp</h3>
+		<pre>&lt;static&gt;&nbsp;!bidichecker.FilterFactory.ComposableFilter_&nbsp;<b>bidichecker.FilterFactory.precededByTextRegexp</b>(precededByTextRegexp)</pre> 
+	<ul>
+		Create a filter which suppresses errors by applying a regular expression to
+their <code>precededByText</code> fields.
+	</ul>
+	<!-- METHOD PARAMETERS START -->
+	<ul>
+		<b>Parameters:</b>
+		<ul>
+			<code><i>string, RegExp</i>&nbsp;precededByTextRegexp </code> - A regular expression, which must
+    match the entire <code>precededByText</code> field. If empty or null, will
+    only match an empty or null <code>precededByText</code>. 
+		</ul>
+	</ul>
+	<!-- METHOD PARAMETERS END -->
+	<!-- ADDITIONAL ATTRIBUTES START -->
+	<ul>
+		<b>Returns:</b>
+		<ul>
+			<code><i>!bidichecker.FilterFactory.ComposableFilter_</i>&nbsp;</code>A filter object. 
+		</ul>
+	</ul>
+	
+	<!-- ADDITIONAL ATTRIBUTES  END -->
+	<hr>
+
+	<a name="bidichecker.FilterFactory.readFiltersFromJson"> </a> <h3>bidichecker.FilterFactory.readFiltersFromJson</h3>
+		<pre>&lt;static&gt;&nbsp;Array.<!bidichecker.Filter>&nbsp;<b>bidichecker.FilterFactory.readFiltersFromJson</b>(opt_filtersJson)</pre> 
+	<ul>
+		Deserializes a list of suppression filters from a JSON-format string.
+Throws a string exception if an unknown filter is encountered.
+	</ul>
+	<!-- METHOD PARAMETERS START -->
+	<ul>
+		<b>Parameters:</b>
+		<ul>
+			<code><i>string=</i>&nbsp;opt_filtersJson </code> - The input string, if provided. 
+		</ul>
+	</ul>
+	<!-- METHOD PARAMETERS END -->
+	<!-- ADDITIONAL ATTRIBUTES START -->
+	<ul>
+		<b>Returns:</b>
+		<ul>
+			<code><i>Array.<!bidichecker.Filter></i>&nbsp;</code>The error suppression filters. 
+		</ul>
+	</ul>
+	
+	<!-- ADDITIONAL ATTRIBUTES  END -->
+	<hr>
+
+	<a name="bidichecker.FilterFactory.severityFrom"> </a> <h3>bidichecker.FilterFactory.severityFrom</h3>
+		<pre>&lt;static&gt;&nbsp;!bidichecker.FilterFactory.ComposableFilter_&nbsp;<b>bidichecker.FilterFactory.severityFrom</b>(severityThreshold)</pre> 
+	<ul>
+		Create a filter which suppresses errors based on their severity levels.
+	</ul>
+	<!-- METHOD PARAMETERS START -->
+	<ul>
+		<b>Parameters:</b>
+		<ul>
+			<code><i>number</i>&nbsp;severityThreshold </code> - the severity level from which errors should
+    be suppressed. At level 1, all messages will be filtered out. Note that
+    higher values indicate lower severities. 
+		</ul>
+	</ul>
+	<!-- METHOD PARAMETERS END -->
+	<!-- ADDITIONAL ATTRIBUTES START -->
+	<ul>
+		<b>Returns:</b>
+		<ul>
+			<code><i>!bidichecker.FilterFactory.ComposableFilter_</i>&nbsp;</code>A filter object. 
+		</ul>
+	</ul>
+	
+	<!-- ADDITIONAL ATTRIBUTES  END -->
+	<hr>
+
+	<a name="bidichecker.FilterFactory.type"> </a> <h3>bidichecker.FilterFactory.type</h3>
+		<pre>&lt;static&gt;&nbsp;!bidichecker.FilterFactory.ComposableFilter_&nbsp;<b>bidichecker.FilterFactory.type</b>(type)</pre> 
+	<ul>
+		Create a filter which suppresses errors based on their type fields.
+	</ul>
+	<!-- METHOD PARAMETERS START -->
+	<ul>
+		<b>Parameters:</b>
+		<ul>
+			<code><i>string</i>&nbsp;type </code> - The error type name to be matched exactly. 
+		</ul>
+	</ul>
+	<!-- METHOD PARAMETERS END -->
+	<!-- ADDITIONAL ATTRIBUTES START -->
+	<ul>
+		<b>Returns:</b>
+		<ul>
+			<code><i>!bidichecker.FilterFactory.ComposableFilter_</i>&nbsp;</code>A filter object. 
+		</ul>
+	</ul>
+	
+	<!-- ADDITIONAL ATTRIBUTES  END -->
+	<hr>
+
+	<a name="bidichecker.runGui"> </a> <h3>bidichecker.runGui</h3>
+		<pre>&lt;static&gt;&nbsp;<b>bidichecker.runGui</b>(errors)</pre> 
+	<ul>
+		Runs the interactive visual error browsing mode.
+	</ul>
+	<!-- METHOD PARAMETERS START -->
+	<ul>
+		<b>Parameters:</b>
+		<ul>
+			<code><i>Array.<!bidichecker.Error></i>&nbsp;errors </code> - An array of errors to be
+    displayed. 
+		</ul>
+	</ul>
+	<!-- METHOD PARAMETERS END -->
+	<!-- ADDITIONAL ATTRIBUTES START -->
+	
+	
+	<!-- ADDITIONAL ATTRIBUTES  END -->
+	<hr>
+
+	<a name="bidichecker.runGuiFromJson"> </a> <h3>bidichecker.runGuiFromJson</h3>
+		<pre>&lt;static&gt;&nbsp;<b>bidichecker.runGuiFromJson</b>(errorsJson)</pre> 
+	<ul>
+		JSON interface to <code>runGui</code>.
+	</ul>
+	<!-- METHOD PARAMETERS START -->
+	<ul>
+		<b>Parameters:</b>
+		<ul>
+			<code><i>string</i>&nbsp;errorsJson </code> - An array of errors to be displayed, in JSON
+    format (similar to that produced by <code>checkPageJson()</code>). 
+		</ul>
+	</ul>
+	<!-- METHOD PARAMETERS END -->
+	<!-- ADDITIONAL ATTRIBUTES START -->
+	
+	
+	<!-- ADDITIONAL ATTRIBUTES  END -->
+	<hr>
+
+
+<!-- ============ METHOD DETAIL END ========== -->
+
+
+
+<!-- ============ EVENT DETAIL START ======= -->
+
+<!-- ============ EVENT DETAIL END ========== -->
+<div class="jsdoc_ctime">Documentation generated by <a href="http://jsdoctoolkit.org/" target="_parent">JsDoc Toolkit</a> 1.3.3 on Sun Oct 24 2010 14:05:39 GMT+0100 (IST)</div>
+</body>
+</html>

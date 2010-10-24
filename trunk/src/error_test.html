@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+  <!--
+    Copyright 2009 Google Inc. All Rights Reserved.
+
+    Use of this source code is governed by an Apache 2.0 License.
+    See the COPYING file for details.
+  -->
+
+  <!--
+  Unit tests for error.js.
+  -->
+  <head>
+    <title>bidichecker - Javascript Unit Tests</title>
+    <script type="text/javascript" src="../third_party/closure-library/closure/goog/base.js">
+    </script>
+
+    <!-- Include the generated deps.js which enables goog.require of
+         the modules under test.
+    -->
+    <script type="text/javascript" src="deps.js"></script>
+    <script type="text/javascript" src="testutils.js"></script>
+
+    <script type="text/javascript">
+// This in turn pulls in the rest of the files.
+goog.require('bidichecker.Error');
+goog.require('bidichecker.HighlightableText');
+
+goog.require('goog.testing.jsunit');
+    </script>
+
+  </head>
+  <body>
+    <script type="text/javascript">
+
+function testError_CreateWithRequiredFields() {
+  var error = new bidichecker.Error('abc', 2);
+  assertEquals('abc', error.getType());
+  assertEquals(2, error.getSeverity());
+  assertEquals('[2] abc', error.toString());
+}
+
+
+function testError_CreateWithMissingSeverityThrows() {
+  var createWithMissingSeverity = function() {
+    var error = new bidichecker.Error('abc');
+  };
+  assertThrows(createWithMissingSeverity);
+}
+
+
+function testError_CreateWithAtText() {
+  var error = new bidichecker.Error('abc', 2, null, 'qrs');
+  assertEquals('qrs', error.getAtText());
+  assertEquals('[2] abc: \'qrs\'', error.toString());
+}
+
+
+function testError_SetSeverity() {
+  var error = new bidichecker.Error('abc', 2);
+  error.setSeverity(4);
+  assertEquals(4, error.getSeverity());
+}
+
+
+function testError_SetLocationDescription() {
+  var error = new bidichecker.Error('abc', 2);
+  assertNull(error.getLocationDescription());
+  error.setLocationDescription('<div><p>');
+  assertEquals('<div><p>', error.getLocationDescription());
+}
+
+
+function testError_SetPrecededByText() {
+  var error = new bidichecker.Error('abc', 2);
+  assertNull(error.getPrecededByText());
+  error.setPrecededByText('tuv');
+  assertEquals('tuv', error.getPrecededByText());
+  assertEquals('[2] abc preceded by \'tuv\'', error.toString());
+}
+
+
+function testError_SetFollowedByText() {
+  var error = new bidichecker.Error('abc', 2);
+  assertNull(error.getFollowedByText());
+  error.setFollowedByText('tuv');
+  assertEquals('tuv', error.getFollowedByText());
+  assertEquals('[2] abc followed by \'tuv\'', error.toString());
+}
+
+
+function testError_SetHighlightableArea() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  testDiv.innerHTML = '<p>Testing</p>';
+
+  bidichecker.Error.clearHighlightableAreas();
+  var error = new bidichecker.Error('abc', 2, null, 'qrs');
+  assertNull(error.getHighlightableArea());
+
+  var newTextNode = testDiv.firstChild.firstChild;
+  var location = new bidichecker.HighlightableText([newTextNode], 0, 3);
+  error.setHighlightableArea(location);
+
+  assertEquals(location, error.getHighlightableArea());
+
+  bidichecker.Error.clearHighlightableAreas();
+  assertNull(error.getHighlightableArea());
+}
+
+
+function testError_CreateFromRawObjectWithRequiredFields() {
+  var error = new bidichecker.Error({'id': 0, 'type': 'abc', 'severity': 2});
+  assertEquals('abc', error.getType());
+  assertEquals(2, error.getSeverity());
+  assertNull(error.getAtText());
+  assertNull(error.getLocationDescription());
+  assertNull(error.getPrecededByText());
+  assertNull(error.getFollowedByText());
+  assertEquals('[2] abc', error.toString());
+}
+
+
+function testError_CreateFromRawObjectWithOptionalFields() {
+  var error = new bidichecker.Error(
+      {'id': 0, 'type': 'abc', 'severity': 2, 'atText': 'def',
+      'locationDescription': 'ghi', 'precededByText': 'jkl',
+      'followedByText': 'mno'});
+  assertEquals('abc', error.getType());
+  assertEquals(2, error.getSeverity());
+  assertEquals('def', error.getAtText());
+  assertEquals('ghi', error.getLocationDescription());
+  assertEquals('jkl', error.getPrecededByText());
+  assertEquals('mno', error.getFollowedByText());
+  assertEquals(
+      '[2] abc: \'def\' preceded by \'jkl\' followed by \'mno\' in ghi',
+      error.toString());
+}
+
+
+function testError_CreateFromRawObjectMissingRequiredFieldThrows() {
+  var createWithMissingSeverity = function() {
+    var error = new bidichecker.Error({'id': 0, 'type': 'abc'});
+  };
+  assertThrows(createWithMissingSeverity);
+
+  var createWithMissingType = function() {
+    var error = new bidichecker.Error({'id': 0, 'severity': 2});
+  };
+  assertThrows(createWithMissingType);
+
+  var createWithMissingId = function() {
+    var error = new bidichecker.Error({'type': 'abc', 'severity': 2});
+  };
+  assertThrows(createWithMissingId);
+}
+
+    </script>
+
+  </body>
+</html>

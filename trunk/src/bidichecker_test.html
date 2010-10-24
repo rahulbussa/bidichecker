@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+  <!--
+    Copyright 2009 Google Inc. All Rights Reserved.
+
+    Use of this source code is governed by an Apache 2.0 License.
+    See the COPYING file for details.
+  -->
+
+  <!--
+  Unit tests for bidichecker.js.
+  -->
+  <head>
+    <title>bidichecker - Javascript Unit Tests</title>
+    <script type="text/javascript" src="../third_party/closure-library/closure/goog/base.js">
+    </script>
+
+    <!-- Include the generated deps.js which enables goog.require of
+         the modules under test.
+    -->
+    <script type="text/javascript" src="deps.js"></script>
+    <script type="text/javascript">
+// This in turn pulls in the rest of the files.
+goog.require('bidichecker');
+
+goog.require('goog.testing.jsunit');
+    </script>
+    <script type="text/javascript" src="testutils.js"></script>
+
+  </head>
+  <body>
+    <script type="text/javascript">
+
+function testBidiChecker_CheckPageRunsAllCheckers() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<p><span dir=\'rtl\'>friends<\/span>5,012.7 meters<\/p>';
+  var errors = bidichecker.checkPage(true, testDiv);
+
+  var expected = [{'type': 'Overall directionality not RTL',
+                   'severity': 1},
+
+                  {'type': 'Undeclared LTR text',
+                   'atText': 'friends',
+                   'severity': 4,
+                   'locationDescription':
+                       '<div id=\'test\'><p><span dir=\'rtl\'>'},
+
+                  {'type': 'Declared RTL spillover to number',
+                   'atText': '5,012.7',
+                   'precededByText': 'friends',
+                   'severity': 2,
+                   'locationDescription':
+                       '<div id=\'test\'><p>'}];
+  assertErrorFields(expected, errors);
+}
+
+
+function testBidiChecker_CheckPageChecksAllIframes() {
+  // Create a page with two iframes in it, one of which itself contains a
+  // nested iframe. All of them contain undeclared LTR text in an RTL context.
+
+  // 1. Create two iframes in the document.
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<p>Shalom<\/p><iframe id=\'iframe1\'><\/iframe>' +
+      '<iframe id=\'iframe2\'><\/iframe>';
+  goog.dom.appendChild(document.body, testDiv);
+
+  // 2. Fill the first iframe with content.
+  var iframe1 = testDiv.childNodes[1];
+  var iframe1Doc = goog.dom.getFrameContentDocument(iframe1);
+  iframe1Doc.open();
+  iframe1Doc.write('<p dir=\'rtl\'>hello world<\/p>');
+  iframe1Doc.close();
+
+  // 3. Fill the second iframe with a nested iframe.
+  var iframe2 = testDiv.childNodes[2];
+  var iframe2Doc = goog.dom.getFrameContentDocument(iframe2);
+  iframe2Doc.open();
+  iframe2Doc.write('<iframe id=\'iframe_nested\'><\/iframe>' +
+                   '<p dir=\'rtl\'>Hi!<\/p>');
+  iframe2Doc.close();
+  var iframe2Root = iframe2Doc.body;
+
+  // 4. Fill the nested iframe with content.
+  var iframe3 = iframe2Root.firstChild;
+  var iframe3Doc =
+      goog.dom.getFrameContentDocument(/** @type {Element} */ (iframe3));
+  iframe3Doc.open();
+  iframe3Doc.write('<p dir=\'rtl\' id=\'para\'>In a nested iframe!<\/p>');
+  iframe3Doc.close();
+
+  // 5. Run BidiChecker on the top-level page.
+  var errors = bidichecker.checkPage(true, testDiv);
+
+  var expected = [{'type': 'Undeclared LTR text',
+                   'atText': 'Shalom',
+                   'severity': 3,
+                   'locationDescription': '<div dir=\'rtl\' id=\'test\'><p>'},
+
+                  {'type': 'Undeclared LTR text',
+                   'atText': 'hello world',
+                   'severity': 4,
+                   'locationDescription':
+                       '<body><p dir=\'rtl\'> in <iframe id=\'iframe1\'>'},
+
+                  {'type': 'Undeclared LTR text',
+                   'atText': 'Hi',
+                   'followedByText': '!',
+                   'severity': 4,
+                   'locationDescription':
+                       '<body><p dir=\'rtl\'> in <iframe id=\'iframe2\'>'},
+
+                  {'type': 'Undeclared LTR text',
+                   'atText': 'In a nested iframe',
+                   'followedByText': '!',
+                   'severity': 4,
+                   'locationDescription':
+                       '<p dir=\'rtl\' id=\'para\'> in ' +
+                       '<iframe id=\'iframe_nested\'> in ' +
+                       '<iframe id=\'iframe2\'>'}
+                   ];
+  assertErrorFields(expected, errors);
+}
+
+
+function testBidiChecker_OverallDirectionalityNotCheckedInIframes() {
+  // Test a page with an iframe in it; neither has declared directionality.
+
+  // 1. Create an iframe in the document.
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<iframe id=\'iframe\'><\/iframe>';
+
+  // 2. Fill the iframe with content.
+  var iframe = testDiv.firstChild;
+  var iframeDoc =
+      goog.dom.getFrameContentDocument(/** @type {Element} */ (iframe));
+  iframeDoc.open();
+  iframeDoc.write('<p>hello world<\/p>');
+  iframeDoc.close();
+
+  // 3. Run BidiChecker on the top-level page, expecting RTL directionality.
+  var errors = bidichecker.checkPage(true, testDiv);
+
+  // 4. Only expect an error at the top level.
+  var expected = [{'type': 'Overall directionality not RTL',
+                   'severity': 1}];
+  assertErrorFields(expected, errors);
+}
+
+
+function testBidiChecker_CheckPageRunsFilters() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<p><span dir=\'rtl\'>friends<\/span>5,012.7 meters<\/p>';
+
+  var filters = [bidichecker.FilterFactory.atText('friends')];
+  var errors = bidichecker.checkPage(true, testDiv, filters);
+
+  var expected = [{'type': 'Overall directionality not RTL',
+                   'severity': 1},
+
+                  {'type': 'Declared RTL spillover to number',
+                   'atText': '5,012.7',
+                   'precededByText': 'friends',
+                   'severity': 2,
+                   'locationDescription':
+                       '<div id=\'test\'><p>'}];
+  assertErrorFields(expected, errors);
+}
+
+
+function testBidiChecker_LocationBasedFilterWorks() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML =
+    '<p><span dir=\'rtl\' id=\'my_id\' >friends<\/span>5,012.7 meters<\/p>';
+  var filters = [bidichecker.FilterFactory.locationId('my_id')];
+  var errors = bidichecker.checkPage(true, testDiv, filters);
+
+  var expected = [{'type': 'Overall directionality not RTL',
+                   'severity': 1},
+
+                  {'type': 'Declared RTL spillover to number',
+                   'atText': '5,012.7',
+                   'precededByText': 'friends',
+                   'severity': 2,
+                   'locationDescription':
+                       '<div id=\'test\'><p>'}];
+  assertErrorFields(expected, errors);
+}
+
+
+function testBidiChecker_LocationBasedFilterWorksInIframe() {
+  // Test that filtering by id works across an iframe boundary.
+
+  // 1. Create an iframe in the document.
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  testDiv.innerHTML = '<p>Shalom<\/p><iframe id=\'iframe1\'><\/iframe>';
+  goog.dom.appendChild(document.body, testDiv);
+
+  // 2. Fill the iframe with content containing an error.
+  var iframe = testDiv.childNodes[1];
+  var iframeDoc =
+      goog.dom.getFrameContentDocument(/** @type {Element} */ (iframe));
+  iframeDoc.open();
+  iframeDoc.write('<p dir=\'rtl\'>hello world<\/p>');
+  iframeDoc.close();
+
+  // 3. Run BidiChecker on the top-level page, filtering within the iframe.
+  var filters = [bidichecker.FilterFactory.locationId('iframe1')];
+  var errors = bidichecker.checkPage(true, testDiv, filters);
+
+  // 4. Only expect errors at the top level.
+  var expected = [{'type': 'Undeclared LTR text',
+                   'atText': 'Shalom',
+                   'severity': 3,
+                   'locationDescription': '<div dir=\'rtl\' id=\'test\'><p>'}
+                 ];
+  assertErrorFields(expected, errors);
+}
+
+    </script>
+
+  </body>
+</html>

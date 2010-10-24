@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+  <!--
+    Copyright 2009 Google Inc. All Rights Reserved.
+
+    Use of this source code is governed by an Apache 2.0 License.
+    See the COPYING file for details.
+  -->
+
+  <!--
+  Unit tests for dirchunk.js.
+  -->
+  <head>
+    <title>bidichecker - Javascript Unit Tests</title>
+    <script type="text/javascript" src="../third_party/closure-library/closure/goog/base.js">
+    </script>
+
+    <!-- Include the generated deps.js which enables goog.require of
+         the modules under test.
+    -->
+    <script type="text/javascript" src="deps.js"></script>
+    <script type="text/javascript" src="testutils.js"></script>
+
+    <script type="text/javascript">
+// This in turn pulls in the rest of the files.
+goog.require('bidichecker.DirChunk');
+
+goog.require('goog.testing.jsunit');
+    </script>
+
+  </head>
+  <body>
+    <script type="text/javascript">
+
+function testDirChunk_BasicFunctions() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'}, 'abcdef');
+  var chunk = new bidichecker.DirChunk('abcdef', false, testDiv.firstChild,
+      testDiv, false);
+
+  assert(!chunk.isRtl());
+  assert(!chunk.isDeclared());
+  assertEquals(testDiv, chunk.getBlock());
+  assert(!chunk.isEmpty());
+  assertEquals('abcdef', chunk.getText());
+  assertEquals(testDiv.firstChild, chunk.findNodeAtPosition(0));
+}
+
+
+function testDirChunk_HasSameContext() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'}, 'abcdef');
+  var chunk =
+      new bidichecker.DirChunk('abcdef', false, testDiv, testDiv, false);
+
+  assert(chunk.hasSameContext(false, testDiv, false));
+  assert(!chunk.hasSameContext(true, testDiv, false));
+  assert(!chunk.hasSameContext(false, null, false));
+  assert(!chunk.hasSameContext(false, testDiv, true));
+}
+
+
+function testDirChunk_Append() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  testDiv.innerHTML = '<p>abcdef<b>ghijkl</b></p>';
+  var para = testDiv.firstChild;  // <p>...</p>
+  var paraText = para.firstChild;  // Contents of <p>...</p>
+  var boldText = para.childNodes[1].firstChild;  // Contents of <b>...</b>
+
+  var chunk =
+    new bidichecker.DirChunk('abcdef', false, paraText, testDiv, false);
+  chunk.append('ghijkl', boldText);
+
+  assertEquals('abcdefghijkl', chunk.getText());
+  assertEquals(paraText, chunk.findNodeAtPosition(0));
+  assertEquals(boldText, chunk.findNodeAtPosition(6));
+}
+
+
+function testDirChunk_NullDirChunkIsEmpty() {
+  var chunk = bidichecker.NullDirChunk;
+  assert(chunk.isEmpty());
+}
+
+
+function testDirChunk_NullDirChunkHasOwnContext() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+
+  var chunk = bidichecker.NullDirChunk;
+  assert(!chunk.hasSameContext(false, testDiv, false));
+  assert(!chunk.hasSameContext(false, testDiv, true));
+  assert(!chunk.hasSameContext(true, testDiv, false));
+  assert(!chunk.hasSameContext(true, testDiv, true));
+}
+
+
+function testDirChunk_NoTextIsEmpty() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  testDiv.innerHTML = '<p><b></b></p>';
+  var para = testDiv.firstChild;  // <p>...</p>
+  var bold = para.childNodes[1];  // <b>...</b>
+
+  var chunk = new bidichecker.DirChunk('', false, para, testDiv, false);
+  chunk.append('', bold);
+
+  assert(chunk.isEmpty());
+  assertEquals('', chunk.getText());
+}
+
+
+function testDirChunk_AppendCanChangeIsEmpty() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  testDiv.innerHTML = '<p><b>abc</b></p>';
+  var para = testDiv.firstChild;  // <p>...</p>
+  var bold = para.childNodes[1];  // <b>...</b>
+
+  var chunk = new bidichecker.DirChunk('', false, para, testDiv, false);
+  assert(chunk.isEmpty());
+  assertEquals('', chunk.getText());
+
+  chunk.append('abc', bold);
+  assert(!chunk.isEmpty());
+  assertEquals('abc', chunk.getText());
+}
+
+    </script>
+
+  </body>
+</html>

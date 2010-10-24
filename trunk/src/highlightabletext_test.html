@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+  <!--
+    Copyright 2009 Google Inc. All Rights Reserved.
+
+    Use of this source code is governed by an Apache 2.0 License.
+    See the COPYING file for details.
+  -->
+
+  <!--
+  Unit tests for highlightabletext.js.
+  -->
+  <head>
+    <title>bidichecker - Javascript Unit Tests</title>
+    <script type="text/javascript" src="../third_party/closure-library/closure/goog/base.js">
+    </script>
+
+    <!-- Include the generated deps.js which enables goog.require of
+         the modules under test.
+    -->
+    <script type="text/javascript" src="deps.js"></script>
+    <script type="text/javascript" src="testutils.js"></script>
+
+    <script type="text/javascript">
+// This in turn pulls in the rest of the files.
+goog.require('bidichecker.HighlightableText');
+goog.require('bidichecker.utils');
+
+goog.require('goog.color');
+goog.require('goog.testing.jsunit');
+    </script>
+
+  </head>
+  <body>
+    <script type="text/javascript">
+
+function testErrorHighlightableText_HighlightOneNode() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  testDiv.innerHTML = '<p>Shalom</p>';
+  var textNode = testDiv.firstChild.firstChild;
+
+  // Highlight a single text node in yellow.
+  var location = new bidichecker.HighlightableText([textNode], 0, 6);
+  location.highlightOnPage();
+
+  // Double-wrapped {@code <span>} elements should have replaced the original
+  // text node:
+  // <p><span><span style="...">Shalom</span></span></p>.
+  var wrapperSpan = testDiv.firstChild.firstChild;
+  assertEquals('SPAN', wrapperSpan.nodeName);
+  var highlightSpan = (/** @type {Element} */ (wrapperSpan.firstChild));
+  assertEquals('SPAN', highlightSpan.nodeName);
+
+  // Check that the highlight background color is yellow and the foreground
+  // color is red.
+  assertEquals('#ffff00',
+      goog.color.parse(goog.style.getBackgroundColor(highlightSpan)).hex);
+  assertEquals('#ff0000',
+      goog.color.parse(goog.style.getStyle(highlightSpan, 'color')).hex);
+
+  // The new text node should be the child of the inner span element.
+  textNode = highlightSpan.firstChild;
+  assertEquals('Shalom', bidichecker.utils.getTextContents(textNode));
+}
+
+
+function testErrorHighlightableText_HighlightStartOfNode() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  testDiv.innerHTML = '<p>Shalom</p>';
+  var textNode = testDiv.firstChild.firstChild;
+
+  // Highlight just the first four characters of the text node.
+  var location = new bidichecker.HighlightableText([textNode], 0, 4);
+  location.highlightOnPage();
+
+  // In place of the original text node, we should have a doubly-nested {@code
+  // span} element, like this:
+  // <p><span><span style="...">Shal</span>om</span></p>.
+  // This keeps the replacement in a single DOM element, which can easily be
+  // swapped with the original text node.
+  var wrapperSpan = testDiv.firstChild.firstChild;
+  assertEquals('SPAN', wrapperSpan.nodeName);
+  assertEquals(2, wrapperSpan.childNodes.length);
+
+  // Check that the highlight background color is yellow and the foreground
+  // color is red.
+  var highlightSpan = (/** @type {Element} */ (wrapperSpan.firstChild));
+  assertEquals('#ffff00',
+      goog.color.parse(goog.style.getBackgroundColor(highlightSpan)).hex);
+  assertEquals('#ff0000',
+      goog.color.parse(goog.style.getStyle(highlightSpan, 'color')).hex);
+
+  // The prefix part should be the only child of the highlighted span element.
+  assertEquals('Shal',
+      bidichecker.utils.getTextContents(highlightSpan.firstChild));
+
+  // The suffix part should be the second child of the wrapper span element.
+  assertEquals('om',
+      bidichecker.utils.getTextContents(wrapperSpan.childNodes[1]));
+}
+
+
+function testErrorHighlightableText_HighlightEndOfNode() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  testDiv.innerHTML = '<p>Shalom</p>';
+  var textNode = testDiv.firstChild.firstChild;
+
+  // Highlight just the last four characters of the text node.
+  var location = new bidichecker.HighlightableText([textNode], 2, 6);
+  location.highlightOnPage();
+
+  // In place of the original text node, we should have a doubly-nested {@code
+  // span} element, like this:
+  // <p><span>Sh<span style="...">alom</span></span></p>.
+  // This keeps the replacement in a single DOM element, which can easily be
+  // swapped with the original text node.
+  var wrapperSpan = testDiv.firstChild.firstChild;
+  assertEquals('SPAN', wrapperSpan.nodeName);
+  assertEquals(2, wrapperSpan.childNodes.length);
+
+  // Check that the highlight background color is yellow and the foreground
+  // color is red.
+  var highlightSpan = wrapperSpan.childNodes[1];
+  assertEquals('#ffff00',
+      goog.color.parse(goog.style.getBackgroundColor(highlightSpan)).hex);
+  assertEquals('#ff0000',
+      goog.color.parse(goog.style.getStyle(highlightSpan, 'color')).hex);
+
+  // The prefix part should be the first child of the wrapper span element.
+  assertEquals('Sh',
+      bidichecker.utils.getTextContents(wrapperSpan.firstChild));
+
+  // The suffix part should be the only child of the highlighted span element.
+  assertEquals('alom',
+      bidichecker.utils.getTextContents(highlightSpan.firstChild));
+}
+
+    </script>
+
+  </body>
+</html>

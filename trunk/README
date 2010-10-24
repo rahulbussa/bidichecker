@@ -1,0 +1,16 @@
+BidiChecker is an open-source tool for the automated testing of web pages
+for errors in support of bidirectional languages (those written from right
+to left).
+
+The user's guide, with instructions on installation and use, can be found
+in the docs/ subdirectory of this package.
+
+The subdirectories in this package:
+docs/        The user's guide and the API documentation (in docs/jsdoc/).
+lib/         Precompiled JavaScript for easy use in web page tests.
+samples/     A sample application which demonstrates the use of BidiChecker.
+src/         The JavaScript source code and unit tests, if you want to modify
+             BidiChecker or understand its internals. Requires Closure Library.
+
+For more information about BidiChecker, visit:
+http://code.google.com/p/bidichecker

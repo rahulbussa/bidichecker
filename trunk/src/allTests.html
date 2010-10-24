@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+  <!--
+    Copyright 2009 Google Inc. All Rights Reserved.
+
+    Use of this source code is governed by an Apache 2.0 License.
+    See the COPYING file for details.
+  -->
+
+  <!-- Load this file into the browser to manually test all units. -->
+  <head>
+    <title>BidiChecker - Test All Units</title>
+
+    <!-- All *_test.html files to be tested. -->
+    <script type="text/javascript">
+      window.allTestFiles = [
+          'bidichecker_test.html',
+          'bidichecker_packaged_test.html',
+          'dirchunk_test.html',
+          'dirchunk_test.html',
+          'dirchunkwalker_test.html',
+          'domwalker_test.html',
+          'error_test.html',
+          'errorcollector_test.html',
+          'filterfactory_test.html',
+          'highlightableelement_test.html',
+          'highlightabletext_test.html',
+          'overalldirectionalitydetector_test.html',
+          'spilloverdetector_test.html',
+          'undeclaredtextdetector_test.html',
+          'utils_test.html'
+          ];
+    </script>
+
+    <script type="text/javascript" src="../third_party/closure-library/closure/goog/base.js">
+    </script>
+
+    <!-- Include the closure multi-test runner. -->
+    <script type="text/javascript">
+      goog.require('goog.testing.MultiTestRunner');
+    </script>
+    <link rel="stylesheet"
+          href="../third_party/closure-library/closure/goog/css/multitestrunner.css" type="text/css">
+    <!-- Create a test runner. -->
+    <script type="text/javascript">
+      var runner = new goog.testing.MultiTestRunner().setName(document.title);
+      runner.addTests(window.allTestFiles);
+    </script>
+  </head>
+
+  <!-- Start the runner and render it. -->
+  <body onload='runner.start();'>
+    <h1>Test All Units</h1>
+
+    <script type="text/javascript">
+      runner.render();
+    </script>
+
+    <!-- Add any elements required by the production code.  -->
+
+  </body>
+</html>

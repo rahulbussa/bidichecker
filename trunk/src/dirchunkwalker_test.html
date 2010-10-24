@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+  <!--
+    Copyright 2009 Google Inc. All Rights Reserved.
+
+    Use of this source code is governed by an Apache 2.0 License.
+    See the COPYING file for details.
+  -->
+
+  <!--
+  Unit tests for dirchunkwalker.js.
+  -->
+  <head>
+    <title>bidichecker - Javascript Unit Tests</title>
+    <script type="text/javascript" src="../third_party/closure-library/closure/goog/base.js">
+    </script>
+
+    <!-- Include the generated deps.js which enables goog.require of
+         the modules under test.
+    -->
+    <script type="text/javascript" src="deps.js"></script>
+    <script type="text/javascript" src="testutils.js"></script>
+
+    <script type="text/javascript">
+// This in turn pulls in the rest of the files.
+goog.require('bidichecker.DirChunkWalker');
+
+goog.require('goog.testing.jsunit');
+    </script>
+
+  </head>
+  <body>
+    <script type="text/javascript">
+
+/**
+ * Compares a bidichecker.DirChunk object with a list of field contents and
+ * reports on whether they differ.
+ * @param {bidichecker.DirChunk} chunk The chunk to be compared.
+ * @param {string} text The expected text in the chunk.
+ * @param {boolean} isRtl Whether or not its context should be right-to-left.
+ * @param {Array.<bidichecker.CharPositionNode_>} nodePositions The expected
+ *     index of character positions in the string to DOM nodes.
+ * @return {string} Newline-separated list of differences, if any.
+ * @private
+ */
+function DirChunkDiff_(chunk, text, isRtl, nodePositions) {
+  var diffs = '';
+  if (chunk.getText() !== text) {
+    diffs += 'expected [' + text + '] was [' + chunk.getText() + ']\n';
+  }
+  if (chunk.isRtl() !== isRtl) {
+    diffs += 'expected isRtl ' + isRtl + ' was ' + chunk.isRtl() + '\n';
+  }
+  var chunkNodePositions = chunk.nodeFinder_.nodePositions_;
+  if (chunkNodePositions.length != nodePositions.length) {
+    diffs += 'expected nodePositions.length ' + nodePositions.length +
+        ' was ' + chunkNodePositions.length + '\n';
+  }
+  for (var i = 0; i < chunkNodePositions.length; ++i) {
+    if (!nodePositions[i]) break;
+
+    if (chunkNodePositions[i].charPos != nodePositions[i].charPos) {
+      diffs += 'expected location[' + i + '].charPos ' +
+          nodePositions[i].charPos + ' was ' + chunkNodePositions[i].charPos +
+          '\n';
+    }
+    if (chunkNodePositions[i].element != nodePositions[i].element) {
+      diffs += 'expected location[' + i + '].element ' +
+      nodePositions[i].element + ' was ' + chunkNodePositions[i].element + '\n';
+    }
+  }
+  return diffs;
+}
+
+
+/**
+ * Container to collect chunks from {@code bidichecker.DirChunkEvent} events.
+ * @constructor
+ */
+function DirChunkCollector_() {
+  this.chunks = [];
+};
+
+
+/**
+ * Handles {@code bidichecker.DirChunkEvent} events by storing the chunk.
+ * @param {!goog.events.Event} event A {@code bidichecker.DirChunkEvent}.
+ */
+DirChunkCollector_.prototype.handleEvent = function(event) {
+  this.chunks.push(event.target.getChunk());
+};
+
+
+function walkTheChunks(rootElement) {
+  var domWalker = new bidichecker.DomWalker(rootElement);
+  var dirChunkWalker = new bidichecker.DirChunkWalker(domWalker);
+  var collector = new DirChunkCollector_();
+  goog.events.listen(dirChunkWalker, 'DirChunk', collector);
+  domWalker.go();
+  goog.events.unlisten(dirChunkWalker, 'DirChunk', collector);
+  return collector.chunks;
+}
+
+
+function testDirChunkWalker_NoText() {
+  // Paragraphs contain no content characters.
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<p dir=\'rtl\'></p><p></p>';
+
+  var chunks = walkTheChunks(testDiv);
+  assertArrayEquals([], chunks);
+}
+
+
+function testDirChunkWalker_TwoOppositeDirParagraphs() {
+  // Two paragraphs with opposite directionality tags.
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<p dir=\'rtl\'>Shalom!</p><p>Okay?</p>';
+  var rtlPara = testDiv.firstChild;  // <p dir=rtl>Shalom!</p>
+  var ltrPara = testDiv.childNodes[1];  // <p>Okay?</p>
+
+  var chunks = walkTheChunks(testDiv);
+
+  var chunk = chunks[0];
+  assertEquals('', DirChunkDiff_(chunk, 'Shalom!', true,
+                                 [{charPos: 0, node: rtlPara}]));
+  assertEquals(true, chunk.isDeclared());
+  assertEquals(rtlPara, chunk.getBlock());
+
+  chunk = chunks[1];
+  assertEquals('', DirChunkDiff_(chunk, 'Okay?', false,
+                                 [{charPos: 0, node: ltrPara}]));
+  assertEquals(false, chunk.isDeclared());
+  assertEquals(ltrPara, chunk.getBlock());
+
+  assertEquals(2, chunks.length);
+}
+
+
+function testDirChunkWalker_DeclaredSameDirParagraphs() {
+  // Paragraphs have explicit directionality declaration, though they're the
+  // same as the root element's.
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<p dir=\'ltr\'>Shalom!</p><p dir=\'ltr\'>Okay?</p>';
+  var para1 = testDiv.firstChild;  // Shalom!
+  var para2 = testDiv.childNodes[1];  // Okay?
+
+  var chunks = walkTheChunks(testDiv);
+
+  var chunk = chunks[0];
+  assertEquals('', DirChunkDiff_(chunk, 'Shalom!', false,
+                                 [{charPos: 0, node: para1}]));
+  assertEquals(true, chunk.isDeclared());
+  chunk = chunks[1];
+  assertEquals('', DirChunkDiff_(chunk, 'Okay?', false,
+                                 [{charPos: 0, node: para2}]));
+  assertEquals(true, chunk.isDeclared());
+  assertEquals(2, chunks.length);
+}
+
+
+function testDirChunkWalker_TwoSameDirChunks() {
+  // Two chunks with the same directionality; they should still be returned
+  // separately, since <P> is a block-level element.
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<p>Shalom!</p><p>Okay?</p>';
+  var shalomPara = testDiv.firstChild;  // Shalom!
+  var okayPara = testDiv.childNodes[1];  // Okay?
+
+  var chunks = walkTheChunks(testDiv);
+
+  var chunk = chunks[0];
+  assertEquals('', DirChunkDiff_(chunk, 'Shalom!', false,
+                                 [{charPos: 0, node: shalomPara}]));
+  chunk = chunks[1];
+  assertEquals('', DirChunkDiff_(chunk, 'Okay?', false,
+                                 [{charPos: 0, node: okayPara}]));
+  assertEquals(2, chunks.length);
+}
+
+
+function testDirChunkWalker_TwoSameDirSubchunks() {
+  // Two text elements with the same directionality within the same chunk;
+  // they should be combined. (A bold word sandwiched between two plain words.)
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<p>Shalom! <b>boldly</b> Okay? </p><p>New chunk</p>';
+  var para1 = testDiv.firstChild;  // <p>Shalom!...
+  var boldWord = para1.childNodes[1];  // <b>boldly</b>
+  var para2 = testDiv.childNodes[1];  // <p>New chunk</p>
+
+  var chunks = walkTheChunks(testDiv);
+
+  var chunk = chunks[0];
+  assertEquals('', DirChunkDiff_(chunk, 'Shalom! boldly Okay? ', false,
+                                 [{charPos: 0, node: para1},
+                                  {charPos: 8, node: boldWord},
+                                  {charPos: 14, node: para1}]
+                                 ));
+  assertEquals(para1, chunk.getBlock());
+  chunk = chunks[1];
+  assertEquals('', DirChunkDiff_(chunk, 'New chunk', false,
+                                 [{charPos: 0, node: para2}]));
+  assertEquals(para2, chunk.getBlock());
+  assertEquals(2, chunks.length);
+}
+
+
+function testDirChunkWalker_OppositeDirSubchunks() {
+  // Text elements with opposite directionality within the same chunk;
+  // they should be returned separately.
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML =
+      '<p>Shalom! <span dir=\'rtl\'>BACK</span> Okay? </p><p>New chunk</p>';
+  var para1 = testDiv.firstChild;  // <p>Shalom!...
+  var rtlSpan = para1.childNodes[1];  // <span dir='rtl'>BACK</span>
+  var para2 = testDiv.childNodes[1];  // <p>New chunk</p>
+
+  var chunks = walkTheChunks(testDiv);
+
+  var chunk = chunks[0];
+  assertEquals('', DirChunkDiff_(chunk, 'Shalom! ', false,
+                                 [{charPos: 0, node: para1}]));
+  assertEquals(false, chunk.isDeclared());
+  chunk = chunks[1];
+  assertEquals('', DirChunkDiff_(chunk, 'BACK', true,
+                                 [{charPos: 0, node: rtlSpan}]));
+  assertEquals(true, chunk.isDeclared());
+  chunk = chunks[2];
+  assertEquals('', DirChunkDiff_(chunk, ' Okay? ', false,
+                                 [{charPos: 0, node: para1}]));
+  assertEquals(false, chunk.isDeclared());
+  chunk = chunks[3];
+  assertEquals('', DirChunkDiff_(chunk, 'New chunk', false,
+                                 [{charPos: 0, node: para2}]));
+  assertEquals(false, chunk.isDeclared());
+  assertEquals(4, chunks.length);
+}
+
+
+function testDirChunkWalker_DeclaredSameDirSubchunks() {
+  // Text elements with the same directionality within the same chunk,
+  // but the second has declared directionality.
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<p>Shalom! <span dir=\'ltr\'>BACK</span> Okay? </p>';
+  var para1 = testDiv.firstChild;  // <p>Shalom!...
+  var ltrSpan = para1.childNodes[1];  // <span dir='ltr'>BACK</span>
+
+  var chunks = walkTheChunks(testDiv);
+
+  var chunk = chunks[0];
+  assertEquals('', DirChunkDiff_(chunk, 'Shalom! ', false,
+                                 [{charPos: 0, node: para1}]));
+  assertEquals(false, chunk.isDeclared());
+  assertEquals(para1, chunk.getBlock());
+  chunk = chunks[1];
+  assertEquals('', DirChunkDiff_(chunk, 'BACK', false,
+                                 [{charPos: 0, node: ltrSpan}]));
+  assertEquals(true, chunk.isDeclared());
+  assertEquals(para1, chunk.getBlock());
+  chunk = chunks[2];
+  assertEquals('', DirChunkDiff_(chunk, ' Okay? ', false,
+                                 [{charPos: 0, node: para1}]));
+  assertEquals(false, chunk.isDeclared());
+  assertEquals(para1, chunk.getBlock());
+  assertEquals(3, chunks.length);
+}
+
+
+function testDirChunkWalker_BlockStartsWithNonBlockElement() {
+  // The first text in the block is enclosed in a non-block element (it's bold).
+  // Its location should be reported as in the bold element, not the block.
+  // Also, the block ends with another nested div.
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<div><b>boldly</b> Shalom! <div>y\'all!</div></div>';
+  var shalomDiv = testDiv.firstChild;  // <div><b>boldly</b>...
+  var boldWord = shalomDiv.firstChild;  // <b>boldly</b>
+  var yallDiv = shalomDiv.childNodes[2];  // <div>y\'all!</div>
+
+  var chunks = walkTheChunks(testDiv);
+
+  var chunk = chunks[0];
+  assertEquals('', DirChunkDiff_(chunk, 'boldly Shalom! ', false,
+                                 [{charPos: 0, node: boldWord},
+                                  {charPos: 6, node: shalomDiv}]
+                                 ));
+  chunk = chunks[1];
+  assertEquals('', DirChunkDiff_(chunk, 'y\'all!', false,
+                                 [{charPos: 0, node: yallDiv}]
+                                 ));
+  assertEquals(2, chunks.length);
+}
+
+
+function testDirChunkWalker_EmbeddedBlockCancelsDeclaredStatus() {
+  // If a block with declared directionality contains another block inside it,
+  // we don't consider the outer block's contents to be "declared" chunks.
+  // Note: This DOM must be built with createDom(), since the HTML parser
+  // inserts unwanted paragraph breaks.
+  var para2 = goog.dom.createDom('p', {'dir': 'ltr'}, 'BACK');
+  var para1 = goog.dom.createDom('p', {'dir': 'ltr'}, 'Shalom', para2, 'Okay');
+  var testDiv = goog.dom.createDom('div', {'id': 'test'}, para1);
+  goog.dom.appendChild(document.body, testDiv);
+
+  var chunks = walkTheChunks(testDiv);
+
+  var chunk = chunks[0];
+  assertEquals('', DirChunkDiff_(chunk, 'Shalom', false,
+                                 [{charPos: 0, node: para1}]));
+  assertEquals(false, chunk.isDeclared());
+  chunk = chunks[1];
+  assertEquals('', DirChunkDiff_(chunk, 'BACK', false,
+                                 [{charPos: 0, node: para2}]));
+  assertEquals(true, chunk.isDeclared());
+  chunk = chunks[2];
+  assertEquals('', DirChunkDiff_(chunk, 'Okay', false,
+                                 [{charPos: 0, node: para1}]));
+  assertEquals(false, chunk.isDeclared());
+  assertEquals(3, chunks.length);
+}
+
+
+function testDirChunkWalker_BlockChangesAfterExitingEmbeddedBlock() {
+  // The first text in the block is enclosed in a non-block element (it's bold).
+  // Its location should be reported as in the bold element, not the block.
+  // Also, the block ends with another nested div.
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  goog.dom.appendChild(document.body, testDiv);
+
+  testDiv.innerHTML = '<div><div dir=\'ltr\'>Shalom</div>Okay</div></div>';
+  var parentDiv = testDiv.firstChild;  // <div><div dir=\'ltr\'>...
+  var ltrDiv = parentDiv.firstChild;  // <div dir=\'ltr\'>...
+
+  var chunks = walkTheChunks(testDiv);
+
+  var chunk = chunks[0];
+  assertEquals('', DirChunkDiff_(chunk, 'Shalom', false,
+                                 [{charPos: 0, node: ltrDiv}]));
+  assertEquals(true, chunk.isDeclared());
+  assertEquals(ltrDiv, chunk.getBlock());
+
+  chunk = chunks[1];
+  assertEquals('', DirChunkDiff_(chunk, 'Okay', true,
+                                 [{charPos: 0, node: parentDiv}]));
+  assertEquals(false, chunk.isDeclared());
+  assertEquals(parentDiv, chunk.getBlock());
+
+  assertEquals(2, chunks.length);
+}
+
+
+function testDirChunkWalker_DisplayNoneIsIgnored() {
+  // All the contents have display:none set.
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<p dir=\'rtl\' style=\'display: none\'>Shalom!</p>' +
+      '<p style=\'display: none\'>Okay?</p>';
+
+  var chunks = walkTheChunks(testDiv);
+
+  assertArrayEquals([], chunks);
+}
+
+
+function testDirChunkWalker_ScriptAndStyleAreIgnored() {
+  // <style> shouldn't really appear in the body, but sometimes it does.
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<\script dir=\'rtl\'>if (true) x=7;</\script>' +
+      '<style>A b c d e f g</style>';
+
+  var chunks = walkTheChunks(testDiv);
+
+  assertArrayEquals([], chunks);
+}
+
+    </script>
+
+  </body>
+</html>
