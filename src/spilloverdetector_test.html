@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+  <!--
+    Copyright 2009 Google Inc. All Rights Reserved.
+
+    Use of this source code is governed by an Apache 2.0 License.
+    See the COPYING file for details.
+  -->
+
+  <!--
+  Unit tests for spilloverdetector.js.
+  -->
+  <head>
+    <title>bidichecker - Javascript Unit Tests</title>
+    <script type="text/javascript" src="../third_party/closure-library/closure/goog/base.js">
+    </script>
+
+    <!-- Include the generated deps.js which enables goog.require of
+         the modules under test.
+    -->
+    <script type="text/javascript" src="deps.js"></script>
+    <script type="text/javascript">
+// This in turn pulls in the rest of the files.
+goog.require('bidichecker');
+
+goog.require('goog.testing.jsunit');
+    </script>
+    <script type="text/javascript" src="testutils.js"></script>
+
+  </head>
+  <body>
+    <script type="text/javascript">
+
+/**
+ * Runs the spillover checker on the contents of a DOM element.
+ * @param {!Element} rootElement The root element of the DOM to be checked.
+ * @return {!Array.<!bidichecker.Error>} List of error messages.
+ */
+function runSpilloverDetector(rootElement) {
+  var errorCollector =
+      new bidichecker.ErrorCollector(new bidichecker.FrameStack());
+
+  var scanner = new bidichecker.Scanner();
+  // Override the buildDetectors method to build only one detector.
+  scanner.buildDetectors = function(element, shouldBeRtl) {
+    return [new bidichecker.SpilloverDetector(errorCollector)];
+  };
+
+  scanner.scan(rootElement);
+  return errorCollector.getErrors();
+}
+
+
+function testSpilloverDetector_SpilloverToNumberAfterLtr() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<p><span dir=\'ltr\'>Rambo<\/span>(5.67)<\/p>';
+  var errors = runSpilloverDetector(testDiv);
+
+  var expected = [{'type': 'Declared LTR spillover to number',
+                   'atText': '(5.67',
+                   'precededByText': 'Rambo',
+                   'severity': 2,
+                   'locationDescription':
+                       '<div dir=\'rtl\' id=\'test\'><p>'}];
+  assertErrorFields(expected, errors);
+
+  // The error is located in characters 0-5 of the text node reading '(5.67)'.
+  var numbersNode = testDiv.firstChild.childNodes[1];
+  var highlightableArea =
+      new bidichecker.HighlightableText([numbersNode], 0, 5);
+  assertObjectEquals(highlightableArea, errors[0].getHighlightableArea());
+}
+
+
+function testSpilloverDetector_SpilloverToNumberAfterLtrLowSeverity() {
+  // As above, but enclosing paragraph has declared directionality, demoting the
+  // error severity.
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<p dir=\'rtl\'><span dir=\'ltr\'>Rambo<\/span>' +
+      // Hebrew text for "(5.67 Shalom)"
+      '(5.67 \u05e9\u05dc\u05d5\u05dd)<\/p>';
+  var errors = runSpilloverDetector(testDiv);
+
+  var expected = [{'type': 'Declared LTR spillover to number',
+                   'atText': '(5.67',
+                   'precededByText': 'Rambo',
+                   'severity': 4,
+                   'locationDescription':
+                       '<div id=\'test\'><p dir=\'rtl\'>'}];
+  assertErrorFields(expected, errors);
+}
+
+
+function testSpilloverDetector_SpilloverToNumberAfterRtl() {
+  // Reverse the directionality from above.
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<p><span dir=\'rtl\'>' +
+      // Hebrew text for "Shalom: {"
+      '\u05e9\u05dc\u05d5\u05dd: {' +
+      '<\/span>}@@ 5 Shalom<\/p>';
+  var errors = runSpilloverDetector(testDiv);
+
+  var expected = [{'type': 'Declared RTL spillover to number',
+                   'atText': '}@@ 5',
+                   'precededByText': '\u05e9\u05dc\u05d5\u05dd: {',
+                   'severity': 2,
+                   'locationDescription':
+                       '<div id=\'test\'><p>'}];
+  assertErrorFields(expected, errors);
+}
+
+
+function testSpilloverDetector_SpilloverToNumberAfterDeclaredRtl() {
+  // Don't actually need RTL text for spillover, just an RTL declaration.
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<p><span dir=\'rtl\'>friends<\/span>5,012.7 meters<\/p>';
+  var errors = runSpilloverDetector(testDiv);
+
+  var expected = [{'type': 'Declared RTL spillover to number',
+                   'atText': '5,012.7',
+                   'precededByText': 'friends',
+                   'severity': 2,
+                   'locationDescription':
+                       '<div id=\'test\'><p>'}];
+  assertErrorFields(expected, errors);
+}
+
+
+function testSpilloverDetector_NoSpilloverToNumberOutOfBlock() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<div><div dir=\'ltr\'>Rambo<\/div>(5.67)<\/div>';
+  var errors = runSpilloverDetector(testDiv);
+  assertErrorFields([], errors);
+}
+
+
+function testSpilloverDetector_NoSpilloverToNumberIntoBlock() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<span dir=\'ltr\'>Rambo<\/span><div>(5.67)<\/div>';
+  var errors = runSpilloverDetector(testDiv);
+  assertErrorFields([], errors);
+}
+
+
+function testSpilloverDetector_RlmCharacterPreventsSpilloverError() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<p><span dir=\'ltr\'>Rambo<\/span>' +
+      // Unicode RLM, then some numbers.
+      '\u200F 5.724/12.3<\/p>';
+  var errors = runSpilloverDetector(testDiv);
+  assertErrorFields([], errors);
+}
+
+
+function testSpilloverDetector_LrmCharacterPreventsSpilloverError() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<p><span dir=\'rtl\'>' +
+      // Hebrew text for "Shalom: {"
+      '\u05e9\u05dc\u05d5\u05dd: {<\/span>' +
+      // Unicode RLM, then some numbers.
+      '\u200E 5.234<\/p>';
+  var errors = runSpilloverDetector(testDiv);
+  assertErrorFields([], errors);
+}
+
+
+function testSpilloverDetector_SpilloverToNumberAcrossBreak() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<span dir=\'ltr\'>Rambo<\/span><br>(5.67)';
+  var errors = runSpilloverDetector(testDiv);
+
+  var expected = [{'type': 'Declared LTR spillover to number',
+                   'atText': '(5.67',
+                   'precededByText': 'Rambo',
+                   'severity': 2,
+                   'locationDescription':
+                       '<div dir=\'rtl\' id=\'test\'>'}];
+  assertErrorFields(expected, errors);
+}
+
+
+function testSpilloverDetector_SpilloverToNumberAcrossInlineElements() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<span dir=\'ltr\'>Rambo<\/span>' +
+      '<a href=\'http://www.google.com\'>++++<\/a>(5.67)';
+  var errors = runSpilloverDetector(testDiv);
+
+  var expected = [{'type': 'Declared LTR spillover to number',
+                   'atText': '++++(5.67',
+                   'precededByText': 'Rambo',
+                   'severity': 2,
+                   'locationDescription':
+                       '<div dir=\'rtl\' id=\'test\'>'}];
+  assertErrorFields(expected, errors);
+
+  // The error crosses two text nodes this time.
+  var plussesNode = testDiv.childNodes[1].firstChild;
+  var numbersNode = testDiv.childNodes[2];
+  var highlightableArea = new bidichecker.HighlightableText(
+      [plussesNode, numbersNode], 0, 5);
+  assertObjectEquals(highlightableArea, errors[0].getHighlightableArea());
+}
+
+
+function testSpilloverDetector_SpilloverToNumberAcrossEmbeddedBlockFails() {
+  // Technically, this is a spillover situation (at least in Firefox), but
+  // the algorithm isn't currently sophisticated enough to catch it.
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<span dir=\'ltr\'>Rambo<\/span><div><\/div>(5.67)';
+  var errors = runSpilloverDetector(testDiv);
+
+  // Expect no errors, even though arguably there should be one.
+  assertErrorFields([], errors);
+}
+
+
+function testSpilloverDetector_NoSpilloverErrorIfNewExplicitDir() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML =
+      '<span dir=\'ltr\'>Shalom<\/span> - <span dir=\'rtl\'>50<\/span>';
+  var errors = runSpilloverDetector(testDiv);
+  assertErrorFields([], errors);
+}
+
+
+function testSpilloverDetector_NoSpilloverErrorIfSpaceBetweenCloseSpanTags() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML =
+      '<span dir=\'rtl\'><span dir=\'ltr\'>Double wrap<\/span> <\/span> - 50';
+  var errors = runSpilloverDetector(testDiv);
+  assertErrorFields([], errors);
+}
+
+
+function testSpilloverDetector_NoSpilloverErrorAcrossEmptySpan() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML =
+      '<span dir=\'ltr\'>Rambo<\/span><span dir=\'rtl\'><\/span> - 50';
+  var errors = runSpilloverDetector(testDiv);
+  assertErrorFields([], errors);
+}
+
+
+function testSpilloverDetector_NoSpilloverIfNumberInsideOppositeDirElement() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML =
+      // Hebrew text for "Shalom"
+      '<p><span dir=\'ltr\'>Rambo 4<\/span>\u05e9\u05dc\u05d5\u05dd<\/p>';
+  var errors = runSpilloverDetector(testDiv);
+  assertErrorFields([], errors);
+}
+
+
+function testSpilloverDetector_NoSpilloverIfNumberPrecedesOppositeDirElement() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '5 <span dir=\'ltr\'>Shalom<\/span>';
+  var errors = runSpilloverDetector(testDiv);
+  assertErrorFields([], errors);
+}
+
+    </script>
+
+  </body>
+</html>

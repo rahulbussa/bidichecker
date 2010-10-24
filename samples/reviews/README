@@ -1,0 +1,22 @@
+This directory contains a sample application to demonstrate the use of
+BidiChecker. The application has a BiDi bug for BidiChecker to catch.
+
+reviews.html - The sample application.
+
+reviews_packaged_test.html - Sample tests of reviews.js using BidiChecker in its
+packaged form. Does not require the Closure Library to run. This demonstrates
+the recommended way to use BidiChecker in a typical application.
+
+reviews_closure_test.html - Sample tests using BidiChecker in its non-packaged
+form. This demonstrates using BidiChecker in an application based on the Closure
+Library. The Closure Library must be installed at its expected location for this
+to work; see the BidiChecker User's Guide for more details.
+
+reviews.js - A widget formatting movie title and review data for display in a
+localized UI. Contains a bidi bug for BidiChecker to catch.
+
+i18n.js - Quick and dirty internationalization support utilities. Not very
+interesting.
+
+minitestrunner.js - A quick and dirty miniature unit test runner. Not very
+interesting.

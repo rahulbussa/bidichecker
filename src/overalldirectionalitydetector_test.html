@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+  <!--
+    Copyright 2009 Google Inc. All Rights Reserved.
+
+    Use of this source code is governed by an Apache 2.0 License.
+    See the COPYING file for details.
+  -->
+
+  <!--
+  Unit tests for overalldirectionalitydetector.js.
+  -->
+  <head>
+    <title>bidichecker - Javascript Unit Tests</title>
+    <script type="text/javascript" src="../third_party/closure-library/closure/goog/base.js">
+    </script>
+
+    <!-- Include the generated deps.js which enables goog.require of
+         the modules under test.
+    -->
+    <script type="text/javascript" src="deps.js"></script>
+    <script type="text/javascript">
+// This in turn pulls in the rest of the files.
+goog.require('bidichecker');
+
+goog.require('goog.testing.jsunit');
+    </script>
+    <script type="text/javascript" src="testutils.js"></script>
+
+  </head>
+  <body>
+    <script type="text/javascript">
+
+/**
+ * Runs the overall directionality detector on the contents of a DOM element.
+ * @param {!Element} rootElement The root element of the DOM to be checked.
+ * @param {boolean} shouldBeRtl Is the root expected to be right-to-left?
+ * @return {!Array.<!bidichecker.Error>} List of error messages.
+ */
+function runOverallDirectionalityDetector(rootElement, shouldBeRtl) {
+  var errorCollector =
+      new bidichecker.ErrorCollector(new bidichecker.FrameStack());
+
+  var scanner = new bidichecker.Scanner();
+  // Override the buildDetectors method to build only one detector.
+  scanner.buildDetectors = function(element, shouldBeRtl) {
+    return [new bidichecker.OverallDirectionalityDetector(shouldBeRtl,
+                                                          errorCollector)];
+  };
+
+  scanner.scan(rootElement, shouldBeRtl);
+  return errorCollector.getErrors();
+}
+
+
+function testOverallDirectionalityDetector_DirectionalityIsLtrSucceeds() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  var errors = runOverallDirectionalityDetector(testDiv, false);
+  assertErrorFields([], errors);
+}
+
+
+function testOverallDirectionalityDetector_DirectionalityIsRtlSucceeds() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  goog.dom.appendChild(document.body, testDiv);
+  var errors = runOverallDirectionalityDetector(testDiv, true);
+  assertErrorFields([], errors);
+}
+
+
+function testOverallDirectionalityDetector_DirectionalityIsLtrError() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  var errors = runOverallDirectionalityDetector(testDiv, true);
+  var expected = [{'type': 'Overall directionality not RTL',
+                   'severity': 1}];
+  assertErrorFields(expected, errors);
+
+  // The highlightable element is the root node of the DOM.
+  var highlightableArea = new bidichecker.HighlightableElement(testDiv);
+  assertObjectEquals(highlightableArea, errors[0].getHighlightableArea());
+}
+
+
+function testOverallDirectionalityDetector_DirectionalityIsRtlError() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  goog.dom.appendChild(document.body, testDiv);
+  var errors = runOverallDirectionalityDetector(testDiv, false);
+  var expected = [{'type': 'Overall directionality not LTR',
+                   'severity': 1}];
+  assertErrorFields(expected, errors);
+}
+
+    </script>
+
+  </body>
+</html>

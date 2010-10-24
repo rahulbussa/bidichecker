@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html>
+  <!--
+    Copyright 2010 Google Inc. All Rights Reserved.
+
+    Use of this source code is governed by an Apache 2.0 License.
+    See the COPYING file for details.
+  -->
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>BidiChecker User's Guide</title>
+  </head>
+
+  <body style="font-family: arial,sans-serif;">
+
+<h1>BidiChecker User's Guide</h1>
+
+<h2>Table of Contents</h2>
+<ol>
+<li><a href="#TOC-Overview">Overview</a></li>
+<li><a href="#TOC-Getting-started">Getting started</a></li>
+<ol>
+  <li><a href="#TOC-Getting-BidiChecker">Getting BidiChecker</a></li>
+  <li><a href="#TOC-Platform-support">Platform support</a></li>
+  <li><a href="#TOC-Writing-a-regression">Writing a regression test using the Javascript API</a></li>
+  <li><a href="#TOC-Viewing-BidiChecker-output">Viewing BidiChecker output</a></li>
+</ol>
+<li><a href="#TOC-Error-descriptions">Error descriptions and error suppression</a></li>
+<ol>
+  <li><a href="#TOC-The-error-suppression">The error suppression API</a></li>
+</ol>
+<li><a href="#TOC-Catalog-of">Catalog of BiDi checks and errors</a></li>
+<ol>
+  <li><a href="#TOC-Incorrect-overall">Incorrect overall directionality</a></li>
+  <li><a href="#TOC-Undeclared-opposite">Undeclared opposite-directionality text</a></li>
+  <li><a href="#TOC-Spillover-from-declared">Spillover from declared opposite-directionality element to number</a></li>
+</ol>
+<li><a href="#TOC-How-to-devise">How to devise effective test cases</a></li>
+<li><a href="#TOC-Issues-with-HTML">Issues with HTML support</a></li>
+<li><a href="#TOC-Known-problems">Known problems</a></li>
+</ol>
+
+<h2><a name="TOC-Overview"></a>Overview</h2>
+<p><b>BidiChecker</b> is a tool for the automated testing of
+web pages for errors in support of right-to-left (RTL) languages, also known as
+bidirectional (BiDi) because they routinely include left-to-right items such as numbers and Latin-script words and phrases.
+</p>
+<p>BiDi support for a web page is a common
+requirement, even for pages in left-to-right scripts. Any page which accepts user input or displays multilingual content is likely to end up handling bidirectional text at
+some point, as it will eventually encounter data in Arabic, Hebrew or another
+right-to-left (RTL) language. Unfortunately, handling bidirectional text can be tricky and requires special processing at every appearance of potentially BiDi data in the UI. (<a href="http://doctype.googlecode.com/svn-history/trunk/bidihowto/index.html">Examples of common BiDi UI bugs can be found here</a>.) As a result, BiDi text support often regresses when a developer adds a new feature and simply forgets about BiDi.
+</p>
+<p>BidiChecker is a library meant to be called from automated test suites that regression-test live web pages in a browser, usually using an automated testing framework such as JSUnit. BidiChecker provides a Javascript API which integrates easily into such a test. The BidiChecker API
+accepts a page element (by default, the body of the top-level document), runs BiDi
+tests on its contents, and returns a list of BiDi errors found,
+including the type of each error, its location on the page and an estimate of its
+level of severity.</p>
+<p>
+Note that using BidiChecker does not require any custom "hooks" or modifications
+to the product under test. New BidiChecker-based tests can be written in addition to the product's existing test suite.</p>
+<p>
+In the future, we plan to provide additional
+front ends for regression testing of applications whose test suites are
+based on other platforms.</p>
+<p>
+BidiChecker is currently in use at several projects inside Google.</p>
+<h2><a name="TOC-Getting-started"></a>Getting started</h2>
+<h3><a name="TOC-Getting-BidiChecker"></a>Getting BidiChecker</h3>
+<p>The BidiChecker source code can be downloaded from <a href="http://code.google.com/p/bidichecker">http://code.google.com/p/bidichecker</a> using the following command:</p>
+<div style="margin-left: 40px; margin-right: 80px">
+<div style="background-color: rgb(223, 223, 223);"><span style="font-family: courier new,monospace; color: rgb(0, 96, 0); font-weight: bold;">
+<code>svn checkout http://bidichecker.googlecode.com/svn/trunk/ bidichecker</code></div></div>
+<p>Source code and unit tests can be found in the <tt>src/</tt> subdirectory. This user's guide is in the <tt>docs/</tt> subdirectory, with the complete API documentation in <tt>docs/jsdoc/</tt>. A sample application, along with demonstrations of how BidiChecker can be used to check for BiDi errors, can be found in <tt>samples/reviews/</tt>. The <tt>lib/</tt> subdirectory contains a single-file, precompiled version of BidiChecker named <tt>bidichecker_packaged.js</tt>. Including this one file in the web page to be tested is the usual way to use BidiChecker; you only need BidiChecker's source code if you want to modify BidiChecker or understand its internal workings. For an example of how to use the precompiled package, see <tt>samples/reviews/reviews_packaged_test.html</tt>.</p>
+<p>BidiChecker source code uses the  <a href="http://code.google.com/p/closure-library/">Closure Library</a>, an open-source library of useful Javascript modules. If you want to run a modified version of BidiChecker or run BidiChecker's own unit tests, you will need to install a copy of the Closure Library on your system. To do that, run the following command from the same working directory as you ran the above command:</p>
+<div style="margin-left: 40px; margin-right: 80px">
+<div style="background-color: rgb(223, 223, 223);"><span style="font-family: courier new,monospace; color: rgb(0, 96, 0); font-weight: bold;">
+<code>svn checkout http://closure-library.googlecode.com/svn/trunk/ bidichecker/third_party/closure-library</code></div></div>
+<p>BidiChecker does not currently easily support linking with a copy of the Closure Library at a different location. Please note that you do <b>not</b> need to install the Closure Library to use the precompiled version of BidiChecker.</p>
+<p>For an example of how to use BidiChecker with the Closure Library, see <tt>samples/reviews/reviews_closure_test.html</tt>.</p>
+<h3><a name="TOC-Platform-support"></a>Platform support</h3>
+<p>BidiChecker supports all major browsers. Please note that the errors identified by BidiChecker are not specific to the browser platform on which it is run. That is, BidiChecker will report errors that cause display garbling on any browser, even when that does not include the browser on which it was run.</p>
+
+<h3><a name="TOC-Writing-a-regression"></a>Writing a regression test using the Javascript API</h3>
+BidiChecker can be integrated into Javascript automated unit tests based on a testing framework such as the JSUnit package.
+<div>
+<div><br>
+A sample test might look like this:<br>
+<br>
+<div style="margin-left: 40px; margin-right: 80px"><span style="border-collapse: collapse;">
+<div style="background-color: rgb(223, 223, 223);"><span style="font-family: courier new,monospace; color: rgb(0, 96, 0);">
+<br>
+<code>function testAppWithBidiChecker() {</code><br>
+<code>&nbsp;&nbsp;// Do something to load the application being tested into the page and get it into</code><br>
+<code>&nbsp;&nbsp;// an interesting state for BiDi, e.g. displaying LTR data in an RTL UI.</code><br>
+<code>&nbsp;&nbsp;....</code><br>
+<br>
+<code>&nbsp;&nbsp;// Check for errors in handling BiDi text. First parameter is true to indicate an RTL UI.</code><br>
+<code>&nbsp;&nbsp;// It would be false when testing an LTR UI (with RTL data).</code><br>
+<code>&nbsp;&nbsp;var bidiErrors = bidichecker.checkPage(true, top.document.body);</code><br>
+<code>&nbsp;&nbsp;assertArrayEquals([], errors);  // Should be no BiDi errors!</code><br>
+<code>}</code><br>
+</span>
+</div>
+</span></div>
+<p>A complete code example, including a simple bilingual application and BidiChecker-based JSUnit tests, can be found in the <b style="font-family: courier new,monospace;">samples/reviews/</b> subdirectory of the download tree.</p>
+</div>
+<div>
+
+<h3><a name="TOC-Viewing-BidiChecker-output"></a>Viewing BidiChecker output</h3>
+<p>The tool will produce a list of error messages, one for each BiDi bug discovered. Below is a sample of the messages. The contents of the error messages will be explained in more detail later on.</p>
+<div style="margin-left: 40px; margin-right: 80px">
+<div style="background-color: rgb(223, 223, 223);"><span style="font-family: courier new,monospace; color: rgb(0, 96, 0); font-weight: bold;">
+<code> [4] Undeclared LTR text: 'The Princess Bride' followed by ': 23' in &lt;div id='reviews'&gt;&lt;div&gt;</code><br>
+<code> [4] Undeclared LTR text: 'Leagues Under the Sea' preceded by '20,000 ' followed by ': 17' in &lt;div id='reviews'&gt;&lt;div&gt;</code>
+</span></div></div>
+
+<p>When running a BidiChecker test interactively, however, it is a lot easier to view the errors right in the page where BidiChecker found them using BidiChecker's interactive error browser. To activate the error browser, call <b style="font-family: courier new,monospace;">bidichecker.runGui(errors)</b> from your test code if <b style="font-family: courier new,monospace;">bidichecker.checkPage()</b> returns errors. This will display a dialog box showing the first error, while highlighting the text that aroused BidiChecker's suspicions:</p>
+
+<div style="display: block; margin-top: 5px; margin-left: 40px; margin-right: auto; margin-bottom: 0pt; text-align: left;"><img src="bidichecker_screenshot.png" border="0"></div>
+<br>
+<p>The GUI mode is simple to control: Leaf through the errors with the Prev and Next buttons, or select an error by entering its index number in the input box. Each error in turn is highlighted in a yellow background where it appears on the page. The page will also be scrolled to keep the error's position near the top of the window if possible.</p>
+<p>The error description text can be copied from the dialog box and used in creating a filter to suppress the error if it is spurious, unimportant, or a known bug. Also, the page under test remains accessible, so you can select the page contents near an error and view the HTML source or DOM state using the browser's developer tools capabilities. Note that an error may not always be visibly highlighted, e.g. if its page location is concealed by another page element, or if it is scrolled out of view in a scrollable element.</p>
+<p>Unfortunately, the GUI currently has a major limitation: it will generally not work if more than one test is run from the same test file. Since each test typically manipulates the DOM of the page under test, it is no longer possible to highlight errors on the page after a subsequent test has been run. The GUI can only be relied upon to work correctly if there is only one test in the test file, or alternately if only one test from the file is run (most test runners allow the user to select a single test from a file with several tests).</p>
+</div>
+</div>
+</div>
+
+<h2><a name="TOC-Error-descriptions"></a>Error descriptions and error suppression</h2>
+<p>BidiChecker's results consist of BiDi error reports. The command-line tool outputs them one-per-line as text to standard output, while in the API they are returned as a list of objects with descriptive fields. Either way, the content is the same.<br>
+</p>
+<p>An error may contain and or all of the following fields:<br>
+</p>
+<ol><li><b>Error type</b> (required). For example, "Undeclared RTL text".<br>
+</li>
+<li><b>Severity level</b> (required). Severity levels consist of integers from 1 to 4, with 1 indicating the most severe and 4 the least. There is no absolute significance to the different severity levels. They are meant to represent a combination of the likelihood that a given error represents a real bug and the likelihood that it causes visible text garbling. Severity levels are determined by heuristics described in the error catalog below.<br>
+</li>
+<li><b>The text at which the error occurs.</b></li>
+<li><b>The text immediately preceding and/or following the error text,</b> where it is useful to indicate the likelihood of garbling or to help locate the error on the page.<br>
+</li>
+<li><b>Page location where the error occurs.</b> This is given as a string containing the nested HTML tags (with attributes) surrounding the first character of the error text, starting from the
+highest-level containing parent element with an "id" attribute. The intent is to give sufficient information about the error location
+to allow the developer to find it in the page and in the code
+generating the page, without including too much extraneous detail. For
+example: "<code>&lt;div id='abc'&gt;&lt;table&gt;&lt;tr&gt;&lt;td align='left'&gt;&lt;p dir='rtl'&gt;</code>".
+Starting with an "id" attribute (if present) guarantees uniqueness at
+that point, though below it we don't indicate which of
+multiple repeated elements is the one in question (for example, which
+table row/cell or which paragraph).  In conjunction with the error text, that should be
+sufficient for identification of the error location.<br>
+</li></ol>
+<div>The sample output above demonstrates how these fields are combined into a textual error message. First the severity level is given in square brackets, followed by the error type, the error text, the preceding and/or following text, and the page location. Delimiters and separators between fields are as shown in the sample.<br>
+<br>
+The error details serve two purposes: <b>Error identification</b> and <b>error suppression</b>.<br>
+<br>
+<b>Error identification</b> is the human task of understanding what an error
+message refers to: what the problem is and where on the page it occurs.<br>
+<br>
+<b>Error suppression</b> is the filtering out of error messages that match a
+set of specifications. Not all "errors" found by BidiChecker
+represent real problems, and it is essential to suppress the generation
+of those that don't, so automated tests run clean until a code change
+results in new suspects. Similarly, after BidiChecker finds real problems, it may take time for them to be fixed. In the meantime, after filing appropriate bug reports, it often makes sense to suppress these errors in the automated tests until the problems have been fixed, so that the tests run clean and new problems are readily noticed.<br>
+<br>
+Each of the fields above may be relevant for suppression. Users may wish to suppress
+errors of a certain type which they know to be spurious everywhere on
+the page, or to ignore low-severity errors. They may know that a
+particular word is falsely reported as an error (for example, "Gmail"
+in a navigation menu), or that a particular area of the page contains
+user-generated content whose BiDi correctness cannot be ensured.<br>
+<br>
+</div>
+<h3><a name="TOC-The-error-suppression"></a>The error suppression API</h3>
+<div>The error suppression mechanism supports the specification and composition of filters on most fields of the Error object, as well as filters based on the error's location on the page.</div>
+<div><br>
+</div>
+<div>Some filter examples:</div>
+<div><br>
+</div>
+<div style="margin-left: 40px; margin-right: 80px"><span style="border-collapse: collapse;"><span style="font-family: courier new,monospace;">
+<div style="background-color: rgb(223, 223, 223);"><span style="font-family: courier new,monospace; color: rgb(0, 96, 0);">
+<code>var filters = [</code>
+<div><code>&nbsp;&nbsp; &nbsp;// Suppress errors with the&nbsp;</code><b><code>atText</code></b><code>&nbsp;field "שלום":</code></div>
+<div><code>&nbsp;&nbsp; &nbsp;bidichecker.FilterFactory.atText(</code><span style="font-family: monospace; color: rgb(0, 96, 0);">"\u05e9\u05dc\u05d5\u05dd"),</span></div>
+<div><code><br>&nbsp;&nbsp; &nbsp;// Suppress errors appearing within a page element with the <b>element id</b>&nbsp;"other_id"</code></div>
+<div><code>&nbsp;&nbsp; &nbsp;//&nbsp;(matches any ancestor element, including those of enclosing frames):</code></div>
+<div><code>&nbsp;&nbsp; &nbsp;bidichecker.FilterFactory.locationId("other_id"),</code></div>
+<br>
+<div><code>&nbsp;&nbsp; &nbsp;// Composing multiple filters: Suppress errors of <b>severity levels</b> 3 and 4 and <b>error type</b><br>
+&nbsp;&nbsp; &nbsp;// "Declared RTL spillover to number":</code></div>
+<div><code>&nbsp;&nbsp; &nbsp;</code><span style="font-family: monospace; color: rgb(0, 96, 0);">bidichecker.FilterFactory</span><span style="font-family: monospace; color: rgb(0, 96, 0);">.severityFrom(3)</span><span style="font-family: monospace; color: rgb(0, 96, 0);">.and(</span></div>
+<div><span style="font-family: monospace; color: rgb(0, 96, 0);">&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;bidichecker.FilterFactory.type("Declared RTL spillover to number")),</span></div>
+<br>
+<div><code>&nbsp;&nbsp; &nbsp;// Suppress errors within a page element with the <b>class</b> attribute&nbsp;"myclass" and<br>
+&nbsp;&nbsp; &nbsp;// <b>preceded by text</b> matching the regular expression "http:.*":</code></div>
+<div><code>&nbsp;&nbsp; &nbsp;</code><span style="font-family: monospace; color: rgb(0, 96, 0);">bidichecker.FilterFactory</span><code>.</code><code>locationClass("myclass")</code><code>.and(</code></div>
+<div><code>&nbsp;&nbsp; &nbsp; &nbsp; &nbsp;bidichecker.FilterFactory.precededByTextRegexp(</code><code>"http:.*"))</code></div>
+<div><code>];</code></div>
+<div><code><br>var errors = bidichecker.checkPage(true, top.document.body, filters);</code></div>
+<div><code>assertArrayEquals([], errors); &nbsp;// Should be no BiDi errors after filtering!</code></div>
+</span>
+</div>
+</span></div>
+<br>
+<div>Below is the complete list of filters (static factory methods in the bidichecker.FilterFactory class):</div>
+<div><br>
+<table style="border-color: rgb(136, 136, 136); border-width: 1px; border-collapse: collapse; margin-right: 40px; margin-left: 80px" border="1" bordercolor="#888888" cellspacing="0">
+<tbody>
+<tr>
+<td><b> Filter name</b></td>
+<td><b> Sample construction</b></td>
+<td><b> Description</b></td>
+</tr>
+<tr>
+<td> and</td>
+<td> bidichecker.FilterFactory.and(filter1, filter2)</td>
+<td> Composes two filters by <b>and</b>-ing their suppressions<span><br>
+</span></td>
+</tr>
+<tr>
+<td> atText</td>
+<td> bidichecker.FilterFactory.atText()</td>
+<td> Matches against the entire <b>atText</b> field of an error</td>
+</tr>
+<tr>
+<td> atTextRegexp</td>
+<td> bidichecker.FilterFactory.atTextRegexp(regexp)</td>
+<td> Matches against the entire <b>atText</b> field of an error</td>
+</tr>
+<tr>
+<td> followedByText<br>
+</td>
+<td> bidichecker.FilterFactory.followedByText(string)</td>
+<td> Matches against the entire <b>followedByText</b> field of an error</td>
+</tr>
+<tr>
+<td> followedByTextRegexp</td>
+<td> bidichecker.FilterFactory.followedByTextRegexp(regexp)</td>
+<td> Matches against the entire <b>followedByText</b> field of an error</td>
+</tr>
+<tr>
+<td> locationClass</td>
+<td> bidichecker.FilterFactory.locationClass(string)</td>
+<td> Matches against an entire <b>class</b> name on any ancestor element containing the error location (including any containing frames)</td>
+</tr>
+<tr>
+<td> locationClassRegexp</td>
+<td> bidichecker.FilterFactory.locationClassRegexp(regexp)</td>
+<td> Matches against an entire <b>class</b> name on any ancestor element containing the error location (including any containing frames)</td>
+</tr>
+<tr>
+<td> locationId</td>
+<td> bidichecker.FilterFactory.locationId(string)</td>
+<td> Matches against an entire <b>id</b> attribute on any ancestor element containing the error location (including any containing frames)</td>
+</tr>
+<tr>
+<td> locationIdRegexp</td>
+<td> bidichecker.FilterFactory.locationIdRegexp(regexp)</td>
+<td> Matches against an entire <b>id</b> attribute on any ancestor element containing the error location (including any containing frames)</td>
+</tr>
+<tr>
+<td> not</td>
+<td> bidichecker.FilterFactory.not(filter)</td>
+<td> Inverts the meaning of a filter</td>
+</tr>
+<tr>
+<td> or</td>
+<td> bidichecker.FilterFactory.or(filter1, filter2)</td>
+<td> Composes two filters by <b>or</b>-ing their suppressions</td>
+</tr>
+<tr>
+<td> precededByText</td>
+<td> bidichecker.FilterFactory.precededByText(string)</td>
+<td> Matches against the entire <b>precededByText</b> field of an error</td>
+</tr>
+<tr>
+<td> precededByTextRegexp</td>
+<td> bidichecker.FilterFactory.precededByTextRegexp(regexp)</td>
+<td> Matches against the entire <b>precededByText</b> field of an error</td>
+</tr>
+<tr>
+<td> severityFrom</td>
+<td> bidichecker.FilterFactory.severityFrom(severityThreshold)</td>
+<td> Matches any errors with <b>severity</b> at the given threshold, or less severe than it. It is generally advisable to suppress errors of severity level 4; they often indicate insigificant issues.</td>
+</tr>
+<tr>
+<td> type</td>
+<td> bidichecker.FilterFactory.type(typeValue)</td>
+<td> Matches against the exact <b>type</b> field of an error</td>
+</tr>
+</tbody>
+</table>
+<br>
+</div>
+<div>Each filter object also supports instance methods <b>and()</b>, <b>not()</b>, and <b>or()</b> for an alternate way of composing/inverting filters.</div>
+<div>
+<br>
+</div>
+<div>
+<h2><a name="TOC-Catalog-of"></a>Catalog of BiDi checks and errors</h2>
+<p>The "meat" of BidiChecker is the actual BiDi checks. BidiChecker runs a series of checkers on the web page DOM, each of which scans for a particular kind of error and generates error reports. This section catalogs the checks implemented so far and the errors they produce.</p>
+<p><br>
+</p>
+<h3><a name="TOC-Incorrect-overall"></a>Incorrect overall directionality</h3>
+<h4><span style="border-collapse: collapse;">Description<br>
+</span></h4>
+<p><span style="border-collapse: collapse;">Checks whether the overall declared directionality of the web page (or root element being checked) is the same as that intended by the developer (as specified in the call to BidiChecker). If, for example, the developer specified an intended directionality of RTL, but the page body or root element is LTR, an error will be reported. This type of error is always
+severity level 1.</span></p>
+<h4><span style="border-collapse: collapse;">Sample output<br>
+</span></h4>
+<div style="margin-left: 40px; margin-right: 80px"><span style="border-collapse: collapse;"><span style="font-family: courier new,monospace;">
+<div style="background-color: rgb(223, 223, 223);"><span style="font-family: courier new,monospace; color: rgb(0, 96, 0);">
+<b><code>[1] Overall directionality not LTR</code></b></div>
+</span></span></div>
+<p><a href="http://doctype.googlecode.com/svn-history/trunk/bidihowto/bidi-support-in-a-ui/declaring-page-directionality.html" target="_blank">More information about declaring the overall page directionality.</a></p>
+<br>
+<h3><a name="TOC-Undeclared-opposite"></a>Undeclared opposite-directionality text</h3>
+<h4><span style="border-collapse: collapse;">Description<br>
+</span></h4>
+<p><span style="border-collapse: collapse;">Checks for strongly-directional characters (such as English, Hebrew or Arabic letters) which are in an area declared to have the opposite directionality. Each run of opposite-directionality text
+(possibly mixed in with neutrals) is reported as an error.</span><span style="border-collapse: collapse;"><br>
+</span></p>
+</div>
+<div>
+<h4><span style="border-collapse: collapse;">Why is it a problem?</span></h4>
+<div><span style="border-collapse: collapse;">Undeclared opposite-directionality </span>text is a problem because</div>
+<ul><li><span style="border-collapse: collapse;">Undeclared opposite-directionality </span>text
+(LTR or RTL) is often displayed garbled. The common cases (see the link below for examples) are when it:<br>
+</li>
+<ul><li>Starts with a number or punctuation or other neutral characters (e.g. copyright symbol).<br>
+</li>
+<li>
+
+Ends with punctuation or other neutral characters.<br>
+</li>
+<li>Contains embedded text of directionality opposite to it, i.e. in the original directionality.<br>
+</li></ul>
+<li>Even
+when it is not garbled itself, it can garble the layout
+of the line in which it appears by "sticking" to a logically separate
+opposite-directionality phrase next to it. This is especially
+problematic when these are separated by neutral items like images or
+inputs, since it will all be laid out in reverse.<br>
+
+</li></ul>
+<h4>Why it might not be a problem<span style="border-collapse: collapse;"><br>
+</span></h4>
+ Undeclared
+opposite-directionality text is not necessarily a problem. There are
+messages that you never want translated, e.g. "Gmail". If their text
+does not fall into one of the troublesome categories above and does not
+happen to lie next to another undeclared opposite-directionality
+phrase, no visible problem will result.
+<h4><span style="border-collapse: collapse;">Sample output<br>
+</span></h4>
+<div style="margin-left: 40px; margin-right: 80px"><b><span style="font-family: courier new,monospace;">
+<div style="background-color: rgb(223, 223, 223);"><span style="font-family: courier new,monospace; color: rgb(0, 96, 0);">
+<code>[2] Undeclared RTL text: 'שלום' followed by '.' in &lt;p id='resultStats'&gt;&lt;b&gt;</code></div>
+</span></b></div>
+<div><span style="border-collapse: collapse;"><br>
+If the run of
+opposite-directionality text is immediately preceded or followed by a
+run of neutral characters, those characters are reported as the error
+context fields and the error severity is set at level 2. If there is no
+such adjacent run of neutral characters, the error severity is 3. (But see the next section.)<br>
+<br>
+</span><span style="border-collapse: collapse;"><a href="http://doctype.googlecode.com/svn-history/trunk/bidihowto/bidi-support-in-a-ui/declaring-opposite-directionality.html" target="_blank">More information about declaring opposite-directionality text.</a></span><span style="border-collapse: collapse;"><br>
+</span>
+<h4><span style="border-collapse: collapse;">Severity demotion of errors in areas of explicitly-declared directionality</span></h4>
+<span style="border-collapse: collapse;">In certain circumstances, the severity of undeclared opposite-directionality text errors is demoted to 4. If an element other than the root element has an explicitly-declared directionality (i.e., a "dir" attribute), and that element also does not contain any block-level elements (i.e., it is the lowest-level block in its subtree), then BiDi errors inside that element's subtree are assigned the lowest severity. This is based on the assumption that the explicit declaration of directionality indicates that the code which generated this part of the page has somehow deliberately assessed its directionality. Rather than second-guess the developers, we demote the severity of error reports in that subtree. It may, for example, represent a block of user-generated content included from an external website; errors in such content are not the responsibility of the application.<br>
+<br>
+This heuristic is far from perfect, and we may revisit it as necessary.<br>
+<br>
+</span></div>
+<h3><a name="TOC-Spillover-from-declared"></a>Spillover from declared opposite-directionality element to number</h3>
+<h4>Description<br>
+</h4>
+<p>When an opposite-directionality element is followed by a number (possibly with
+intervening neutral characters), the <a href="http://unicode.org/reports/tr9/" target="_blank">standard Unicode bidi algorithm</a> extends the
+opposite-directionality region to encompass the subsequent number. This
+can, and often does, cause text garbling. For examples, follow the link below.<br>
+<br>
+We identify spillover by the following heuristic criteria:<br>
+</p>
+<ol><li>When an HTML element with a 'dir' attribute closes, and
+this causes a change in the current declared directionality, the
+element becomes a spillover candidate.</li>
+<li>If we then encounter a
+text node containing a number, with only neutral characters preceding
+it, a spillover error has been identified.</li>
+<li>However, if
+following the spillover candidate we encounter: a) a text node
+containing a strongly-directional character, b) the opening of an
+element with a 'dir' attribute, c) the closing of an element with a
+'dir' attribute which does not change the current directionality, or d)
+the opening or closing of a block-level element - then the spillover
+candidate is canceled.</li></ol>
+<h4>Sample output</h4>
+<div style="margin-left: 40px; margin-right: 80px"><span style="border-collapse: collapse;"><span style="font-family: courier new,monospace;">
+<div style="background-color: rgb(223, 223, 223);"><span style="font-family: courier new,monospace; color: rgb(0, 96, 0);">
+<b><code>[2]
+Declared LTR spillover to number: '1' preceded by '2001 A Space Odyssey
+Opening' in &lt;ol id='rso'&gt;&lt;li class='g'&gt;&lt;table
+class='ts'&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td width='290' valign='top'
+colspan='1'&gt;</code></b>
+</span></b></div></span></div>
+<br>
+Spillover errors have severity level 2. As with undeclared opposite-directionality text, errors in an area of explictly-declared directionality are demoted to severity level 4 (see above).<br>
+<br>
+<a href="http://doctype.googlecode.com/svn-history/trunk/bidihowto/bidi-support-in-a-ui/resetting-directionality.html" target="_blank">More information about preventing spillover errors.</a><br>
+<br>
+<h2><a name="TOC-How-to-devise"></a>How to devise effective test cases</h2>
+Just running BidiChecker on random pages of your application may reveal some BiDi support errors, but it is unlikely to be an effective approach to BiDi testing. To start with the obvious, if you run BiDi checks on a page with a left-to-right UI and contents in a left-to-right language, you probably won't find any errors, but neither would you have tested the handling of right-to-left text! An application with an LTR UI should at the minimum run BidiChecker on each page while displaying RTL text contents. For example, a search application should test pages with an RTL search query. If your application also supports RTL UIs, they should be tested both with RTL contents and with LTR contents, as each one may reveal different errors.<br>
+<br>
+Keep in mind that most user input fields, and output which displays them, should be able to support RTL contents, even on an LTR page. Hebrew- and Arabic-speaking users may access web content or enter data in their native languages, even if the UI is in English. There are exceptions; fields such as phone numbers, currency values or e-mail addresses need only support LTR data (though the human name associated with an e-mail account may well be RTL). But as a rule, any data field your application displays may need to handle RTL text. Thorough testing should include displaying RTL contents in every such field and checking the page with BidiChecker.<br>
+<br>
+<h2><a name="TOC-Issues-with"></a>Issues with HTML support</h2>
+How BidiChecker handles various features of HTML:<br>
+<ol><li><b>Undisplayed text.</b> Content designated as "display:none" is ignored by BidiChecker. If a page has elements which are conditionally displayed when something is clicked, for example, they will not be checked while invisible.<br>
+</li>
+<li><b>Frames.</b> When traversing the DOM of the page, BidiChecker also enters the contents of frames (either FRAME or IFRAME elements). The frame's location is appended to the element's location description, such as: "<b style="font-family: courier new,monospace;">in &lt;div id='abc'&gt;&lt;p&gt; in &lt;iframe id='frame1'&gt;</b>". In the case of FRAMEs making up the top-level page passed to
+BidiChecker, their overall directionality is checked to match the
+specified value; in the case of IFRAMEs and FRAMEs below IFRAMEs, their
+overall
+directionality is not checked. If a frame's contents are hosted on a different domain, they are not checked; the Javascript security model makes them inaccessible, and you probably don't intend to check them anyway.<br>
+</li>
+<li><b>Unicode BiDi characters.</b> BidiChecker does not yet handle <a href="http://www.w3.org/TR/unicode-xml/#Bidi" target="_blank">Unicode BiDi embedding control characters</a>. This means that in the rare situation where embedding control characters are used to fix a BiDi bug, such as in <b style="font-family: courier new,monospace;">&lt;option&gt;</b> elements, BidiChecker will report the bug anyway. In the rarer circumstance where incorrectly used embedding control characters may introduce a bug, the bug will not be identified.</li>
+<li><b>Layout garbling of non-text inline elements.</b> Certain page elements, such as inputs and images, are affected by BiDi layout garbling bugs as if they were neutral characters. This is not yet identified.<br>
+</li></ol>
+<h2><a name="TOC-Known-problems"></a>Known problems</h2>
+<ol><li>The GUI does not work correctly if more than one test is run from a given test file; otherwise, subsequent tests may corrupt the DOM of the test for which the GUI is run, making it unusable.</li>
+><li>The dialog box of the GUI mode does not work correctly when run on some pages.</li>
+<li>The GUI mode does not interact well with frameset-style frames. The dialog box will always appear in the first frame on the page, where it may not fit or be inaccessible or invisible.</li>
+<li>If an error's page location is already on a yellow background, or is scrolled out of view in a scrollable component, it will not be visible when highlighted by the GUI.<br>
+</li>
+<li>No support yet for Unicode BiDi embedding control characters.</li></ol>
+</div>
+</div>
+</div>
+
+
+  </body>
+</html>

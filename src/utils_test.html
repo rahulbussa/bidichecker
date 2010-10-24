@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+  <!--
+    Copyright 2009 Google Inc. All Rights Reserved.
+
+    Use of this source code is governed by an Apache 2.0 License.
+    See the COPYING file for details.
+  -->
+
+  <!--
+  Unit tests for utils.js.
+  -->
+  <head>
+    <title>bidichecker - Javascript Unit Tests</title>
+    <script type="text/javascript" src="../third_party/closure-library/closure/goog/base.js">
+    </script>
+
+    <!-- Include the generated deps.js which enables goog.require of
+         the modules under test.
+    -->
+    <script type="text/javascript" src="deps.js"></script>
+    <script type="text/javascript" src="testutils.js"></script>
+
+    <script type="text/javascript">
+// This in turn pulls in the rest of the files.
+goog.require('bidichecker.utils');
+
+goog.require('goog.i18n.bidi');
+goog.require('goog.testing.jsunit');
+    </script>
+
+  </head>
+  <body>
+    <script type="text/javascript">
+
+function testUtils_FindRtlSubstrings() {
+  // No RTL substrings.
+  var matches = bidichecker.utils.findRtlSubstrings('abcdefg 0123456');
+  assertArrayEquals([], matches);
+
+  // One RTL substring in the middle.
+  // Hebrew text for "Shalom" between some neutral characters.
+  matches = bidichecker.utils.findRtlSubstrings(
+      '0123456789 \u05e9\u05dc\u05d5\u05dd ()**&^!@#$%');
+  assertArrayEquals([{text: '\u05e9\u05dc\u05d5\u05dd', index: 11}], matches);
+
+  // Two RTL substrings, with neutral characters mixed into them.
+  matches = bidichecker.utils.findRtlSubstrings(
+      '\u05e9\u05dc 1234 \u05d5\u05dd WORD \u05e9\u05dc!@#$%^&*()\u05d5\u05dd');
+  assertArrayEquals([{text: '\u05e9\u05dc 1234 \u05d5\u05dd', index: 0},
+                     {text: '\u05e9\u05dc!@#$%^&*()\u05d5\u05dd', index: 16}],
+                    matches);
+
+  // An RTL substring starting with an LRM and ending with an RLM. Should not
+  // include the LRM.
+  matches = bidichecker.utils.findRtlSubstrings('Some Text ' +
+      goog.i18n.bidi.Format.LRM + '\u05e9\u05dc ' + goog.i18n.bidi.Format.RLM);
+  assertArrayEquals([{text: '\u05e9\u05dc ' + goog.i18n.bidi.Format.RLM,
+                      index: 11}], matches);
+}
+
+
+function testUtils_FindLtrSubstrings() {
+  // No LTR substrings: Hebrew for "Shalom" between some neutral characters.
+  var matches = bidichecker.utils.findLtrSubstrings(
+      '1234567890 \u05e9\u05dc\u05d5\u05dd ()**&^!@#$%');
+  assertArrayEquals([], matches);
+
+  // One LTR substring in the middle.
+  // Hebrew text for "Shalom" and some numbers split by some English characters.
+  matches = bidichecker.utils.findLtrSubstrings(
+      '\u05e9\u05dc 123 ENGLISH 456 \u05d5\u05dd');
+  assertArrayEquals([{text: 'ENGLISH', index: 7}], matches);
+
+  // Two LTR substrings, with neutral characters mixed into them.
+  matches = bidichecker.utils.findLtrSubstrings(
+      'English !*@#$ Text \u05e9\u05dc Car 54 where are you?');
+  assertArrayEquals([{text: 'English !*@#$ Text', index: 0},
+                     {text: 'Car 54 where are you', index: 22}], matches);
+
+  // An LTR substring starting with an LRM and ending with an RLM. Should not
+  // include the RLM.
+  matches = bidichecker.utils.findLtrSubstrings(
+    '\u05e9\u05dc ' + goog.i18n.bidi.Format.LRM + ' Some Text' +
+      goog.i18n.bidi.Format.RLM);
+  assertArrayEquals([{text: goog.i18n.bidi.Format.LRM + ' Some Text',
+                      index: 3}], matches);
+}
+
+
+function testHasOnlyLrmChars() {
+  assertFalse(bidichecker.utils.hasOnlyLrmChars('abcdefg 0123456'));
+  assertFalse(bidichecker.utils.hasOnlyLrmChars('\u05e9\u05dc\u05d5\u05dd'));
+  assertTrue(bidichecker.utils.hasOnlyLrmChars('234567890 \u200E !@#$%^&*('));
+  assertFalse(bidichecker.utils.hasOnlyLrmChars('234567890 \u200F !@#$%^&*('));
+}
+
+
+function testHasOnlyRlmChars() {
+  assertFalse(bidichecker.utils.hasOnlyRlmChars('abcdefg 0123456'));
+  assertFalse(bidichecker.utils.hasOnlyRlmChars('\u05e9\u05dc\u05d5\u05dd'));
+  assertFalse(bidichecker.utils.hasOnlyRlmChars('234567890 \u200E !@#$%^&*('));
+  assertTrue(bidichecker.utils.hasOnlyRlmChars('234567890 \u200F !@#$%^&*('));
+}
+
+
+function testUtils_FindNeutralTextAtIndex() {
+  var text = '1234567890 \u05e9\u05dc\u05d5\u05dd ()**&^!@#$% abcdefg';
+
+  // Index 0 starts with digits.
+  var match = bidichecker.utils.findNeutralTextAtIndex(text, 0);
+  assertHashEquals({text: '1234567890', index: 0}, match);
+
+  // Index 10 starts with a space and then Hebrew text.
+  match = bidichecker.utils.findNeutralTextAtIndex(text, 10);
+  assertNull(match);
+
+  // Index 15 starts with a space and then neutral characters.
+  match = bidichecker.utils.findNeutralTextAtIndex(text, 15);
+  assertHashEquals({text: ' ()**&^!@#$%', index: 15}, match);
+
+  // Index 28 starts with English text.
+  match = bidichecker.utils.findNeutralTextAtIndex(text, 28);
+  assertNull(match);
+}
+
+
+function testUtils_FindNeutralTextBeforeIndex() {
+  var text = '1234567890 \u05e9\u05dc\u05d5\u05dd ()**&^!@#$% abcdefg';
+
+  // Index 0 has nothing before it.
+  var match = bidichecker.utils.findNeutralTextBeforeIndex(text, 0);
+  assertNull(match);
+
+  // Index 11 is preceded by digits and a space.
+  match = bidichecker.utils.findNeutralTextBeforeIndex(text, 11);
+  assertHashEquals({text: '1234567890 ', index: 0}, match);
+
+  // Index 15 is preceded by Hebrew text.
+  match = bidichecker.utils.findNeutralTextBeforeIndex(text, 15);
+  assertNull(match);
+
+  // Index 28 is preceded by neutrals and a space.
+  match = bidichecker.utils.findNeutralTextBeforeIndex(text, 28);
+  assertHashEquals({text: '()**&^!@#$% ', index: 16}, match);
+
+  // Index 30 is preceded by English text.
+  match = bidichecker.utils.findNeutralTextBeforeIndex(text, 30);
+  assertNull(match);
+}
+
+
+function testUtils_FindNumberAtStart() {
+  // String begins with neutrals followed by numbers.
+  var text = '()**&^!@#$% 1234567890 \u05e9\u05dc\u05d5\u05dd abcdefg';
+  var match = bidichecker.utils.findNumberAtStart(text);
+  assertHashEquals({text: '()**&^!@#$% 1234567890', index: 0}, match);
+
+  // String begins with neutrals followed by English.
+  text = '()**&^!@#$% abcdef 1234567890';
+  match = bidichecker.utils.findNumberAtStart(text);
+  assertNull(match);
+
+  // String begins with neutrals followed by Hebrew.
+  text = '()**&^!@#$% \u05e9\u05dc\u05d5\u05dd 1234567890';
+  match = bidichecker.utils.findNumberAtStart(text);
+  assertNull(match);
+
+  // String begins with digits mixed with neutrals.
+  text = '123.56+07 ()**&^!@#$% abcdefg';
+  match = bidichecker.utils.findNumberAtStart(text);
+  assertHashEquals({text: '123.56+07', index: 0}, match);
+}
+
+
+function testUtils_DescribeNode() {
+  var testDiv = goog.dom.createDom('div', {'id': '\n\f\r\007' +
+                                           goog.i18n.bidi.Format.LRM,
+                                           'align': 'right'});
+  testDiv.innerHTML = '<div dir=\'rtl\'><p>Okay?</p></div>';
+  var innerDiv = testDiv.firstChild;  // <div dir=...
+  var para = innerDiv.firstChild;  // <p>Okay?</p>
+  goog.dom.appendChild(document.body, testDiv);
+
+  assertEquals('<p>', bidichecker.utils.describeNode(para));
+  assertEquals('<div dir=\'rtl\'>',
+               bidichecker.utils.describeNode(innerDiv));
+  assertEquals('<div align=\'right\' id=\'\\n\\f\\r\\u0007\\u200e\'>',
+               bidichecker.utils.describeNode(testDiv));
+}
+
+
+function testUtils_DescribeLocation() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  testDiv.innerHTML = '<div dir=\'rtl\'><p>Okay?</p></div>';
+  var innerDiv = testDiv.firstChild;  // <div dir=...
+  var para = innerDiv.firstChild;  // <p>Okay?</p>
+  goog.dom.appendChild(document.body, testDiv);
+
+  assertEquals('<div id=\'test\'><div dir=\'rtl\'><p>',
+               bidichecker.utils.describeLocation(para));
+}
+
+
+function testUtils_EscapeString() {
+  // Plain text is unchanged
+  assertEquals('abcdefghijk1234567890',
+               bidichecker.utils.escapeString('abcdefghijk1234567890'));
+
+  // Hebrew text is unchanged.
+  assertEquals('\u05e9\u05dc\u05d5\u05dd',
+                bidichecker.utils.escapeString('\u05e9\u05dc\u05d5\u05dd'));
+
+  // Special characters are escaped: backslash, whitespace, single and double
+  // quotes.
+  assertEquals('\\\\\\b\\f\\n\\r\\t\\\'\\"',
+                bidichecker.utils.escapeString('\\\b\f\n\r\t\'"'));
+
+  // Nonprinting ASCII characters are encoded with \u, since Java doesn't
+  // recognize \x.
+  assertEquals('\\u0000\\u0007\\u007f',
+                bidichecker.utils.escapeString('\x00\x07\x7f'));
+
+  // Nonprinting Unicode characters are encoded with \u.
+  assertEquals('\\u200e\\u205f\\u1680',
+                bidichecker.utils.escapeString('\u200e\u205f\u1680'));
+}
+
+    </script>
+
+  </body>
+</html>

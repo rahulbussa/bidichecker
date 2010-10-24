@@ -1,0 +1,40 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+<!--
+    Copyright 2010 Google Inc. All Rights Reserved.
+
+    Use of this source code is governed by an Apache 2.0 License.
+    See the COPYING file for details.
+  -->
+<!--
+  Sample bidi-buggy application used to demonstrate the use of the BidiChecker
+  testing library.
+  -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Reviews</title>
+<script type="text/javascript" src="reviews.js"></script>
+<script type="text/javascript" src="i18n.js"></script>
+</head>
+
+<body>
+<div style="font-size: large">
+<div id="reviews"></div>
+</div>
+
+<script type="text/javascript">
+
+// User reviews data to display.
+var reviewsData = [
+    {'title': 'The Princess Bride', 'reviews': '23'},
+    {'title': '20,000 Leagues Under the Sea', 'reviews': '17'},
+    {'title': 'דירה להשכיר', 'reviews': '57'}
+];
+
+var reviewsElement = document.getElementById('reviews');
+var app = new ReviewsApp(reviewsData, reviewsElement);
+app.render();
+
+</script>
+</body>
+</html>

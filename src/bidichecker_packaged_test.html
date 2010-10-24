@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+  <!--
+    Copyright 2009 Google Inc. All Rights Reserved.
+
+    Use of this source code is governed by an Apache 2.0 License.
+    See the COPYING file for details.
+  -->
+
+  <!--
+  Unit tests to verify that bidichecker_packaged.js is built correctly.
+  -->
+  <head>
+    <title>bidichecker - Javascript Unit Tests</title>
+    <script type="text/javascript" src="../third_party/closure-library/closure/goog/base.js">
+    </script>
+    <script type="text/javascript">
+      goog.require('goog.testing.jsunit');
+    </script>
+
+    <!-- Include BidiChecker's precompiled JS API file, bidichecker_packaged.js.
+    -->
+    <script type="text/javascript" src="../lib/bidichecker_packaged.js">
+    </script>
+
+  </head>
+  <!-- Invoke the test runner when the page has loaded. -->
+  <body>
+    <script type="text/javascript">
+
+/** Common initializations before each unit test. */
+function setUp() {
+  // Some of the unit tests add content to the page by creating a div with
+  // id="test". We remove it before each test to make way for the next one.
+  var testDiv = document.getElementById('test');
+  if (testDiv) {
+    testDiv.parentNode.removeChild(testDiv);
+  }
+}
+
+/**
+ * Checks that an array of {@code bidichecker.Error} objects matches an array
+ * of expected results, where the results are objects with simple key-value
+ * pairs representing the data fields expected in the error objects.
+ * This lets us easily avoid comparing uninteresting object fields, such as
+ * functions and error ids.
+ * @param {Array.<Object>} expected For each expected error, the fields we
+ *     expect to see and their values.
+ * @param {Array.<bidichecker.Error>} errors The list of actual errors returned
+ *     from the bidi checks.
+ */
+function assertErrorFields(expected, errors) {
+  /**
+   * The data fields we care to compare among error objects.
+   * @type {Array.<string>}
+   */
+  var relevantFields = ['type', 'severity', 'atText', 'locationDescription',
+                        'precededByText', 'followedByText'];
+
+  // Extract from the error objects the fields of interest to us into an array
+  // with the same type of contents as {@code expected}.
+  assertEquals(expected.length, errors.length);
+  for (var i = 0; i < expected.length; i++) {
+    for (var j = 0; j < relevantFields.length; j++) {
+      var field = relevantFields[j];
+      if (field in errors[i] && errors[i][field] != null) {
+        assertEquals(expected[i][field], errors[i][field]);
+      }
+    }
+  }
+}
+
+
+function testBidiChecker_CheckPageRunsAllCheckers() {
+  var testDiv = document.createElement('div');
+  testDiv.setAttribute('id', 'test');
+  document.body.appendChild(testDiv);
+
+  testDiv.innerHTML = '<p><span dir=\'rtl\'>friends<\/span>5,012.7 meters<\/p>';
+  var errors = bidichecker.checkPage(true, testDiv);
+
+  var expected = [{'type': 'Overall directionality not RTL',
+                   'severity': 1},
+
+                  {'type': 'Undeclared LTR text',
+                   'atText': 'friends',
+                   'severity': 4,
+                   'locationDescription':
+                       '<div id=\'test\'><p><span dir=\'rtl\'>'},
+
+                  {'type': 'Declared RTL spillover to number',
+                   'atText': '5,012.7',
+                   'precededByText': 'friends',
+                   'severity': 2,
+                   'locationDescription':
+                       '<div id=\'test\'><p>'}];
+  assertErrorFields(expected, errors);
+}
+
+
+function testBidiChecker_CheckPageRunsFilters() {
+  var testDiv = document.createElement('div');
+  testDiv.setAttribute('id', 'test');
+  document.body.appendChild(testDiv);
+
+  testDiv.innerHTML = '<p><span dir=\'rtl\'>friends<\/span>5,012.7 meters<\/p>';
+
+  var filters = [bidichecker.FilterFactory.atText('friends')];
+  var errors = bidichecker.checkPage(true, testDiv, filters);
+
+  var expected = [{'type': 'Overall directionality not RTL',
+                   'severity': 1},
+
+                  {'type': 'Declared RTL spillover to number',
+                   'atText': '5,012.7',
+                   'precededByText': 'friends',
+                   'severity': 2,
+                   'locationDescription':
+                       '<div id=\'test\'><p>'}];
+  assertErrorFields(expected, errors);
+}
+
+
+function testBidiChecker_LocationBasedFilterWorks() {
+  var testDiv = document.createElement('div');
+  testDiv.setAttribute('id', 'test');
+  document.body.appendChild(testDiv);
+
+  testDiv.innerHTML =
+    '<p><span dir=\'rtl\' id=\'my_id\' >friends<\/span>5,012.7 meters<\/p>';
+  var filters = [bidichecker.FilterFactory.locationId('my_id')];
+  var errors = bidichecker.checkPage(true, testDiv, filters);
+
+  var expected = [{'type': 'Overall directionality not RTL',
+                   'severity': 1},
+
+                  {'type': 'Declared RTL spillover to number',
+                   'atText': '5,012.7',
+                   'precededByText': 'friends',
+                   'severity': 2,
+                   'locationDescription':
+                       '<div id=\'test\'><p>'}];
+  assertErrorFields(expected, errors);
+}
+
+function testBidiChecker_ComposingFiltersWorks() {
+  var testDiv = document.createElement('div');
+  testDiv.setAttribute('id', 'test');
+  document.body.appendChild(testDiv);
+
+  testDiv.innerHTML =
+    '<p><span dir=\'rtl\' id=\'my_id\' >friends<\/span>5,012.7 meters<\/p>';
+  var filters = [bidichecker.FilterFactory.locationId('my_id').and(
+                    bidichecker.FilterFactory.atText('friends'))];
+  var errors = bidichecker.checkPage(true, testDiv, filters);
+
+  var expected = [{'type': 'Overall directionality not RTL',
+                   'severity': 1},
+
+                  {'type': 'Declared RTL spillover to number',
+                   'atText': '5,012.7',
+                   'precededByText': 'friends',
+                   'severity': 2,
+                   'locationDescription':
+                       '<div id=\'test\'><p>'}];
+  assertErrorFields(expected, errors);
+}
+    </script>
+
+  </body>
+</html>
