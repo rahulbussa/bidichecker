@@ -71,7 +71,7 @@ function testErrorCollector_AddErrorWithLocation() {
 
 
 function testErrorCollector_AddErrorSuppressedByFilter() {
-  var filters = [bidichecker.FilterFactory.constructFilter(
+  var filters = [bidichecker.FilterFactory.constructFilter_(
       {'atText': 'friends', 'opcode': 'AT_TEXT'})];
 
   var collector =
@@ -83,7 +83,7 @@ function testErrorCollector_AddErrorSuppressedByFilter() {
 
 
 function testErrorCollector_AddErrorNotSuppressedByFilter() {
-  var filters = [bidichecker.FilterFactory.constructFilter(
+  var filters = [bidichecker.FilterFactory.constructFilter_(
       {'atText': 'friends', 'opcode': 'AT_TEXT'})];
 
   var collector =
@@ -96,9 +96,9 @@ function testErrorCollector_AddErrorNotSuppressedByFilter() {
 
 function testErrorCollector_AddErrorSuppressedBySecondFilter() {
   // Make sure all filters are applied to all errors.
-  var filters = [bidichecker.FilterFactory.constructFilter(
+  var filters = [bidichecker.FilterFactory.constructFilter_(
       {'atText': 'friends', 'opcode': 'AT_TEXT'}),
-      bidichecker.FilterFactory.constructFilter(
+      bidichecker.FilterFactory.constructFilter_(
       {'atText': 'enemies', 'opcode': 'AT_TEXT'})];
 
   var collector =

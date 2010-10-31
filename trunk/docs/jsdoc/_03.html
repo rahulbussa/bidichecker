@@ -1,0 +1,2176 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta name="generator" content="JsDoc Toolkit 1.0">
+	<title>JsDoc: </title>
+	<link rel=stylesheet href="default.css" type="text/css" media=screen>
+</head>
+
+<body>
+	<div class="content">
+		<div class="docs">
+		
+			<div class="sectionHead">Library: filterfactory.js</div>
+			<div class="section overview">
+				<div class="itemTitle">
+					Overview
+				</div>
+				<div>	
+					<div class="desc">Factory methods for constructing error-suppression filters.</div>
+					<div class="itemTags">
+					<ul>
+						<li>source: <a href="src_03.html">filterfactory.js</a></li>
+					
+					</ul>
+					</div>
+				</div>
+			</div>
+			
+			<div class="sectionHead">Constructors</div>
+			
+			
+			<div class="section constructor">
+				<div class="itemTitle">
+					<a name="bidichecker.FilterFactory.ComposableFilter"></a>
+					
+					
+					bidichecker.FilterFactory.ComposableFilter(<span class="signature"></span>)
+					
+				</div>
+				
+				
+					<div class="desc">Abstract base class for custom filter classes, providing them with
+<code>and()</code>, <code>or()</code> and <code>not()</code> methods.</div>
+				
+				
+				
+				
+				
+				
+				
+				<div class="detailHead">methods</div>
+				
+					<ul class="details">
+						<li><a href="#bidichecker.FilterFactory.ComposableFilter.and">and</a>(other)</li>
+					</ul>
+				
+					<ul class="details">
+						<li><a href="#bidichecker.FilterFactory.ComposableFilter.not">not</a>()</li>
+					</ul>
+				
+					<ul class="details">
+						<li><a href="#bidichecker.FilterFactory.ComposableFilter.or">or</a>(other)</li>
+					</ul>
+				
+				
+				
+				
+				<div class="detailHead">properties</div>
+				
+					<ul class="details">
+						<li><a href="#bidichecker.FilterFactory.ComposableFilter.isSuppressed">isSuppressed</a></li>
+					</ul>
+				
+				
+				
+				
+				
+				
+			</div>
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			<div class="sectionHead">Functions</div>
+			
+			
+			
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.FilterFactory.ComposableFilter.and"></a>
+					
+						<i><a href="#bidichecker.FilterFactory.ComposableFilter" class="type">bidichecker.FilterFactory.ComposableFilter.</a></i>and(<span class="signature">other</span>)
+					
+					
+				</div>
+				
+				
+					<div class="desc">Create a filter which ands this filter with another.</div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							!bidichecker.Filter
+						</td>
+						<td>
+							other
+						</td>
+						<td>
+							The second subfilter.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				<div class="detailHead">returns</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							!bidichecker.FilterFactory.ComposableFilter
+						</td>
+						<td>
+							A filter object.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.FilterFactory.ComposableFilter.not"></a>
+					
+						<i><a href="#bidichecker.FilterFactory.ComposableFilter" class="type">bidichecker.FilterFactory.ComposableFilter.</a></i>not(<span class="signature"></span>)
+					
+					
+				</div>
+				
+				
+					<div class="desc">Create a filter which inverts this filter.</div>
+				
+				
+				
+				
+				
+				
+				
+				<div class="detailHead">returns</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							!bidichecker.FilterFactory.ComposableFilter
+						</td>
+						<td>
+							A filter object.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.FilterFactory.ComposableFilter.or"></a>
+					
+						<i><a href="#bidichecker.FilterFactory.ComposableFilter" class="type">bidichecker.FilterFactory.ComposableFilter.</a></i>or(<span class="signature">other</span>)
+					
+					
+				</div>
+				
+				
+					<div class="desc">Create a filter which ors this filter with another.</div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							!bidichecker.Filter
+						</td>
+						<td>
+							other
+						</td>
+						<td>
+							The second subfilter.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				<div class="detailHead">returns</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							!bidichecker.FilterFactory.ComposableFilter
+						</td>
+						<td>
+							A filter object.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.FilterFactory.readFiltersFromJson"></a>
+					
+					
+					bidichecker.FilterFactory.readFiltersFromJson(<span class="signature">opt_filtersJson</span>)
+					
+				</div>
+				
+				
+					<div class="desc">Deserializes a list of suppression filters from a JSON-format string.
+Throws a string exception if an unknown filter is encountered.</div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							string=
+						</td>
+						<td>
+							opt_filtersJson
+						</td>
+						<td>
+							The input string, if provided.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				<div class="detailHead">returns</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							Array.<!bidichecker.Filter>
+						</td>
+						<td>
+							The error suppression filters.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.FilterFactory.and"></a>
+					
+					
+					bidichecker.FilterFactory.and(<span class="signature">filter1, filter2</span>)
+					
+				</div>
+				
+				
+					<div class="desc">Create a filter which suppresses errors by and-ing component filters.</div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							!bidichecker.Filter
+						</td>
+						<td>
+							filter1
+						</td>
+						<td>
+							The first subfilter.
+						</td> 
+					</tr>
+				
+					<tr>
+						<td class="type">
+							!bidichecker.Filter
+						</td>
+						<td>
+							filter2
+						</td>
+						<td>
+							The second subfilter.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				<div class="detailHead">returns</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							!bidichecker.FilterFactory.ComposableFilter
+						</td>
+						<td>
+							A filter object.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.FilterFactory.atText"></a>
+					
+					
+					bidichecker.FilterFactory.atText(<span class="signature">atText</span>)
+					
+				</div>
+				
+				
+					<div class="desc">Create a filter which suppresses errors based on a literal match of their
+<code>atText</code> fields.</div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							?string
+						</td>
+						<td>
+							atText
+						</td>
+						<td>
+							A string which must match the entire <code>atText</code>
+    field. If empty or null, will only match an empty or null <code>atText</code>.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				<div class="detailHead">returns</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							!bidichecker.FilterFactory.ComposableFilter
+						</td>
+						<td>
+							A filter object.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.FilterFactory.atTextRegexp"></a>
+					
+					
+					bidichecker.FilterFactory.atTextRegexp(<span class="signature">atTextRegexp</span>)
+					
+				</div>
+				
+				
+					<div class="desc">Create a filter which suppresses errors by applying a regular expression to
+their <code>atText</code> fields.</div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							string, RegExp
+						</td>
+						<td>
+							atTextRegexp
+						</td>
+						<td>
+							A regular expression, which must match
+    the entire <code>atText</code> field. If empty or null, will only match an
+    empty or null <code>atText</code>.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				<div class="detailHead">returns</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							!bidichecker.FilterFactory.ComposableFilter
+						</td>
+						<td>
+							A filter object.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.FilterFactory.followedByText"></a>
+					
+					
+					bidichecker.FilterFactory.followedByText(<span class="signature">followedByText</span>)
+					
+				</div>
+				
+				
+					<div class="desc">Create a filter which suppresses errors based on a literal match of their
+<code>followedByText</code> fields.</div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							?string
+						</td>
+						<td>
+							followedByText
+						</td>
+						<td>
+							A string which must match the entire
+    <code>followedByText</code> field. If empty or null, will only match an empty
+    or null <code>followedByText</code>.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				<div class="detailHead">returns</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							!bidichecker.FilterFactory.ComposableFilter
+						</td>
+						<td>
+							A filter object.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.FilterFactory.followedByTextRegexp"></a>
+					
+					
+					bidichecker.FilterFactory.followedByTextRegexp(<span class="signature">followedByTextRegexp</span>)
+					
+				</div>
+				
+				
+					<div class="desc">Create a filter which suppresses errors by applying a regular expression to
+their <code>followedByText</code> fields.</div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							string, RegExp
+						</td>
+						<td>
+							followedByTextRegexp
+						</td>
+						<td>
+							A regular expression, which must
+    match the entire <code>followedByText</code> field. If empty or null, will
+    only match an empty or null <code>followedByText</code>.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				<div class="detailHead">returns</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							!bidichecker.FilterFactory.ComposableFilter
+						</td>
+						<td>
+							A filter object.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.FilterFactory.locationClass"></a>
+					
+					
+					bidichecker.FilterFactory.locationClass(<span class="signature">className</span>)
+					
+				</div>
+				
+				
+					<div class="desc">Create a filter which suppresses errors based on a literal match of one of
+the class names of any parent node of the error location in the DOM.</div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							string
+						</td>
+						<td>
+							className
+						</td>
+						<td>
+							A string which must match one of the class names in
+    the <code>class</code> attribute of the location or one of its ancestors. Must
+    not be empty or null.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				<div class="detailHead">returns</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							!bidichecker.FilterFactory.ComposableFilter
+						</td>
+						<td>
+							A filter object.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.FilterFactory.locationClassRegexp"></a>
+					
+					
+					bidichecker.FilterFactory.locationClassRegexp(<span class="signature">classRegexp</span>)
+					
+				</div>
+				
+				
+					<div class="desc">Create a filter which suppresses errors based on a regular expression match
+of one of the class names of any parent node of the error location in the
+DOM.</div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							string, RegExp
+						</td>
+						<td>
+							classRegexp
+						</td>
+						<td>
+							A regular expression, which must match
+    one of the class names in the <code>class</code> attribute of the location or
+    one of its ancestors. Must not be empty or null.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				<div class="detailHead">returns</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							!bidichecker.FilterFactory.ComposableFilter
+						</td>
+						<td>
+							A filter object.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.FilterFactory.locationId"></a>
+					
+					
+					bidichecker.FilterFactory.locationId(<span class="signature">id</span>)
+					
+				</div>
+				
+				
+					<div class="desc">Create a filter which suppresses errors based on a literal match of the error
+location's (or one of its DOM ancestors') <code>id</code> attribute.</div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							string
+						</td>
+						<td>
+							id
+						</td>
+						<td>
+							A string which must match the entire <code>id</code> attribute
+    of the location or one of its ancestors. Must not be empty or null.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				<div class="detailHead">returns</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							!bidichecker.FilterFactory.ComposableFilter
+						</td>
+						<td>
+							A filter object.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.FilterFactory.locationIdRegexp"></a>
+					
+					
+					bidichecker.FilterFactory.locationIdRegexp(<span class="signature">idRegexp</span>)
+					
+				</div>
+				
+				
+					<div class="desc">Create a filter which suppresses errors by applying a regular expression to
+the error location's (or one of its DOM ancestors') <code>id</code> attribute.</div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							string, RegExp
+						</td>
+						<td>
+							idRegexp
+						</td>
+						<td>
+							A regular expression, which must match the
+    entire <code>id</code> attribute of the location or one of its ancestors. Must
+    not be empty or null.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				<div class="detailHead">returns</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							!bidichecker.FilterFactory.ComposableFilter
+						</td>
+						<td>
+							A filter object.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.FilterFactory.not"></a>
+					
+					
+					bidichecker.FilterFactory.not(<span class="signature">filter</span>)
+					
+				</div>
+				
+				
+					<div class="desc">Create a filter which suppresses errors by inverting another filter.</div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							!bidichecker.Filter
+						</td>
+						<td>
+							filter
+						</td>
+						<td>
+							The subfilter.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				<div class="detailHead">returns</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							!bidichecker.FilterFactory.ComposableFilter
+						</td>
+						<td>
+							A filter object.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.FilterFactory.or"></a>
+					
+					
+					bidichecker.FilterFactory.or(<span class="signature">filter1, filter2</span>)
+					
+				</div>
+				
+				
+					<div class="desc">Create a filter which suppresses errors by or-ing component filters.</div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							!bidichecker.Filter
+						</td>
+						<td>
+							filter1
+						</td>
+						<td>
+							The first subfilter.
+						</td> 
+					</tr>
+				
+					<tr>
+						<td class="type">
+							!bidichecker.Filter
+						</td>
+						<td>
+							filter2
+						</td>
+						<td>
+							The second subfilter.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				<div class="detailHead">returns</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							!bidichecker.FilterFactory.ComposableFilter
+						</td>
+						<td>
+							A filter object.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.FilterFactory.precededByText"></a>
+					
+					
+					bidichecker.FilterFactory.precededByText(<span class="signature">precededByText</span>)
+					
+				</div>
+				
+				
+					<div class="desc">Create a filter which suppresses errors based on a literal match of their
+<code>precededByText</code> fields.</div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							?string
+						</td>
+						<td>
+							precededByText
+						</td>
+						<td>
+							A string which must match the entire
+    <code>precededByText</code> field. If empty or null, will only match an empty
+    or null <code>precededByText</code>.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				<div class="detailHead">returns</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							!bidichecker.FilterFactory.ComposableFilter
+						</td>
+						<td>
+							A filter object.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.FilterFactory.precededByTextRegexp"></a>
+					
+					
+					bidichecker.FilterFactory.precededByTextRegexp(<span class="signature">precededByTextRegexp</span>)
+					
+				</div>
+				
+				
+					<div class="desc">Create a filter which suppresses errors by applying a regular expression to
+their <code>precededByText</code> fields.</div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							string, RegExp
+						</td>
+						<td>
+							precededByTextRegexp
+						</td>
+						<td>
+							A regular expression, which must
+    match the entire <code>precededByText</code> field. If empty or null, will
+    only match an empty or null <code>precededByText</code>.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				<div class="detailHead">returns</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							!bidichecker.FilterFactory.ComposableFilter
+						</td>
+						<td>
+							A filter object.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.FilterFactory.severityFrom"></a>
+					
+					
+					bidichecker.FilterFactory.severityFrom(<span class="signature">severityThreshold</span>)
+					
+				</div>
+				
+				
+					<div class="desc">Create a filter which suppresses errors based on their severity levels.</div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							number
+						</td>
+						<td>
+							severityThreshold
+						</td>
+						<td>
+							the severity level from which errors should
+    be suppressed. At level 1, all messages will be filtered out. Note that
+    higher values indicate lower severities.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				<div class="detailHead">returns</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							!bidichecker.FilterFactory.ComposableFilter
+						</td>
+						<td>
+							A filter object.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.FilterFactory.type"></a>
+					
+					
+					bidichecker.FilterFactory.type(<span class="signature">type</span>)
+					
+				</div>
+				
+				
+					<div class="desc">Create a filter which suppresses errors based on their type fields.</div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							string
+						</td>
+						<td>
+							type
+						</td>
+						<td>
+							The error type name to be matched exactly.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				<div class="detailHead">returns</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							!bidichecker.FilterFactory.ComposableFilter
+						</td>
+						<td>
+							A filter object.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.FilterFactory.AndFilter_.isSuppressed"></a>
+					
+						<i><a href="#bidichecker.FilterFactory.AndFilter_" class="type">bidichecker.FilterFactory.AndFilter_.</a></i>isSuppressed(<span class="signature">error, locationElements</span>)
+					
+					
+				</div>
+				
+				
+					<div class="desc"></div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							
+						</td>
+						<td>
+							error
+						</td>
+						<td>
+							
+						</td> 
+					</tr>
+				
+					<tr>
+						<td class="type">
+							
+						</td>
+						<td>
+							locationElements
+						</td>
+						<td>
+							
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.FilterFactory.AtTextFilter_.isSuppressed"></a>
+					
+						<i><a href="#bidichecker.FilterFactory.AtTextFilter_" class="type">bidichecker.FilterFactory.AtTextFilter_.</a></i>isSuppressed(<span class="signature">error, locationElements</span>)
+					
+					
+				</div>
+				
+				
+					<div class="desc"></div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							
+						</td>
+						<td>
+							error
+						</td>
+						<td>
+							
+						</td> 
+					</tr>
+				
+					<tr>
+						<td class="type">
+							
+						</td>
+						<td>
+							locationElements
+						</td>
+						<td>
+							
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.FilterFactory.AtTextRegexpFilter_.isSuppressed"></a>
+					
+						<i><a href="#bidichecker.FilterFactory.AtTextRegexpFilter_" class="type">bidichecker.FilterFactory.AtTextRegexpFilter_.</a></i>isSuppressed(<span class="signature">error, locationElements</span>)
+					
+					
+				</div>
+				
+				
+					<div class="desc"></div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							
+						</td>
+						<td>
+							error
+						</td>
+						<td>
+							
+						</td> 
+					</tr>
+				
+					<tr>
+						<td class="type">
+							
+						</td>
+						<td>
+							locationElements
+						</td>
+						<td>
+							
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.FilterFactory.FollowedByTextFilter_.isSuppressed"></a>
+					
+						<i><a href="#bidichecker.FilterFactory.FollowedByTextFilter_" class="type">bidichecker.FilterFactory.FollowedByTextFilter_.</a></i>isSuppressed(<span class="signature">error, locationElements</span>)
+					
+					
+				</div>
+				
+				
+					<div class="desc"></div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							
+						</td>
+						<td>
+							error
+						</td>
+						<td>
+							
+						</td> 
+					</tr>
+				
+					<tr>
+						<td class="type">
+							
+						</td>
+						<td>
+							locationElements
+						</td>
+						<td>
+							
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.FilterFactory.FollowedByTextRegexpFilter_.isSuppressed"></a>
+					
+						<i><a href="#bidichecker.FilterFactory.FollowedByTextRegexpFilter_" class="type">bidichecker.FilterFactory.FollowedByTextRegexpFilter_.</a></i>isSuppressed(<span class="signature">error, locationElements</span>)
+					
+					
+				</div>
+				
+				
+					<div class="desc"></div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							
+						</td>
+						<td>
+							error
+						</td>
+						<td>
+							
+						</td> 
+					</tr>
+				
+					<tr>
+						<td class="type">
+							
+						</td>
+						<td>
+							locationElements
+						</td>
+						<td>
+							
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.FilterFactory.LocationClassFilter_.isSuppressed"></a>
+					
+						<i><a href="#bidichecker.FilterFactory.LocationClassFilter_" class="type">bidichecker.FilterFactory.LocationClassFilter_.</a></i>isSuppressed(<span class="signature">error, locationElements</span>)
+					
+					
+				</div>
+				
+				
+					<div class="desc"></div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							
+						</td>
+						<td>
+							error
+						</td>
+						<td>
+							
+						</td> 
+					</tr>
+				
+					<tr>
+						<td class="type">
+							
+						</td>
+						<td>
+							locationElements
+						</td>
+						<td>
+							
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.FilterFactory.LocationClassRegexpFilter_.isSuppressed"></a>
+					
+						<i><a href="#bidichecker.FilterFactory.LocationClassRegexpFilter_" class="type">bidichecker.FilterFactory.LocationClassRegexpFilter_.</a></i>isSuppressed(<span class="signature">error, locationElements</span>)
+					
+					
+				</div>
+				
+				
+					<div class="desc"></div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							
+						</td>
+						<td>
+							error
+						</td>
+						<td>
+							
+						</td> 
+					</tr>
+				
+					<tr>
+						<td class="type">
+							
+						</td>
+						<td>
+							locationElements
+						</td>
+						<td>
+							
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.FilterFactory.LocationIdFilter_.isSuppressed"></a>
+					
+						<i><a href="#bidichecker.FilterFactory.LocationIdFilter_" class="type">bidichecker.FilterFactory.LocationIdFilter_.</a></i>isSuppressed(<span class="signature">error, locationElements</span>)
+					
+					
+				</div>
+				
+				
+					<div class="desc"></div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							
+						</td>
+						<td>
+							error
+						</td>
+						<td>
+							
+						</td> 
+					</tr>
+				
+					<tr>
+						<td class="type">
+							
+						</td>
+						<td>
+							locationElements
+						</td>
+						<td>
+							
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.FilterFactory.LocationIdRegexpFilter_.isSuppressed"></a>
+					
+						<i><a href="#bidichecker.FilterFactory.LocationIdRegexpFilter_" class="type">bidichecker.FilterFactory.LocationIdRegexpFilter_.</a></i>isSuppressed(<span class="signature">error, locationElements</span>)
+					
+					
+				</div>
+				
+				
+					<div class="desc"></div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							
+						</td>
+						<td>
+							error
+						</td>
+						<td>
+							
+						</td> 
+					</tr>
+				
+					<tr>
+						<td class="type">
+							
+						</td>
+						<td>
+							locationElements
+						</td>
+						<td>
+							
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.FilterFactory.NotFilter_.isSuppressed"></a>
+					
+						<i><a href="#bidichecker.FilterFactory.NotFilter_" class="type">bidichecker.FilterFactory.NotFilter_.</a></i>isSuppressed(<span class="signature">error, locationElements</span>)
+					
+					
+				</div>
+				
+				
+					<div class="desc"></div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							
+						</td>
+						<td>
+							error
+						</td>
+						<td>
+							
+						</td> 
+					</tr>
+				
+					<tr>
+						<td class="type">
+							
+						</td>
+						<td>
+							locationElements
+						</td>
+						<td>
+							
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.FilterFactory.OrFilter_.isSuppressed"></a>
+					
+						<i><a href="#bidichecker.FilterFactory.OrFilter_" class="type">bidichecker.FilterFactory.OrFilter_.</a></i>isSuppressed(<span class="signature">error, locationElements</span>)
+					
+					
+				</div>
+				
+				
+					<div class="desc"></div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							
+						</td>
+						<td>
+							error
+						</td>
+						<td>
+							
+						</td> 
+					</tr>
+				
+					<tr>
+						<td class="type">
+							
+						</td>
+						<td>
+							locationElements
+						</td>
+						<td>
+							
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.FilterFactory.PrecededByTextFilter_.isSuppressed"></a>
+					
+						<i><a href="#bidichecker.FilterFactory.PrecededByTextFilter_" class="type">bidichecker.FilterFactory.PrecededByTextFilter_.</a></i>isSuppressed(<span class="signature">error, locationElements</span>)
+					
+					
+				</div>
+				
+				
+					<div class="desc"></div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							
+						</td>
+						<td>
+							error
+						</td>
+						<td>
+							
+						</td> 
+					</tr>
+				
+					<tr>
+						<td class="type">
+							
+						</td>
+						<td>
+							locationElements
+						</td>
+						<td>
+							
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.FilterFactory.PrecededByTextRegexpFilter_.isSuppressed"></a>
+					
+						<i><a href="#bidichecker.FilterFactory.PrecededByTextRegexpFilter_" class="type">bidichecker.FilterFactory.PrecededByTextRegexpFilter_.</a></i>isSuppressed(<span class="signature">error, locationElements</span>)
+					
+					
+				</div>
+				
+				
+					<div class="desc"></div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							
+						</td>
+						<td>
+							error
+						</td>
+						<td>
+							
+						</td> 
+					</tr>
+				
+					<tr>
+						<td class="type">
+							
+						</td>
+						<td>
+							locationElements
+						</td>
+						<td>
+							
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.FilterFactory.SeverityFilter_.isSuppressed"></a>
+					
+						<i><a href="#bidichecker.FilterFactory.SeverityFilter_" class="type">bidichecker.FilterFactory.SeverityFilter_.</a></i>isSuppressed(<span class="signature">error, locationElements</span>)
+					
+					
+				</div>
+				
+				
+					<div class="desc"></div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							
+						</td>
+						<td>
+							error
+						</td>
+						<td>
+							
+						</td> 
+					</tr>
+				
+					<tr>
+						<td class="type">
+							
+						</td>
+						<td>
+							locationElements
+						</td>
+						<td>
+							
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.FilterFactory.TypeFilter_.isSuppressed"></a>
+					
+						<i><a href="#bidichecker.FilterFactory.TypeFilter_" class="type">bidichecker.FilterFactory.TypeFilter_.</a></i>isSuppressed(<span class="signature">error, locationElements</span>)
+					
+					
+				</div>
+				
+				
+					<div class="desc"></div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							
+						</td>
+						<td>
+							error
+						</td>
+						<td>
+							
+						</td> 
+					</tr>
+				
+					<tr>
+						<td class="type">
+							
+						</td>
+						<td>
+							locationElements
+						</td>
+						<td>
+							
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="sectionHead">Objects</div>
+			
+			
+			
+			
+			
+			<div class="section object">
+				<div class="itemTitle">
+					<a name="bidichecker.FilterFactory.ComposableFilter.isSuppressed"></a>
+					
+					
+						<i><a href="#bidichecker.FilterFactory.ComposableFilter" class="type">bidichecker.FilterFactory.ComposableFilter.</a></i>isSuppressed
+					
+					
+				</div>
+				
+				
+					<div class="desc"></div>
+				
+				
+				
+				
+				
+			</div>
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+		</div>
+	</div>
+	<div class="finePrint">
+	Generated by <a href="http://jsdoctoolkit.org/" target="_blank">JsDoc Toolkit</a> 1.3.3 on Sun, 31 Oct 2010 11:00:20 GMT.
+	</div>
+</body>
+</html>

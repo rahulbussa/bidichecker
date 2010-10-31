@@ -33,7 +33,7 @@ goog.require('goog.testing.jsunit');
 
     <script type="text/javascript">
 function testFilterFactory_AndFilterConstruct() {
-  var actual = bidichecker.FilterFactory.constructFilter(
+  var actual = bidichecker.FilterFactory.constructFilter_(
       {'filter1': new bidichecker.FilterFactory.atText('friends'),
        'filter2': new bidichecker.FilterFactory.locationId('friends'),
        'opcode': 'AND'});
@@ -91,7 +91,7 @@ function testFilterFactory_AndMethodOnFilterObject() {
 
 
 function testFilterFactory_AtTextFilterConstruct() {
-  var actual = bidichecker.FilterFactory.constructFilter(
+  var actual = bidichecker.FilterFactory.constructFilter_(
       {'atText': 'friends', 'opcode': 'AT_TEXT'});
   var expected = bidichecker.FilterFactory.atText('friends');
   assertObjectEquals(expected, actual);
@@ -151,7 +151,7 @@ function testFilterFactory_AtTextFilterRegexpMatchFails() {
 
 
 function testFilterFactory_AtTextRegexpFilterConstruct() {
-  var actual = bidichecker.FilterFactory.constructFilter(
+  var actual = bidichecker.FilterFactory.constructFilter_(
       {'atTextRegexp': 'friends', 'opcode': 'AT_TEXT_REGEXP'});
   var expected = bidichecker.FilterFactory.atTextRegexp('friends');
   assertObjectEquals(expected, actual);
@@ -225,7 +225,7 @@ function testFilterFactory_AtTextRegexpFilterRegexpMatch() {
 
 
 function testFilterFactory_FollowedByTextFilterConstruct() {
-  var actual = bidichecker.FilterFactory.constructFilter(
+  var actual = bidichecker.FilterFactory.constructFilter_(
       {'followedByText': 'friends', 'opcode': 'FOLLOWED_BY_TEXT'});
   var expected = bidichecker.FilterFactory.followedByText('friends');
   assertObjectEquals(expected, actual);
@@ -289,7 +289,7 @@ function testFilterFactory_FollowedByTextFilterRegexpMatchFails() {
 
 
 function testFilterFactory_FollowedByTextRegexpFilterConstruct() {
-  var actual = bidichecker.FilterFactory.constructFilter(
+  var actual = bidichecker.FilterFactory.constructFilter_(
       {'followedByTextRegexp': 'friends',
        'opcode': 'FOLLOWED_BY_TEXT_REGEXP'});
   var expected = bidichecker.FilterFactory.followedByTextRegexp('friends');
@@ -368,7 +368,7 @@ function testFilterFactory_FollowedByTextRegexpFilterRegexpMatch() {
 
 
 function testFilterFactory_LocationClassFilterConstruct() {
-  var actual = bidichecker.FilterFactory.constructFilter(
+  var actual = bidichecker.FilterFactory.constructFilter_(
       {'className': 'friends', 'opcode': 'LOCATION_CLASS'});
   var expected = bidichecker.FilterFactory.locationClass('friends');
   assertObjectEquals(expected, actual);
@@ -433,7 +433,7 @@ function testFilterFactory_LocationClassFilterRegexpMatchFails() {
 
 
 function testFilterFactory_LocationClassRegexpFilterConstruct() {
-  var actual = bidichecker.FilterFactory.constructFilter(
+  var actual = bidichecker.FilterFactory.constructFilter_(
       {'classRegexp': 'friends', 'opcode': 'LOCATION_CLASS_REGEXP'});
   var expected = bidichecker.FilterFactory.locationClassRegexp('friends');
   assertObjectEquals(expected, actual);
@@ -498,7 +498,7 @@ function testFilterFactory_LocationClassRegexpFilterRegexpMatch() {
 
 
 function testFilterFactory_LocationIdFilterConstruct() {
-  var actual = bidichecker.FilterFactory.constructFilter(
+  var actual = bidichecker.FilterFactory.constructFilter_(
       {'id': 'friends', 'opcode': 'LOCATION_ID'});
   var expected = bidichecker.FilterFactory.locationId('friends');
   assertObjectEquals(expected, actual);
@@ -563,7 +563,7 @@ function testFilterFactory_LocationIdFilterRegexpMatchFails() {
 
 
 function testFilterFactory_LocationIdRegexpFilterConstruct() {
-  var actual = bidichecker.FilterFactory.constructFilter(
+  var actual = bidichecker.FilterFactory.constructFilter_(
       {'idRegexp': 'friends', 'opcode': 'LOCATION_ID_REGEXP'});
   var expected = bidichecker.FilterFactory.locationIdRegexp('friends');
   assertObjectEquals(expected, actual);
@@ -627,7 +627,7 @@ function testFilterFactory_LocationIdRegexpFilterRegexpMatch() {
 
 
 function testFilterFactory_NotFilterConstruct() {
-  var actual = bidichecker.FilterFactory.constructFilter(
+  var actual = bidichecker.FilterFactory.constructFilter_(
       {'filter': new bidichecker.FilterFactory.atText('friends'),
        'opcode': 'NOT'});
   var expected = bidichecker.FilterFactory.not(
@@ -661,7 +661,7 @@ function testFilterFactory_NotMethodOnFilterObject() {
 
 
 function testFilterFactory_OrFilterConstruct() {
-  var actual = bidichecker.FilterFactory.constructFilter(
+  var actual = bidichecker.FilterFactory.constructFilter_(
       {'filter1': new bidichecker.FilterFactory.atText('friends'),
        'filter2': new bidichecker.FilterFactory.locationId('friends'),
        'opcode': 'OR'});
@@ -732,7 +732,7 @@ function testFilterFactory_OrMethodOnAndFilterObject() {
 
 
 function testFilterFactory_PrecededByTextFilterConstruct() {
-  var actual = bidichecker.FilterFactory.constructFilter(
+  var actual = bidichecker.FilterFactory.constructFilter_(
       {'precededByText': 'friends', 'opcode': 'PRECEDED_BY_TEXT'});
   var expected = bidichecker.FilterFactory.precededByText('friends');
   assertObjectEquals(expected, actual);
@@ -796,7 +796,7 @@ function testFilterFactory_PrecededByTextFilterRegexpMatchFails() {
 
 
 function testFilterFactory_PrecededByTextRegexpFilterConstruct() {
-  var actual = bidichecker.FilterFactory.constructFilter(
+  var actual = bidichecker.FilterFactory.constructFilter_(
       {'precededByTextRegexp': 'friends', 'opcode': 'PRECEDED_BY_TEXT_REGEXP'});
   var expected = bidichecker.FilterFactory.precededByTextRegexp('friends');
   assertObjectEquals(expected, actual);
@@ -860,7 +860,7 @@ function testFilterFactory_PrecededByTextRegexpFilterRegexpMatch() {
 
 
 function testFilterFactory_SeverityFilterConstruct() {
-  var actual = bidichecker.FilterFactory.constructFilter(
+  var actual = bidichecker.FilterFactory.constructFilter_(
       {'severityThreshold': 2, 'opcode': 'SEVERITY'});
   var expected = bidichecker.FilterFactory.severityFrom(2);
   assertObjectEquals(expected, actual);
@@ -889,7 +889,7 @@ function testFilterFactory_SeverityFilterThresholdMatch() {
 
 
 function testFilterFactory_TypeFilterConstruct() {
-  var actual = bidichecker.FilterFactory.constructFilter(
+  var actual = bidichecker.FilterFactory.constructFilter_(
       {'type': 'friends', 'opcode': 'TYPE'});
   var expected = bidichecker.FilterFactory.type('friends');
   assertObjectEquals(expected, actual);
