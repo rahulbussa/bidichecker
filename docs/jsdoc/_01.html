@@ -1,0 +1,319 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8">
+	<meta name="generator" content="JsDoc Toolkit 1.0">
+	<title>JsDoc: </title>
+	<link rel=stylesheet href="default.css" type="text/css" media=screen>
+</head>
+
+<body>
+	<div class="content">
+		<div class="docs">
+		
+			<div class="sectionHead">Library: bidichecker.js</div>
+			<div class="section overview">
+				<div class="itemTitle">
+					Overview
+				</div>
+				<div>	
+					<div class="desc">Testing utilities to check a web page for BiDi-related errors.
+This file has the top-level entry points for use as a Javascript API, along
+with JSON-based interface functions meant to be called from an external
+testing framework like WebDriver.</div>
+					<div class="itemTags">
+					<ul>
+						<li>source: <a href="src_01.html">bidichecker.js</a></li>
+					
+					</ul>
+					</div>
+				</div>
+			</div>
+			
+			<div class="sectionHead">Constructors</div>
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			<div class="sectionHead">Functions</div>
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.checkPage"></a>
+					
+					
+					bidichecker.checkPage(<span class="signature">shouldBeRtl, opt_element, opt_filters</span>)
+					
+				</div>
+				
+				
+					<div class="desc">Checks the contents of the current web page, including all nested frames, for
+BiDi-related errors. If <code>opt_element</code> is specified, checks only within
+the given element of the DOM (including any nested frames). This is the main
+entry point for the Javascript API.</div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							boolean
+						</td>
+						<td>
+							shouldBeRtl
+						</td>
+						<td>
+							Is the root expected to be right-to-left?
+						</td> 
+					</tr>
+				
+					<tr>
+						<td class="type">
+							Element=
+						</td>
+						<td>
+							opt_element
+						</td>
+						<td>
+							The root element of the DOM subtree to be
+    checked; if null, checks the entire current web page.
+						</td> 
+					</tr>
+				
+					<tr>
+						<td class="type">
+							Array.<!bidichecker.Filter>=
+						</td>
+						<td>
+							opt_filters
+						</td>
+						<td>
+							Error suppression filters.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				<div class="detailHead">returns</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							!Array.<!bidichecker.Error>
+						</td>
+						<td>
+							Array of error objects for all failing
+    checks.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.checkPageToJson"></a>
+					
+					
+					bidichecker.checkPageToJson(<span class="signature">shouldBeRtl, opt_element, opt_filtersJson</span>)
+					
+				</div>
+				
+				
+					<div class="desc">JSON interface to <code>checkPage</code>.</div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							boolean
+						</td>
+						<td>
+							shouldBeRtl
+						</td>
+						<td>
+							Is the element/page expected to be
+    right-to-left?
+						</td> 
+					</tr>
+				
+					<tr>
+						<td class="type">
+							Element=
+						</td>
+						<td>
+							opt_element
+						</td>
+						<td>
+							The root element of the DOM subtree to be
+    checked; if null, checks the entire current web page.
+						</td> 
+					</tr>
+				
+					<tr>
+						<td class="type">
+							string=
+						</td>
+						<td>
+							opt_filtersJson
+						</td>
+						<td>
+							Error suppression filters in a JSON string.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				<div class="detailHead">returns</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							string
+						</td>
+						<td>
+							Array of <code>bidichecker.Error</code> objects for all failing
+    checks, in JSON format. If no errors were found, returns an empty array
+    ("[]").
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.runGui"></a>
+					
+					
+					bidichecker.runGui(<span class="signature">errors</span>)
+					
+				</div>
+				
+				
+					<div class="desc">Runs the interactive visual error browsing mode.</div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							Array.<!bidichecker.Error>
+						</td>
+						<td>
+							errors
+						</td>
+						<td>
+							An array of errors to be
+    displayed.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.runGuiFromJson"></a>
+					
+					
+					bidichecker.runGuiFromJson(<span class="signature">errorsJson</span>)
+					
+				</div>
+				
+				
+					<div class="desc">JSON interface to <code>runGui</code>.</div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							string
+						</td>
+						<td>
+							errorsJson
+						</td>
+						<td>
+							An array of errors to be displayed, in JSON
+    format (similar to that produced by <code>checkPageJson()</code>).
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="sectionHead">Objects</div>
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+		</div>
+	</div>
+	<div class="finePrint">
+	Generated by <a href="http://jsdoctoolkit.org/" target="_blank">JsDoc Toolkit</a> 1.3.3 on Sun, 31 Oct 2010 11:00:20 GMT.
+	</div>
+</body>
+</html>
