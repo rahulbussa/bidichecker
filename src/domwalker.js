@@ -282,9 +282,8 @@ bidichecker.DomWalker.prototype.declaresDir_ = function(element) {
 
 
 /**
- * Advances the node iterator while skipping scripts or elements with style
- * display:none.
- * @return {Node} Returns the next node in a displayable element.
+ * Advances the node iterator while skipping non-displayable elements.
+ * @return {Node} The next node in a displayable element.
  * @throws goog.iter.StopIteration when the whole DOM has been read.
  * @private
  */

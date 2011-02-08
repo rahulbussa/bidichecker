@@ -85,6 +85,13 @@ function testUtils_FindLtrSubstrings() {
       goog.i18n.bidi.Format.RLM);
   assertArrayEquals([{text: goog.i18n.bidi.Format.LRM + ' Some Text',
                       index: 3}], matches);
+
+  // A series of LTR letters surrounded by RLO (right-to-left override) and PDF
+  // should not be identified as LTR.
+  matches = bidichecker.utils.findLtrSubstrings(
+      'Some Text \u202Ebidi\u202C \u202Eoverride\u202C and some other text');
+  assertArrayEquals([{text: 'Some Text', index: 0},
+                     {text: 'and some other text', index: 28}], matches);
 }
 
 

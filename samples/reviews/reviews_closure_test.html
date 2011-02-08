@@ -147,9 +147,10 @@ function testReviews_HebrewDataEnglishUi() {
 
   // Run BidiChecker on the application's element.
   // As before, we'll filter out the known BiDi errors; specifically,
-  // "undeclared RTL text" errors in the reviews panel.
+  // "undeclared RTL text" errors in the reviews panel. This time, we'll try
+  // the XPath-based filter.
   var filters = [ bidichecker.FilterFactory.type('Undeclared RTL text').and(
-                      bidichecker.FilterFactory.locationId('reviews')) ];
+      bidichecker.FilterFactory.locationXpath('id("reviews")/*')) ];
   var errors =
       bidichecker.checkPage(/* shouldBeRtl= */ false, testDiv, filters);
 

@@ -89,7 +89,7 @@ bidichecker.utils.nonprintingChars_ = '\u0000-\u001f\u007f\u0085\u00a0\u1680' +
 
 /**
  * Regular expression to check for a substring of RTL characters with neutral
- * characters among them.
+ * characters among them (excluding Unicode bidi control characters).
  * @type {RegExp}
  * @private
  */
@@ -99,13 +99,13 @@ bidichecker.utils.rtlSubstringReg_ =
     // first character is optional to allow for a match against a single RTL
     // character.
     new RegExp('[' + bidichecker.utils.rtlChars_ + '](?:[^' +
-               bidichecker.utils.ltrChars_ + ']*[' +
+               bidichecker.utils.ltrChars_ + '\u202A-\u202E]*[' +
                bidichecker.utils.rtlChars_ + '])?', 'g');
 
 
 /**
  * Regular expression to check for a substring of LTR characters with neutral
- * characters among them.
+ * characters among them (excluding Unicode bidi control characters).
  * @type {RegExp}
  * @private
  */
@@ -115,7 +115,7 @@ bidichecker.utils.ltrSubstringReg_ =
     // first character is optional to allow for a match against a single LTR
     // character.
     new RegExp('[' + bidichecker.utils.ltrChars_ + '](?:[^' +
-               bidichecker.utils.rtlChars_ + ']*[' +
+               bidichecker.utils.rtlChars_ + '\u202A-\u202E]*[' +
                bidichecker.utils.ltrChars_ + '])?', 'g');
 
 
@@ -233,7 +233,8 @@ bidichecker.utils.findRtlSubstrings = function(str) {
 
 /**
  * Finds substrings in a given string of LTR characters with neutral characters
- * among them.
+ * among them. Ignores "fake RTL" strings, when the LTR characters are
+ * sandwiched between Unicode RLO and PDF characters.
  * @param {string} str The string to be searched.
  * @return {Array.<bidichecker.utils.Substring>} Array of matching substrings.
  *     Returns empty array if no match.
@@ -242,6 +243,11 @@ bidichecker.utils.findLtrSubstrings = function(str) {
   var results = [];
   var match;
   while ((match = bidichecker.utils.ltrSubstringReg_.exec(str))) {
+    // Skip fake RTl strings.
+    if (str.charAt(match.index - 1) == '\u202E' &&
+        str.charAt(match.index + match[0].length) == '\u202C') {
+      continue;
+    }
     results.push(new bidichecker.utils.Substring(match[0], match.index));
   }
   return results;
@@ -565,14 +571,20 @@ bidichecker.utils.isBlockElement = function(element) {
 
 
 /**
- * Checks if a node is displayable; that is, it has style "display:none" or
- * is a script or style element.
+ * Checks if a node is displayable; that is, it does not have style
+ * "display:none" and is not a script, noscript or style element.
+ * <p>In some browsers (such as IE), contents of noscript tags are not
+ * accessible anyway with scripting activated. In others (such as Chrome) the
+ * DOM contains a noscript element whose contents are the entity-encoded HTML
+ * source code of the contents of the noscript tag; if the context is RTL, that
+ * produces undeclared-directionality errors.
  * @param {Node} node The node to test.
  * @return {boolean} Whether the node is displayable.
  */
 bidichecker.utils.isDisplayable = function(node) {
   if (node.nodeType == goog.dom.NodeType.ELEMENT) {
-    if (node.nodeName == 'SCRIPT' || node.nodeName == 'STYLE') {
+    if (node.nodeName == 'SCRIPT' || node.nodeName == 'STYLE' ||
+        node.nodeName == 'NOSCRIPT') {
       return false;
     }
     return bidichecker.utils.getDisplayStyle(

@@ -252,6 +252,11 @@ user-generated content whose BiDi correctness cannot be ensured.<br>
 <td> Matches against an entire <b>id</b> attribute on any ancestor element containing the error location (including any containing frames)</td>
 </tr>
 <tr>
+<td> locationXpath</td>
+<td> bidichecker.FilterFactory.locationXpath(string)</td>
+<td> Matches an XPath expression against the element of the error location (including the elements representing any containing frames). This does not match against ancestor elements; to match against everything within a given location, you can add "/*" to the XPath expression. There is currently no mechanism for restricting the XPath match to specific frames. <b>NOTE: XPaths are not currently supported on Internet Explorer.</b></td>
+</tr>
+<tr>
 <td> not</td>
 <td> bidichecker.FilterFactory.not(filter)</td>
 <td> Inverts the meaning of a filter</td>
@@ -399,17 +404,14 @@ Keep in mind that most user input fields, and output which displays them, should
 <br>
 <h2><a name="TOC-Issues-with"></a>Issues with HTML support</h2>
 How BidiChecker handles various features of HTML:<br>
-<ol><li><b>Undisplayed text.</b> Content designated as "display:none" is ignored by BidiChecker. If a page has elements which are conditionally displayed when something is clicked, for example, they will not be checked while invisible.<br>
-</li>
+<ol><li><b>Undisplayed text.</b> Content designated as "display:none" is ignored by BidiChecker. If a page has elements which are conditionally displayed when something is clicked, for example, they will not be checked while invisible.</li>
 <li><b>Frames.</b> When traversing the DOM of the page, BidiChecker also enters the contents of frames (either FRAME or IFRAME elements). The frame's location is appended to the element's location description, such as: "<b style="font-family: courier new,monospace;">in &lt;div id='abc'&gt;&lt;p&gt; in &lt;iframe id='frame1'&gt;</b>". In the case of FRAMEs making up the top-level page passed to
 BidiChecker, their overall directionality is checked to match the
-specified value; in the case of IFRAMEs and FRAMEs below IFRAMEs, their
-overall
-directionality is not checked. If a frame's contents are hosted on a different domain, they are not checked; the Javascript security model makes them inaccessible, and you probably don't intend to check them anyway.<br>
-</li>
+specified value; in the case of IFRAMEs and FRAMEs below IFRAMEs, their overall
+directionality is not checked. If a frame's contents are hosted on a different domain, they are not checked; the Javascript security model makes them inaccessible, and you probably don't intend to check them anyway.</li>
 <li><b>Unicode BiDi characters.</b> BidiChecker does not yet handle <a href="http://www.w3.org/TR/unicode-xml/#Bidi" target="_blank">Unicode BiDi embedding control characters</a>. This means that in the rare situation where embedding control characters are used to fix a BiDi bug, such as in <b style="font-family: courier new,monospace;">&lt;option&gt;</b> elements, BidiChecker will report the bug anyway. In the rarer circumstance where incorrectly used embedding control characters may introduce a bug, the bug will not be identified.</li>
-<li><b>Layout garbling of non-text inline elements.</b> Certain page elements, such as inputs and images, are affected by BiDi layout garbling bugs as if they were neutral characters. This is not yet identified.<br>
-</li></ol>
+<li><b>Layout garbling of non-text inline elements.</b> Certain page elements, such as inputs and images, are affected by BiDi layout garbling bugs as if they were neutral characters. This is not yet identified.</li>
+<li><b>&lt;noscript&gt; elements.</b> The contents of <b>noscript</b> tags (which are meant to be rendered when scripting is disabled) are not checked by BidiChecker; anything inside them is skipped.</li></ol>
 <h2><a name="TOC-Known-problems"></a>Known problems</h2>
 <ol><li>The GUI does not work correctly if more than one test is run from a given test file; otherwise, subsequent tests may corrupt the DOM of the test for which the GUI is run, making it unusable.</li>
 <li>The dialog box of the GUI mode does not work correctly when run on some pages.</li>

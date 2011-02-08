@@ -50,8 +50,7 @@ function testBidiChecker_CheckPageRunsAllCheckers() {
                    'atText': '5,012.7',
                    'precededByText': 'friends',
                    'severity': 2,
-                   'locationDescription':
-                       '<div id=\'test\'><p>'}];
+                   'locationDescription': '<div id=\'test\'><p>'}];
   assertErrorFields(expected, errors);
 }
 
@@ -166,8 +165,7 @@ function testBidiChecker_CheckPageRunsFilters() {
                    'atText': '5,012.7',
                    'precededByText': 'friends',
                    'severity': 2,
-                   'locationDescription':
-                       '<div id=\'test\'><p>'}];
+                   'locationDescription': '<div id=\'test\'><p>'}];
   assertErrorFields(expected, errors);
 }
 
@@ -187,9 +185,54 @@ function testBidiChecker_LocationBasedFilterWorks() {
                    'atText': '5,012.7',
                    'precededByText': 'friends',
                    'severity': 2,
-                   'locationDescription':
-                       '<div id=\'test\'><p>'}];
+                   'locationDescription': '<div id=\'test\'><p>'}];
   assertErrorFields(expected, errors);
+}
+
+
+function testBidiChecker_XpathFilterNotCachedAcrossCalls() {
+  // Onlyl run this test if the browser supports XPaths.
+  // TODO(elbaum): Remove the condition block when XPath is fully supported.
+  if (document.evaluate) {
+    var testDiv = goog.dom.createDom('div', {'id': 'test'});
+    goog.dom.appendChild(document.body, testDiv);
+    testDiv.innerHTML =
+      '<p><span dir=\'rtl\' id=\'my_id\' >friends<\/span>5,012.7 meters<\/p>';
+
+    var filters = [bidichecker.FilterFactory.locationXpath('id("my_id")')];
+    var errors = bidichecker.checkPage(true, testDiv, filters);
+
+    var expected = [{'type': 'Overall directionality not RTL',
+                     'severity': 1},
+
+                    {'type': 'Declared RTL spillover to number',
+                     'atText': '5,012.7',
+                     'precededByText': 'friends',
+                     'severity': 2,
+                     'locationDescription': '<div id=\'test\'><p>'}];
+    assertErrorFields(expected, errors);
+
+    // Create a new test div containing an element with the same id. If XPath
+    // results are cached across calls to checkPage(), this will fail, since the
+    // cache will still contain the obsolete element.
+    goog.dom.removeNode(testDiv);
+    var testDiv = goog.dom.createDom('div', {'id': 'test'});
+    goog.dom.appendChild(document.body, testDiv);
+    testDiv.innerHTML =
+      '<p><span dir=\'rtl\' id=\'my_id\' align=\'right\'>ends<\/span>5.7<\/p>';
+
+    errors = bidichecker.checkPage(true, testDiv, filters);
+
+    expected = [{'type': 'Overall directionality not RTL',
+                 'severity': 1},
+
+                {'type': 'Declared RTL spillover to number',
+                 'atText': '5.7',
+                 'precededByText': 'ends',
+                 'severity': 2,
+                 'locationDescription': '<div id=\'test\'><p>'}];
+    assertErrorFields(expected, errors);
+  }
 }
 
 
