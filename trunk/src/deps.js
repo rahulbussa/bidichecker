@@ -12,7 +12,7 @@ goog.addDependency('../../../../src/error.js', ['bidichecker.Error'], ['bidichec
 goog.addDependency('../../../../src/errorcollector.js', ['bidichecker.ErrorCollector'], ['bidichecker.Error', 'bidichecker.Filter', 'bidichecker.FrameStack', 'bidichecker.utils', 'goog.array']);
 goog.addDependency('../../../../src/errorgui.js', ['bidichecker.ErrorGui'], ['bidichecker.Error', 'goog.dom', 'goog.events.Event', 'goog.string', 'goog.style', 'goog.ui.Dialog', 'goog.ui.Dialog.ButtonSet']);
 goog.addDependency('../../../../src/filter.js', ['bidichecker.Filter'], ['bidichecker.Error']);
-goog.addDependency('../../../../src/filterfactory.js', ['bidichecker.FilterFactory'], ['bidichecker.Filter', 'goog.json']);
+goog.addDependency('../../../../src/filterfactory.js', ['bidichecker.FilterFactory', 'bidichecker.FilterFactory.ComposableFilter'], ['bidichecker.Filter', 'bidichecker.XpathMatcher', 'goog.json']);
 goog.addDependency('../../../../src/framestack.js', ['bidichecker.FrameStack', 'bidichecker.FrameStack.EventTypes'], ['goog.events.EventTarget']);
 goog.addDependency('../../../../src/highlightablearea.js', ['bidichecker.HighlightableArea'], []);
 goog.addDependency('../../../../src/highlightableelement.js', ['bidichecker.HighlightableElement'], ['bidichecker.HighlightableArea', 'goog.style']);
@@ -20,8 +20,9 @@ goog.addDependency('../../../../src/highlightabletext.js', ['bidichecker.Highlig
 goog.addDependency('../../../../src/overalldirectionalitydetector.js', ['bidichecker.OverallDirectionalityDetector'], ['bidichecker.Detector', 'bidichecker.DomWalker', 'bidichecker.Error', 'bidichecker.HighlightableElement', 'bidichecker.Scanner', 'goog.events', 'goog.events.Event']);
 goog.addDependency('../../../../src/samples/reviews/i18n.js', ['I18n'], []);
 goog.addDependency('../../../../src/samples/reviews/reviews.js', ['ReviewsApp'], ['I18n']);
-goog.addDependency('../../../../src/scanner.js', ['bidichecker.Scanner'], ['bidichecker.Detector', 'bidichecker.DirChunkWalker', 'bidichecker.DomWalker', 'bidichecker.ErrorCollector', 'goog.i18n.bidi']);
+goog.addDependency('../../../../src/scanner.js', ['bidichecker.Scanner'], ['bidichecker.Detector', 'bidichecker.DirChunkWalker', 'bidichecker.DomWalker', 'bidichecker.ErrorCollector', 'bidichecker.XpathMatcher', 'goog.i18n.bidi']);
 goog.addDependency('../../../../src/spilloverdetector.js', ['bidichecker.SpilloverDetector'], ['bidichecker.Detector', 'bidichecker.DomWalker', 'bidichecker.Error', 'bidichecker.HighlightableText', 'bidichecker.Scanner', 'goog.array', 'goog.events', 'goog.events.EventHandler']);
 goog.addDependency('../../../../src/texterrorscanner.js', ['bidichecker.TextErrorScanner'], ['bidichecker.Detector', 'bidichecker.ErrorCollector', 'bidichecker.OverallDirectionalityDetector', 'bidichecker.Scanner', 'bidichecker.SpilloverDetector', 'bidichecker.UndeclaredTextDetector', 'goog.i18n.bidi']);
 goog.addDependency('../../../../src/undeclaredtextdetector.js', ['bidichecker.UndeclaredTextDetector'], ['bidichecker.Detector', 'bidichecker.DirChunk', 'bidichecker.DirChunkWalker', 'bidichecker.Error', 'bidichecker.Scanner', 'bidichecker.utils', 'goog.array', 'goog.events', 'goog.events.Event', 'goog.events.EventHandler']);
 goog.addDependency('../../../../src/utils.js', ['bidichecker.utils', 'bidichecker.utils.Substring'], ['goog.array', 'goog.dom', 'goog.dom.TagIterator', 'goog.style']);
+goog.addDependency('../../../../src/xpathmatcher.js', ['bidichecker.XpathMatcher'], []);

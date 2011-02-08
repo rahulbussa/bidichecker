@@ -26,6 +26,7 @@ goog.provide('bidichecker.FilterFactory');
 goog.provide('bidichecker.FilterFactory.ComposableFilter');
 
 goog.require('bidichecker.Filter');
+goog.require('bidichecker.XpathMatcher');
 goog.require('goog.json');
 
 
@@ -117,6 +118,10 @@ bidichecker.FilterFactory.constructFilter_ = function(bareFilter) {
 
     case 'LOCATION_ID_REGEXP':
       return new bidichecker.FilterFactory.LocationIdRegexpFilter_(
+          bareFilter);
+
+    case 'LOCATION_XPATH':
+      return new bidichecker.FilterFactory.LocationXpathFilter_(
           bareFilter);
 
     case 'NOT':
@@ -245,7 +250,7 @@ bidichecker.FilterFactory.followedByTextRegexp = function(
  * @export
  */
 bidichecker.FilterFactory.locationClass = function(className) {
-  if (!className || className == '') {
+  if (!className) {
     throw 'Empty or null argument to bidichecker.FilterFactory.locationClass';
   }
   return new bidichecker.FilterFactory.LocationClassFilter_(
@@ -264,7 +269,7 @@ bidichecker.FilterFactory.locationClass = function(className) {
  * @export
  */
 bidichecker.FilterFactory.locationClassRegexp = function(classRegexp) {
-  if (!classRegexp || classRegexp == '') {
+  if (!classRegexp) {
     throw 'Empty or null argument to ' +
         'bidichecker.FilterFactory.locationClassRegexp';
   }
@@ -282,7 +287,7 @@ bidichecker.FilterFactory.locationClassRegexp = function(classRegexp) {
  * @export
  */
 bidichecker.FilterFactory.locationId = function(id) {
-  if (!id || id == '') {
+  if (!id) {
     throw 'Empty or null argument to bidichecker.FilterFactory.locationId';
   }
   return new bidichecker.FilterFactory.LocationIdFilter_({'id': id});
@@ -299,12 +304,29 @@ bidichecker.FilterFactory.locationId = function(id) {
  * @export
  */
 bidichecker.FilterFactory.locationIdRegexp = function(idRegexp) {
-  if (!idRegexp || idRegexp == '') {
+  if (!idRegexp) {
     throw 'Empty or null argument to ' +
         'bidichecker.FilterFactory.locationIdRegexp';
   }
   return new bidichecker.FilterFactory.LocationIdRegexpFilter_(
       {'idRegexp': idRegexp});
+};
+
+
+/**
+ * Create a filter which suppresses errors by matching an XPath expression to
+ * the error's location.
+ * @param {string} xpath An XPath expression. Must not be empty or null.
+ * @return {!bidichecker.FilterFactory.ComposableFilter} A filter object.
+ * @export
+ */
+bidichecker.FilterFactory.locationXpath = function(xpath) {
+  if (!xpath) {
+    throw 'Empty or null argument to ' +
+        'bidichecker.FilterFactory.locationXpath';
+  }
+  return new bidichecker.FilterFactory.LocationXpathFilter_(
+      {'xpath': xpath});
 };
 
 
@@ -805,6 +827,48 @@ bidichecker.FilterFactory.LocationIdRegexpFilter_.prototype.isSuppressed =
       if (current.id && this.idRegexp_.test(current.id)) {
         return true;
       }
+    }
+  }
+  return false;
+};
+
+
+/**
+ * A filter which suppresses errors by matching an XPath expression to the
+ * error's location. The XPath is matched against the element location in the
+ * innermost frame, as well as the elements corresponding to any containing
+ * frames. There is currently no way to restrict the match to apply within
+ * specific frames only.
+ * @param {!Object} bareObject An object with an 'xpath' field containing an
+ *     XPath expression.
+ * @constructor
+ * @extends {bidichecker.FilterFactory.ComposableFilter}
+ * @private
+ */
+bidichecker.FilterFactory.LocationXpathFilter_ = function(bareObject) {
+  var xpath = bidichecker.FilterFactory.getStringParam_(bareObject, 'xpath');
+
+  /**
+   * @type {bidichecker.XpathMatcher}
+   * @private
+   */
+  this.xpathMatcher_ = new bidichecker.XpathMatcher(xpath);
+};
+goog.inherits(bidichecker.FilterFactory.LocationXpathFilter_,
+    bidichecker.FilterFactory.ComposableFilter);
+
+
+/** @inheritDoc */
+bidichecker.FilterFactory.LocationXpathFilter_.prototype.isSuppressed =
+    function(error, locationElements) {
+  // TODO(user): This currently matches the path to the element in the
+  // innermost frame, as well as the element(s) of any frame(s) that contain it.
+  // Should we implement Puppet's '/content:' syntax extension to specify
+  // matching in a specific frame(s)? Or some other mechanism to specify the
+  // parent frames?
+  for (var i = 0; i < locationElements.length; ++i) {
+    if (this.xpathMatcher_.matches(locationElements[i])) {
+      return true;
     }
   }
   return false;

@@ -626,6 +626,181 @@ function testFilterFactory_LocationIdRegexpFilterRegexpMatch() {
 }
 
 
+function testFilterFactory_LocationXpathFilterConstruct() {
+  var actual = bidichecker.FilterFactory.constructFilter_(
+      {'xpath': 'mypath', 'opcode': 'LOCATION_XPATH'});
+  var expected = bidichecker.FilterFactory.locationXpath('mypath');
+  assertObjectEquals(expected, actual);
+}
+
+
+function testFilterFactory_LocationXpathFilterConstructThrows() {
+  assertThrows(function() {
+    bidichecker.FilterFactory.locationXpath(null);
+  });
+}
+
+
+function testFilterFactory_LocationXpathFilterNoLocationElement() {
+  var filter = bidichecker.FilterFactory.locationXpath('abc');
+  var error = new bidichecker.Error('my_type', 2);
+  assertFalse(filter.isSuppressed(error, []));
+}
+
+
+function testFilterFactory_LocationXpathFilterNoMatch() {
+  bidichecker.XpathMatcher.initCache(document);
+
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  testDiv.innerHTML = '<div><p>Okay?<\/p><\/div>';
+  document.body.appendChild(testDiv);  // Required for XPaths to work.
+
+  try {
+    var filter = bidichecker.FilterFactory.locationXpath('abc');
+    var error = new bidichecker.Error('my_type', 2);
+    assertFalse(filter.isSuppressed(error, [testDiv.firstChild]));
+  } catch (except) {
+    // The filter should only throw if the browser doesn't support XPaths.
+    // TODO(elbaum): Remove the try-catch block when XPath is fully supported.
+    assert(!document.evaluate);
+  }
+}
+
+
+function testFilterFactory_LocationXpathFilterMatch() {
+  bidichecker.XpathMatcher.initCache(document);
+
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  testDiv.innerHTML = '<div id=\'abc\'><p>Okay?<\/p><\/div>';
+  document.body.appendChild(testDiv);
+
+  try {
+    var filter = bidichecker.FilterFactory.locationXpath('//div/div');
+    var error = new bidichecker.Error('my_type', 2);
+    assertTrue(filter.isSuppressed(error, [testDiv.firstChild]));
+  } catch (except) {
+    // The filter should only throw if the browser doesn't support XPaths.
+    // TODO(elbaum): Remove the try-catch block when XPath is fully supported.
+    assert(!document.evaluate);
+  }
+}
+
+
+function testFilterFactory_LocationXpathFilterTwoMatches() {
+  bidichecker.XpathMatcher.initCache(document);
+
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  testDiv.innerHTML = '<div id=\'abc\'><p>Okay?<\/p><\/div>' +
+      '<div id=\'def\'><p>Okay?<\/p><\/div>';
+  document.body.appendChild(testDiv);
+
+  try {
+    var filter = bidichecker.FilterFactory.locationXpath('//div/div');
+    var error = new bidichecker.Error('my_type', 2);
+    assertTrue(filter.isSuppressed(error, [testDiv.firstChild]));
+    assertTrue(filter.isSuppressed(error, [testDiv.childNodes[1]]));
+  } catch (except) {
+    // The filter should only throw if the browser doesn't support XPaths.
+    // TODO(elbaum): Remove the try-catch block when XPath is fully supported.
+    assert(!document.evaluate);
+  }
+}
+
+
+function testFilterFactory_LocationXpathMatchesInIframes() {
+  // Create an iframe in the document.
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<iframe id=\'iframe\'><\/iframe>';
+  goog.dom.appendChild(document.body, testDiv);
+
+  // Fill the iframe with two "hello world" div's.
+  var iframe = testDiv.firstChild;
+  var iframeDoc =
+      goog.dom.getFrameContentDocument(/** @type {Element} */ (iframe));
+  iframeDoc.open();
+  iframeDoc.write('<div id=\'line1\'>hello world<\/div>' +
+                  '<div id=\'line2\'>hello world<\/div>');
+  iframeDoc.close();
+  var iframeRoot = iframeDoc.body;
+  var firstDiv = iframeRoot.firstChild;
+  var secondDiv = iframeRoot.childNodes[1];
+
+  bidichecker.XpathMatcher.initCache(document);
+  bidichecker.XpathMatcher.initCache(iframeDoc);
+
+  try {
+    // Expect this to match both "hello world" div's.
+    var filter = bidichecker.FilterFactory.locationXpath('//div');
+    var error = new bidichecker.Error('my_type', 2);
+    assertTrue(filter.isSuppressed(error, [iframe, firstDiv]));
+    assertTrue(filter.isSuppressed(error, [iframe, secondDiv]));
+
+    // This time, expect it to match only the second "hello world" div.
+    filter = bidichecker.FilterFactory.locationXpath('id("line2")');
+    var error = new bidichecker.Error('my_type', 2);
+    assertFalse(filter.isSuppressed(error, [iframe, firstDiv]));
+    assertTrue(filter.isSuppressed(error, [iframe, secondDiv]));
+  } catch (except) {
+    // The filter should only throw if the browser doesn't support XPaths.
+    // TODO(elbaum): Remove the try-catch block when XPath is fully supported.
+    assert(!document.evaluate);
+  }
+}
+
+
+function testFilterFactory_LocationXpathMatchesIframeElement() {
+  bidichecker.XpathMatcher.initCache(document);
+
+  // Create an iframe in the document.
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<iframe id=\'iframe\'><\/iframe>';
+  goog.dom.appendChild(document.body, testDiv);
+
+  // Fill the iframe with two "hello world" div's.
+  var iframe = testDiv.firstChild;
+  var iframeDoc =
+      goog.dom.getFrameContentDocument(/** @type {Element} */ (iframe));
+  iframeDoc.open();
+  iframeDoc.write('<div id=\'line1\'>hello world<\/div>' +
+                  '<div id=\'line2\'>hello world<\/div>');
+  iframeDoc.close();
+  var iframeRoot = iframeDoc.body;
+  var firstDiv = iframeRoot.firstChild;
+  var secondDiv = iframeRoot.childNodes[1];
+
+  try {
+    // Expect this to match due to the iframe element, regardless of the rest of
+    // the error location within the frame.
+    var filter = bidichecker.FilterFactory.locationXpath('id("iframe")');
+    var error = new bidichecker.Error('my_type', 2);
+    assertTrue(filter.isSuppressed(error, [iframe, firstDiv]));
+    assertTrue(filter.isSuppressed(error, [iframe, secondDiv]));
+  } catch (except) {
+    // The filter should only throw if the browser doesn't support XPaths.
+    // TODO(elbaum): Remove the try-catch block when XPath is fully supported.
+    assert(!document.evaluate);
+  }
+}
+
+
+function testFilterFactory_LocationXpathFilterInvalidXpathThrows() {
+  bidichecker.XpathMatcher.initCache(document);
+
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  testDiv.innerHTML = '<div><p>Okay?<\/p><\/div>';
+  document.body.appendChild(testDiv);
+
+  var filter = bidichecker.FilterFactory.locationXpath('%&#[]!');
+  var error = new bidichecker.Error('my_type', 2);
+
+  assertThrows(function() {
+    assertFalse(filter.isSuppressed(error, [testDiv.firstChild]));
+  });
+}
+
+
 function testFilterFactory_NotFilterConstruct() {
   var actual = bidichecker.FilterFactory.constructFilter_(
       {'filter': new bidichecker.FilterFactory.atText('friends'),

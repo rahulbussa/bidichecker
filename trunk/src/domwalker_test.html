@@ -405,6 +405,25 @@ function testDomWalker_ScriptAndStyleAreIgnored() {
 }
 
 
+function testDomWalker_NoscriptIsIgnored() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<noscript><p>In a noscript tag.</p></noscript>';
+
+  var domWalker = new bidichecker.DomWalker(testDiv);
+  var states = walkTheDom(domWalker);
+  var expected = [{type: START_TAG, element: testDiv,
+                   inRtl: false, inDeclaredDir: false, block: testDiv},
+
+                   {type: END_TAG, element: testDiv,
+                   inRtl: false, inDeclaredDir: false, block: testDiv},
+
+                   {type: END_OF_DOM, inRtl: false, block: testDiv}
+                 ];
+  assertStatesEqual(expected, states);
+}
+
+
 function testDomWalker_CanWalkAnIframe() {
   // Create an iframe in the document.
   var testDiv = goog.dom.createDom('div', {'id': 'test'});

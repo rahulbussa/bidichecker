@@ -23,6 +23,7 @@ goog.require('bidichecker.Detector');
 goog.require('bidichecker.DirChunkWalker');
 goog.require('bidichecker.DomWalker');
 goog.require('bidichecker.ErrorCollector');
+goog.require('bidichecker.XpathMatcher');
 goog.require('goog.i18n.bidi');
 
 
@@ -115,6 +116,8 @@ bidichecker.Scanner.prototype.getErrors = function() {
  */
 bidichecker.Scanner.prototype.scanDomRecursively_ = function(
     element, expectedDir) {
+  bidichecker.XpathMatcher.initCache(element.ownerDocument);
+
   var newFrames = this.runDetectors_(element, expectedDir);
 
   // Recurse for any contained frames.
