@@ -7,6 +7,6 @@
 
 = Details =
 
-javascript:alert('hi')
+[javascript:alert('hi') Alert]
 
 javascript:%28function%28%29%7B%28function%28target%2Cmsg%29%7Bvar%20loader%3Dfunction%28%29%7Bif%28arguments.callee._executed%29return%3Barguments.callee._executed%3Dtrue%3Bbidichecker.runGui%28bidichecker.checkPage%28document.dir%3D%3D%22rtl%22%29%29%3B%7D%3Bvar%20s%3Ddocument.createElement%28%27script%27%29%3Bs.type%3D%22text%2Fjavascript%22%3Bs.setAttribute%28%27src%27%2C%22%2F%2Fbidichecker.googlecode.com%2Fsvn%2Ftrunk%2Flib%2Fbidichecker_packaged.js%22%29%3Bif%28s.addEventListener%29%7Bs.addEventListener%28%22load%22%2Cloader%2Cfalse%29%3B%7Delse%20if%28%22onreadystatechange%22%20in%20s%29%7Bs.onreadystatechange%3Dfunction%28%29%7Bif%28this.readyState%3D%3D%27complete%27%7C%7Cthis.readyState%3D%3D%27loaded%27%29%7Bloader%28%29%3B%7D%7D%3B%7Delse%7Bwindow.setTimeout%28loader%28%29%2C2500%29%3B%7Ddocument.getElementsByTagName%28%27head%27%29%5B0%5D.appendChild%28s%29%3B%7D%29%28%29%3B%7D%29%28%29%3B
