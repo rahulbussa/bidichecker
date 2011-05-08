@@ -1,4 +1,5 @@
-#summary Convenience bookmarklet for running !BidiChecker from a button installed on the browser
+#summary Convenience bookmarklet for running BidiChecker from a button installed on the browser
+#labels Featured
 
 [http://chris.improbable.org/ Developer/blogger Chris Adams] has graciously contributed a [http://chris.improbable.org/2010/11/4/google-bidichecker-bookmarklet/ BidiChecker bookmarklet] (thanks Chris!). By dragging the bookmarklet link to your browser's Bookmarks toolbar, you get a button you can click to run !BidiChecker on the current page for ad hoc spot-checking. His source code is hosted on [https://gist.github.com/662454 GitHub].
 
