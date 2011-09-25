@@ -1,8 +1,15 @@
 <!DOCTYPE html>
 <html>
+  <!--
+    Copyright 2011 Google Inc. All Rights Reserved.
+
+    Use of this source code is governed by an Apache 2.0 License.
+    See the COPYING file for details.
+  -->
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <title>BidiChecker Bookmarklet Start Page</title>
+    <link href="install_bookmarklet.css" rel="stylesheet" type="text/css">
   </head>
 
   <body>
@@ -34,17 +41,17 @@
 
     <ul>
       <li>This bookmarklet assumes that the page being checked has an overall
-	directionality of left-to-right (for example, an English UI):
-	<a href="javascript:(function(){(function(target,msg){var loader=function(){if(arguments.callee._executed)return;arguments.callee._executed=true;bidichecker.runGui(bidichecker.checkPage(false));};var s=document.createElement('script');s.type="text/javascript";s.setAttribute('src',"//bidichecker.googlecode.com/svn/trunk/lib/bidichecker_packaged.js");if(s.addEventListener){s.addEventListener("load",loader,false);}else if("onreadystatechange" in s){s.onreadystatechange=function(){if(this.readyState=='complete'||this.readyState=='loaded'){loader();}};}else{window.setTimeout(loader(),2500);}document.getElementsByTagName('head')[0].appendChild(s);})();})();">
-	  BidiChecker LTR
-	</a>
+        directionality of left-to-right (for example, an English UI):
+        <a href='javascript:(function(){var id="_bidichecker_bmlet";function run(){bidichecker.runGui(bidichecker.checkPage(false));}if(document.getElementById(id)){if(window.bidichecker){run();}}else{var elem=document.createElement("script");elem.src="http://bidichecker.googlecode.com/svn/trunk/lib/bidichecker_packaged.js";elem.onload=run;elem.id=id;document.getElementsByTagName("head")[0].appendChild(elem);}})()'><br>
+          <span style="border-style:dashed">BidiChecker LTR
+        </a>
       </li>
       <li>And this bookmarklet assumes that the page being checked has an
-	overall directionality of right-to-left (for example, a Hebrew or
-	Arabic UI):
-	<a href="javascript:(function(){(function(target,msg){var loader=function(){if(arguments.callee._executed)return;arguments.callee._executed=true;bidichecker.runGui(bidichecker.checkPage(true));};var s=document.createElement('script');s.type="text/javascript";s.setAttribute('src',"//bidichecker.googlecode.com/svn/trunk/lib/bidichecker_packaged.js");if(s.addEventListener){s.addEventListener("load",loader,false);}else if("onreadystatechange" in s){s.onreadystatechange=function(){if(this.readyState=='complete'||this.readyState=='loaded'){loader();}};}else{window.setTimeout(loader(),2500);}document.getElementsByTagName('head')[0].appendChild(s);})();})();">
-	  BidiChecker RTL
-	</a>
+        overall directionality of right-to-left (for example, a Hebrew or
+        Arabic UI):
+        <a href='javascript:(function(){var id="_bidichecker_bmlet";function run(){bidichecker.runGui(bidichecker.checkPage(true));}if(document.getElementById(id)){if(window.bidichecker){run();}}else{var elem=document.createElement("script");elem.src="http://bidichecker.googlecode.com/svn/trunk/lib/bidichecker_packaged.js";elem.onload=run;elem.id=id;document.getElementsByTagName("head")[0].appendChild(elem);}})()'><br>
+          <span style="border-style:dashed">BidiChecker RTL
+        </a>
       </li>
     </ul>
 
@@ -60,9 +67,11 @@
 
     <ul>
       <li>The bookmarklet does not work on all versions of Internet
-	Explorer.</li>
+        Explorer.</li>
       <li>If no errors are found, no visible changes will take place. It will
-	look as if BidiChecker has not even run.</li>
+        look as if BidiChecker has not even run.</li>
+      <li>If you launch the bookmarklet twice without reloading the page, it
+        may not function correctly.</li>
     </ul>
 
   </body>
