@@ -43,14 +43,14 @@
       <li>This bookmarklet assumes that the page being checked has an overall
         directionality of left-to-right (for example, an English UI):
         <a href='javascript:(function(){var id="_bidichecker_bmlet";function run(){bidichecker.runGui(bidichecker.checkPage(false));}if(document.getElementById(id)){if(window.bidichecker){run();}}else{var elem=document.createElement("script");elem.src="http://bidichecker.googlecode.com/svn/trunk/lib/bidichecker_packaged.js";elem.onload=run;elem.id=id;document.getElementsByTagName("head")[0].appendChild(elem);}})()'><br>
-          <span style="border-style:dashed">BidiChecker LTR
+          <span style="border-style:solid; border-width:thin;">BidiChecker LTR
         </a>
       </li>
       <li>And this bookmarklet assumes that the page being checked has an
         overall directionality of right-to-left (for example, a Hebrew or
         Arabic UI):
         <a href='javascript:(function(){var id="_bidichecker_bmlet";function run(){bidichecker.runGui(bidichecker.checkPage(true));}if(document.getElementById(id)){if(window.bidichecker){run();}}else{var elem=document.createElement("script");elem.src="http://bidichecker.googlecode.com/svn/trunk/lib/bidichecker_packaged.js";elem.onload=run;elem.id=id;document.getElementsByTagName("head")[0].appendChild(elem);}})()'><br>
-          <span style="border-style:dashed">BidiChecker RTL
+          <span style="border-style:solid; border-width:thin;">BidiChecker RTL
         </a>
       </li>
     </ul>
