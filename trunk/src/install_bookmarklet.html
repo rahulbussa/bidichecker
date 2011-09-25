@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>BidiChecker Bookmarklet Start Page</title>
+  </head>
+
+  <body>
+
+    <h1>BidiChecker Bookmarklet Installation Page</h1>
+
+    <p>A "BidiChecker Bookmarklet" is a button you can add to your web browser
+      that will run
+      <a href="https://sites.google.com/a/google.com/bidichecker/home">BidiChecker</a>
+      on any web page, displaying any bidi errors in an interactive window. We'd
+      like to thank <a href="http://chris.improbable.org/">developer/blogger
+      Chris Adams</a> for
+      <a href="http://chris.improbable.org/2010/11/4/google-bidichecker-bookmarklet/">
+      demonstrating the concept</a>. His original source code can be found
+      <a href="https://gist.github.com/662454">here on GitHub</a>.</p>
+
+    <p>Below, we offer two bookmarklet links which differ a bit from Chris's
+      implementation. But the basic concept is the same: By dragging a
+      bookmarklet link to your browser's Bookmarks toolbar, you create a button
+      you can click to run BidiChecker on the current page for ad hoc
+      spot-checking. (In Google Chrome, first press Ctrl-Shift-B to show the
+      Bookmarks toolbar; other browsers have similar options.)</p>
+ 
+    <p>BidiChecker does not currently support this use case very well. If no
+      errors are found, pressing the button will have no visible effect. Also,
+      pressing the button twice in succession will not work correctly. We're
+      aware of these issues and are currently working on a more sophisticated
+      bookmarklet implementation.</p>
+
+    <ul>
+      <li>This bookmarklet assumes that the page being checked has an overall
+	directionality of left-to-right (for example, an English UI):
+	<a href="javascript:(function(){(function(target,msg){var loader=function(){if(arguments.callee._executed)return;arguments.callee._executed=true;bidichecker.runGui(bidichecker.checkPage(false));};var s=document.createElement('script');s.type="text/javascript";s.setAttribute('src',"//bidichecker.googlecode.com/svn/trunk/lib/bidichecker_packaged.js");if(s.addEventListener){s.addEventListener("load",loader,false);}else if("onreadystatechange" in s){s.onreadystatechange=function(){if(this.readyState=='complete'||this.readyState=='loaded'){loader();}};}else{window.setTimeout(loader(),2500);}document.getElementsByTagName('head')[0].appendChild(s);})();})();">
+	  BidiChecker LTR
+	</a>
+      </li>
+      <li>And this bookmarklet assumes that the page being checked has an
+	overall directionality of right-to-left (for example, a Hebrew or
+	Arabic UI):
+	<a href="javascript:(function(){(function(target,msg){var loader=function(){if(arguments.callee._executed)return;arguments.callee._executed=true;bidichecker.runGui(bidichecker.checkPage(true));};var s=document.createElement('script');s.type="text/javascript";s.setAttribute('src',"//bidichecker.googlecode.com/svn/trunk/lib/bidichecker_packaged.js");if(s.addEventListener){s.addEventListener("load",loader,false);}else if("onreadystatechange" in s){s.onreadystatechange=function(){if(this.readyState=='complete'||this.readyState=='loaded'){loader();}};}else{window.setTimeout(loader(),2500);}document.getElementsByTagName('head')[0].appendChild(s);})();})();">
+	  BidiChecker RTL
+	</a>
+      </li>
+    </ul>
+
+    <p>To run BidiChecker, just navigate your browser to the page you want to
+      test, interact with the page to get it into the state you want to test,
+      and click on one of the BidiChecker bookmarklets in your browser's
+      bookmarks toolbar. If bidi errors are found, an in-page dialog box will
+      appear, allowing you to browse through the errors, which should be
+      highlighted within the page.</p>
+
+
+    <h2>Known limitations</h2>
+
+    <ul>
+      <li>The bookmarklet does not work on all versions of Internet
+	Explorer.</li>
+      <li>If no errors are found, no visible changes will take place. It will
+	look as if BidiChecker has not even run.</li>
+    </ul>
+
+  </body>
+</html>
