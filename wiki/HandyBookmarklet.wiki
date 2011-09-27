@@ -1,4 +1,4 @@
 #summary Convenience bookmarklet for running BidiChecker from a button installed on the browser
 #labels Featured
 
-Information about the BidiChecker bookmarklet has been moved [http://bidichecker.googlecode.com/svn/trunk/src/install_bookmarklet.html here].
+Information about the !BidiChecker bookmarklet has been moved [http://bidichecker.googlecode.com/svn/trunk/src/install_bookmarklet.html here].
