@@ -1,10 +1,4 @@
 #summary Convenience bookmarklet for running BidiChecker from a button installed on the browser
 #labels Featured
 
-[http://chris.improbable.org/ Developer/blogger Chris Adams] has graciously contributed a [http://chris.improbable.org/2010/11/4/google-bidichecker-bookmarklet/ BidiChecker bookmarklet] (thanks Chris!). By dragging the bookmarklet link to your browser's Bookmarks toolbar, you get a button you can click to run !BidiChecker on the current page for ad hoc spot-checking. His source code can be found [https://gist.github.com/662454 here on GitHub].
-
-!BidiChecker does not currently support this use case very well. If no errors are found, pressing the button will have no visible effect. Also, pressing the button twice in succession will not work correctly. We're aware of these issues and are working on fixes.
-
-Due to a minor bug, Chris's code currently always assumes the page being checked is meant to be left-to-right. The only effect is that when checking a right-to-left page you'll see an "Overall directionality not LTR" error in addition to any other errors reported by !BidiChecker; other than that, !BidiChecker will work as usual.
-
-Unfortunately, the restrictions of this wiki do not allow us to embed a draggable bookmarklet link directly on this page. Until we find a clean way to do that, please go to Chris's site to get the bookmarklet.
+Information about the BidiChecker bookmarklet has been moved [http://bidichecker.googlecode.com/svn/trunk/src/install_bookmarklet.html here].
