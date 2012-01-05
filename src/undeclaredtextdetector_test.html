@@ -33,10 +33,12 @@ goog.require('goog.testing.jsunit');
 
 /**
  * Runs the undeclared text checker on the contents of a DOM element.
+ * @param {number} revision Revision of checks to run. Revision 2 adds a check
+ *     for undeclared "fake RTL" strings.
  * @param {!Element} rootElement The root element of the DOM to be checked.
  * @return {!Array.<!bidichecker.Error>} List of error messages.
  */
-function runUndeclaredTextDetector(rootElement) {
+function runUndeclaredTextDetector(revision, rootElement) {
   var errorCollector =
       new bidichecker.ErrorCollector(new bidichecker.FrameStack());
 
@@ -44,7 +46,7 @@ function runUndeclaredTextDetector(rootElement) {
       /* opt_needDirChunkWalker */ true);
   // Override the buildDetectors method to build only one detector.
   scanner.buildDetectors = function(element, shouldBeRtl) {
-    return [new bidichecker.UndeclaredTextDetector(errorCollector)];
+    return [new bidichecker.UndeclaredTextDetector(revision, errorCollector)];
   };
 
   scanner.scan(rootElement);
@@ -57,7 +59,7 @@ function testUndeclaredTextDetector_RtlTextInLtrPageError() {
   goog.dom.appendChild(document.body, testDiv);
   // Hebrew text for "Shalom"
   testDiv.innerHTML = '<p>\u05e9\u05dc\u05d5\u05dd<\/p>';
-  var errors = runUndeclaredTextDetector(testDiv);
+  var errors = runUndeclaredTextDetector(/* Revision */ 1, testDiv);
   var expected = [{'type': 'Undeclared RTL text',
                    'severity': 3,
                    'atText': '\u05e9\u05dc\u05d5\u05dd',
@@ -76,7 +78,7 @@ function testUndeclaredTextDetector_LtrTextInLtrPageOkay() {
   var testDiv = goog.dom.createDom('div', {'id': 'test'});
   goog.dom.appendChild(document.body, testDiv);
   testDiv.innerHTML = '<p>Shalom!<\/p>';
-  var errors = runUndeclaredTextDetector(testDiv);
+  var errors = runUndeclaredTextDetector(/* Revision */ 1, testDiv);
   assertErrorFields([], errors);
 }
 
@@ -85,7 +87,7 @@ function testUndeclaredTextDetector_LtrTextInRtlPageError() {
   var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
   goog.dom.appendChild(document.body, testDiv);
   testDiv.innerHTML = '<p>Shalom<\/p>';
-  var errors = runUndeclaredTextDetector(testDiv);
+  var errors = runUndeclaredTextDetector(/* Revision */ 1, testDiv);
   var expected = [{'type': 'Undeclared LTR text',
                    'severity': 3,
                    'atText': 'Shalom',
@@ -101,7 +103,7 @@ function testUndeclaredTextDetector_RlmCharInRtlTextInLtrPageError() {
   // Hebrew text for "Shalom"
   testDiv.innerHTML = '<p>\u05e9\u05dc\u05d5\u05dd' +
       goog.i18n.bidi.Format.RLM + '<\/p>';
-  var errors = runUndeclaredTextDetector(testDiv);
+  var errors = runUndeclaredTextDetector(/* Revision */ 1, testDiv);
   var expected = [{'type': 'Undeclared RTL text',
                    'severity': 3,
                    'atText': '\u05e9\u05dc\u05d5\u05dd' +
@@ -115,7 +117,7 @@ function testUndeclaredTextDetector_SingleRlmCharInLtrPageOkay() {
   var testDiv = goog.dom.createDom('div', {'id': 'test'});
   goog.dom.appendChild(document.body, testDiv);
   testDiv.innerHTML = '<p>Shalom!' + goog.i18n.bidi.Format.RLM + '<\/p>';
-  var errors = runUndeclaredTextDetector(testDiv);
+  var errors = runUndeclaredTextDetector(/* Revision */ 1, testDiv);
   assertErrorFields([], errors);
 }
 
@@ -124,7 +126,7 @@ function testUndeclaredTextDetector_LrmCharInLtrTextInRtlPageError() {
   var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
   goog.dom.appendChild(document.body, testDiv);
   testDiv.innerHTML = '<p>Shalom' + goog.i18n.bidi.Format.LRM + '<\/p>';
-  var errors = runUndeclaredTextDetector(testDiv);
+  var errors = runUndeclaredTextDetector(/* Revision */ 1, testDiv);
   var expected = [{'type': 'Undeclared LTR text',
                    'severity': 3,
                    'atText': 'Shalom' + goog.i18n.bidi.Format.LRM,
@@ -139,7 +141,7 @@ function testUndeclaredTextDetector_SingleLrmCharInRtlPageOkay() {
   // Hebrew text for "Shalom"
   testDiv.innerHTML = '<p>\u05e9\u05dc\u05d5\u05dd' +
       goog.i18n.bidi.Format.LRM + '<\/p>';
-  var errors = runUndeclaredTextDetector(testDiv);
+  var errors = runUndeclaredTextDetector(/* Revision */ 1, testDiv);
   assertErrorFields([], errors);
 }
 
@@ -151,7 +153,7 @@ function testUndeclaredTextDetector_LtrTextInRtlParagraphErrorLowSeverity() {
   var testDiv = goog.dom.createDom('div', {'id': 'test'});
   goog.dom.appendChild(document.body, testDiv);
   testDiv.innerHTML = '<p dir=\'rtl\'>Shalom<\/p><p>Okay?<\/p>';
-  var errors = runUndeclaredTextDetector(testDiv);
+  var errors = runUndeclaredTextDetector(/* Revision */ 1, testDiv);
   var expected = [{'type': 'Undeclared LTR text',
                    'severity': 4,
                    'atText': 'Shalom',
@@ -165,7 +167,7 @@ function testUndeclaredTextDetector_ErrorSpansMultipleTextNodes() {
   goog.dom.appendChild(document.body, testDiv);
   testDiv.innerHTML =
       '<p dir=\'rtl\'>* Shalom <b>Okay?<\/b> <i>Done.<\/i><\/p>';
-  var errors = runUndeclaredTextDetector(testDiv);
+  var errors = runUndeclaredTextDetector(/* Revision */ 1, testDiv);
   var expected = [{'type': 'Undeclared LTR text',
                    'severity': 4,
                    'atText': 'Shalom Okay? Done',
@@ -192,7 +194,7 @@ function testUndeclaredTextDetector_RtlTextInPartOfLtrParagraphError() {
   // Hebrew text for "Shalom"
   testDiv.innerHTML =
       '<p>This is Shalom \u05e9\u05dc\u05d5\u05dd did you know that?<\/p>';
-  var errors = runUndeclaredTextDetector(testDiv);
+  var errors = runUndeclaredTextDetector(/* Revision */ 1, testDiv);
 
   // The error should only report the wrong-directional text, not the entire
   // paragraph.
@@ -214,7 +216,7 @@ function testUndeclaredTextDetector_RlmCharacterNotUndeclaredError() {
   goog.dom.appendChild(document.body, testDiv);
   // Unicode RLM, then some text.
   testDiv.innerHTML = '<p>\u200F Shalom<\/p>';
-  var errors = runUndeclaredTextDetector(testDiv);
+  var errors = runUndeclaredTextDetector(/* Revision */ 1, testDiv);
 
   // RLM marks are presumably inserted intentionally and should not be errors.
   assertErrorFields([], errors);
@@ -226,7 +228,7 @@ function testUndeclaredTextDetector_LrmCharacterNotUndeclaredError() {
   goog.dom.appendChild(document.body, testDiv);
   // Unicode LRM, then Hebrew text for "Shalom"
   testDiv.innerHTML = '<p>\u200E \u05e9\u05dc\u05d5\u05dd<\/p>';
-  var errors = runUndeclaredTextDetector(testDiv);
+  var errors = runUndeclaredTextDetector(/* Revision */ 1, testDiv);
 
   // LRM marks are presumably inserted intentionally and should not be errors.
   assertErrorFields([], errors);
@@ -241,7 +243,7 @@ function testUndeclaredTextDetector_LtrTextInRtlParagraphErrorLowSeverity() {
   // Hebrew text for "Shalom"
   testDiv.innerHTML = '<p dir=\'rtl\'>This is Shalom ' +
       '\u05e9\u05dc\u05d5\u05dd did you know<\/p>';
-  var errors = runUndeclaredTextDetector(testDiv);
+  var errors = runUndeclaredTextDetector(/* Revision */ 1, testDiv);
 
   // The errors should only report the wrong-directional text, not the entire
   // paragraph.
@@ -268,7 +270,7 @@ function testUndeclaredTextDetector_RtlTextFollowedByNeutralsHighSeverity() {
       // Hebrew text for "Shalom!"
       '\u05e9\u05dc\u05d5\u05dd!' +
       ' [@] did you know that?<\/p>';
-  var errors = runUndeclaredTextDetector(testDiv);
+  var errors = runUndeclaredTextDetector(/* Revision */ 1, testDiv);
 
   var expected = [{'type': 'Undeclared RTL text',
                    'severity': 2,
@@ -288,7 +290,7 @@ function testUndeclaredTextDetector_RtlTextPrecededByNeutralsHighSeverity() {
       // Hebrew text for "Shalom"
       '\u05e9\u05dc\u05d5\u05dd' +
       ' did you know that?<\/p>';
-  var errors = runUndeclaredTextDetector(testDiv);
+  var errors = runUndeclaredTextDetector(/* Revision */ 1, testDiv);
 
   var expected = [{'type': 'Undeclared RTL text',
                    'atText': '\u05e9\u05dc\u05d5\u05dd',
@@ -306,7 +308,7 @@ function testUndeclaredTextDetector_NumbersTreatedAsNeutralsForSeverity() {
       // Hebrew text for "Shalom"
       '\u05e9\u05dc\u05d5\u05dd' +
       '456 did you know that?<\/p>';
-  var errors = runUndeclaredTextDetector(testDiv);
+  var errors = runUndeclaredTextDetector(/* Revision */ 1, testDiv);
 
   var expected = [{'type': 'Undeclared RTL text',
                    'atText': '\u05e9\u05dc\u05d5\u05dd',
@@ -325,7 +327,7 @@ function testUndeclaredTextDetector_AdjacentNeutralsAtEndsOfChunk() {
       // Hebrew text for "Shalom"
       '\u05e9\u05dc\u05d5\u05dd' +
       ']?<\/p>';
-  var errors = runUndeclaredTextDetector(testDiv);
+  var errors = runUndeclaredTextDetector(/* Revision */ 1, testDiv);
 
   var expected = [{'type': 'Undeclared RTL text',
                    'atText': '\u05e9\u05dc\u05d5\u05dd',
@@ -346,13 +348,42 @@ function testUndeclaredTextDetector_AdjacentNeutralsLowSeverityInDeclared() {
       // Hebrew text for "Shalom"
       '\u05e9\u05dc\u05d5\u05dd' +
       ' did you know that?<\/p>';
-  var errors = runUndeclaredTextDetector(testDiv);
+  var errors = runUndeclaredTextDetector(/* Revision */ 1, testDiv);
 
   var expected = [{'type': 'Undeclared RTL text',
                    'atText': '\u05e9\u05dc\u05d5\u05dd',
                    'precededByText': ': ',
                    'severity': 4,
                    'locationDescription': '<div id=\'test\'><p dir=\'ltr\'>'}];
+  assertErrorFields(expected, errors);
+}
+
+
+function testUndeclaredTextDetector_FakeRtlInLtrParagraphRevision1Ignored() {
+  // Revision 1 didn't treat fake RTL text as an error in an LTR paragraph.
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML =
+      '<p>This is Shalom with \u202EFake\u202C \u202ERTL\u202C okay?<\/p>';
+
+  var errors = runUndeclaredTextDetector(/* Revision */ 1, testDiv);
+  assertErrorFields([], errors);
+}
+
+
+function testUndeclaredTextDetector_FakeRtlInLtrParagraphRevision2Error() {
+  // Revision 2 produces an error for fake RTL text in an LTR paragraph.
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML =
+      '<p>This is Shalom with \u202EFake\u202C \u202ERTL\u202C okay?<\/p>';
+  var errors = runUndeclaredTextDetector(/* Revision */ 2, testDiv);
+
+  // The error should report the entire sequence of fake RTL text.
+  var expected = [{'type': 'Undeclared RTL text',
+                   'severity': 3,
+                   'atText': '\u202EFake\u202C \u202ERTL\u202C',
+                   'locationDescription': '<div id=\'test\'><p>'}];
   assertErrorFields(expected, errors);
 }
 

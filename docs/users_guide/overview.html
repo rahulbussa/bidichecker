@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+  <!--
+      Copyright 2010 Google Inc. All Rights Reserved.
+
+      Use of this source code is governed by an Apache 2.0 License.
+      See the COPYING file for details.
+    -->
+
+
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link href="users_guide.css" rel="stylesheet" type="text/css">
+
+    <title>BidiChecker User's Guide</title>
+  </head>
+
+  <body>
+
+    <table width="100%"><tr>
+    <td class="prev-link" width="33%">&nbsp;</td>
+    <td class="up-link" width="33%"><a href="index.html">
+        ^^ Table of Contents ^^</a></td>
+    <td class="next-link" width="33%"><a href="getting_started.html">&gt;&gt; Getting started &gt;&gt;</a></td>
+    </tr></table>
+
+    <hr>
+
+    <h1><a href="index.html">BidiChecker User's Guide</a></h1>
+
+    <h2>1. Overview</h2>
+
+        <p><b>BidiChecker</b> is a tool for the automated testing of web pages for
+      errors in support of right-to-left (RTL) languages, also known as
+      bidirectional (bidi) because they routinely include left-to-right items
+      such as numbers and Latin-script words and phrases.</p>
+
+    <p>Bidi support for a web page is a common requirement, even for pages
+      in left-to-right scripts. Any page which accepts user input or
+      displays multilingual content is likely to end up handling
+      bidirectional text at some point, as it will eventually encounter data
+      in Arabic, Hebrew or another RTL language. Unfortunately, handling
+      bidirectional text can be tricky and requires special processing at
+      every appearance of potentially bidi data in the
+      UI.
+      (<a href="http://doctype.googlecode.com/svn-history/trunk/bidihowto/index.html">Examples
+      of common bidi UI bugs can be found here</a>.) As a result, bidi
+      text support often regresses when a developer adds a new feature and
+      simply forgets about bidi.</p>
+
+    <p>BidiChecker can be used in two ways:</p>
+
+    <ol>
+      <li>for <b>regression testing</b>, as part of an automated test
+        suite, or</li>
+      <li>for <b>exploratory testing</b>, manually reviewing the results of
+        running it on the current page in a web browser
+      </li>
+    </ol>
+
+    <p><b>For regression testing,</b> web applications typically use an
+      automated testing framework such as
+      <a href="http://www.jsunit.net" target="_blank">JSUnit</a>
+      for testing against a live browser instance. BidiChecker provides a
+      Javascript API for integration into Javascript tests.
+      The API accepts a page element (by default, the
+      body of the top-level document), runs bidi tests on its contents, and
+      returns a list of bidi errors found, including the type of each error,
+      its location on the page and an estimate of its level of severity.</p>
+
+    <p><b>For exploratory testing,</b> BidiChecker can be run on any page open
+      in a web browser after installing the BidiChecker bookmarklet in the
+      browser's Bookmarks toolbar.
+      When the bookmarklet is run,
+      an interactive error browser will
+      highlight the bidi errors on the displayed page itself, providing an
+      interactive user interface for viewing their details.</p>
+
+
+    <p>Note that BidiChecker
+      does not require any custom "hooks" or modifications to the product under
+      test. New BidiChecker-based tests can be written in addition to the
+      product's existing test suite.</p>
+
+
+    <h3>Who's using it?</h3>
+
+    <p>BidiChecker is currently in use
+    at several projects inside Google,
+         as well as the open-source
+         <a href="http://www.chromium.org">Chromium</a> project.</p>
+
+
+    <hr>
+
+    <table width="100%"><tr>
+    <td class="prev-link" width="33%">&nbsp;</td>
+    <td class="up-link" width="33%"><a href="index.html">
+        ^^ Table of Contents ^^</a></td>
+    <td class="next-link" width="33%"><a href="getting_started.html">&gt;&gt; Getting started &gt;&gt;</a></td>
+    </tr></table>
+
+  </body>
+</html>

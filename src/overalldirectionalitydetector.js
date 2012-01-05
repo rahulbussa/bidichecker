@@ -54,7 +54,7 @@ bidichecker.OverallDirectionalityDetector = function(
 };
 
 
-/** @inheritDoc */
+/** @override */
 bidichecker.OverallDirectionalityDetector.prototype.startListening = function(
     scanner) {
   // Listen for the start of the first tag in the DOM so we can check its

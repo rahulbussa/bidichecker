@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+  <!--
+      Copyright 2010 Google Inc. All Rights Reserved.
+
+      Use of this source code is governed by an Apache 2.0 License.
+      See the COPYING file for details.
+    -->
+
+
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link href="users_guide.css" rel="stylesheet" type="text/css">
+
+    <title>BidiChecker User's Guide</title>
+  </head>
+
+  <body>
+
+    <table width="100%"><tr>
+    <td class="prev-link" width="33%"><a href="writing_regression_tests.html">&lt;&lt; Writing regression tests &lt;&lt;</a></td>
+    <td class="up-link" width="33%"><a href="index.html">
+        ^^ Table of Contents ^^</a></td>
+    <td class="next-link" width="33%"><a href="catalog_of_checks.html">&gt;&gt; Catalog of checks &gt;&gt;</a></td>
+    </tr></table>
+
+    <hr>
+
+    <h1><a href="index.html">BidiChecker User's Guide</a></h1>
+
+    <h2>4. Error descriptions and error suppression</h2>
+
+        <p>BidiChecker's results consist of bidi error reports. In the API they
+      are returned as a list of objects with descriptive fields. The
+      interactive GUI displays them in rows of a table, sortable by field.
+      Regardless of how BidiChecker is invoked, the content is the same.</p>
+
+    <p>An error may contain and or all of the following fields:</p>
+
+    <ul><li><b>Error type</b> (required). For example, "Undeclared RTL
+        text".</li>
+      <li><b>Severity level</b> (required). Severity levels consist of integers
+        from 1 to 4, with 1 indicating the most severe and 4 the least. There is
+        no absolute significance to the different severity levels. They are
+        meant to represent a combination of the likelihood that a given error
+        represents a real bug and the likelihood that it causes visible text
+        garbling. Severity levels are determined by heuristics described in the
+        error catalog below.</li>
+      <li><b>The text at which the error occurs.</b></li>
+      <li><b>The text immediately preceding and/or following the error text,</b>
+        where it is useful to indicate the likelihood of garbling or to help
+        locate the error on the page.</li>
+      <li><b>Page location where the error occurs.</b> This is given as a string
+        containing the nested HTML tags (with attributes) surrounding the first
+        character of the error text, starting from the highest-level containing
+        parent element. The intent is to give sufficient information about the
+        error location to allow the developer to find it in the page and in the
+        code generating the page, without including too much extraneous detail.
+        Values of attributes other than <span class="inline-code">class</span>
+        and <span class="inline-code">id</span> are truncated at 20 characters.
+        For example: "<span class="inline-code">&lt;div
+          onclick='aVeryLongFunctionNam&hellip;'&gt;&lt;div
+          id='abc'&gt;&lt;table&gt;&lt;tr&gt;&lt;td align='left'&gt;&lt;p
+          dir='rtl'&gt;</span>". In conjunction with the error text,
+        this should be sufficient for identification of the error location.</li>
+    </ul>
+
+    <p>The sample output above demonstrates how these fields are combined into
+      a textual error message. First the severity level is given in square
+      brackets, followed by the error type, the error text, the preceding and/or
+      following text, and the page location. Delimiters and separators between
+      fields are as shown in the sample.
+    </p>
+
+    <p>The error details serve two purposes: <b>Error identification</b>
+      and <b>error suppression</b>.</p>
+
+    <p><b>Error identification</b> is the human task of understanding what an
+      error message refers to: what the problem is and where on the page it
+      occurs.</p>
+
+    <p><b>Error suppression</b> is the filtering out of error messages that
+      match a set of specifications. Not all "errors" found by BidiChecker
+      represent real problems, and it is essential to suppress the generation
+      of those that don't, so automated tests run clean until a code change
+      results in new suspects. Similarly, after BidiChecker finds real
+      problems, it may take time for these to be fixed. In the meantime, after
+      filing appropriate bug reports, it often makes sense to suppress these
+      errors in the automated tests (with TODO comments to unsuppress them
+      after the problems have been fixed), so that the tests run clean, and
+      new problems are readily noticed.</p>
+
+    <p>Each of the fields above may be relevant for suppression. Users may
+      wish to suppress errors of a certain type which they know to be
+      spurious everywhere on the page, or to ignore low-severity errors. They
+      may know that a particular word is falsely reported as an error (for
+      example, "Gmail" in a navigation menu), or that a particular area of the
+      page contains user-generated content whose bidi correctness cannot be
+      ensured.</p>
+
+    <h3><a name="Suppression">The error suppression API</a></h3>
+
+    <p>BidiChecker provides a sophisticated error suppression mechanism. The
+      API supports
+      the specification and composition of filters on most fields of the
+      Error object, as well as filters based on the error's location on the
+      page.
+    </p>
+
+    <p>Some filter examples in Javascript:</p>
+
+    <div class="codeblock"><code>
+      var filters = [<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;// Suppress errors with
+        the <b>atText</b> field "&#x5e9;&#x5dc;&#x5d5;&#x5dd;":<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;bidichecker.FilterFactory.atText("\u05e9\u05dc\u05d5\u05dd"),<br>
+      <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;Suppress errors appearing within a
+        page element with the <b>element id</b> "other_id"<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;(matches any ancestor element,
+        including those of enclosing frames):<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;bidichecker.FilterFactory.locationId("other_id"),<br>
+      <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;Composing multiple filters: Suppress
+      errors of <b>severity levels</b> 3 and 4 and <b>error type</b><br>
+      &nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;"Declared RTL spillover to number":<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;bidichecker.FilterFactory.severityFrom(3).and(<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bidichecker.FilterFactory.type("Declared
+      RTL spillover to number")),<br>
+      <br>
+      &nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;Suppress errors within a page element with
+        the <b>class</b> attribute "myclass" and<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;//&nbsp;<b>preceded by text</b> matching the
+      regular expression "http:.*":<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;bidichecker.FilterFactory.locationClass("myclass").and(<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;bidichecker.FilterFactory.precededByTextRegexp("http:.*"))<br>
+      ];<br>
+      var checker = new bidichecker.BidiChecker(bidichecker.REVISION_2);<br>
+      var errors = checker.checkPage(true, top.document.body, filters);<br>
+      assertArrayEquals([], errors); &nbsp;// Should be no bidi errors
+        after filtering!<br>
+    </code></div>
+
+
+    <p>In addition,
+      the bookmarklet supports
+      global error suppression by severity level (and it is generally
+      recommended to filter out the lowest severity errors, level 4).</p>
+
+    <p>Below is the complete list of
+      filters (static factory methods in the
+      <a href="http://bidichecker.googlecode.com/svn/trunk/docs/jsdoc/_03.html"
+         target="_blank">bidichecker.FilterFactory
+      class</a>). Each filter object also supports instance methods
+      <b>and()</b>, <b>not()</b>, and <b>or()</b> for an alternate way of
+      composing/inverting filters.
+
+    <div>
+      <table border="1" bordercolor="#888888" cellspacing="0">
+        <tbody>
+          <tr>
+            <td style="width:20%"><b> Filter name</b></td>
+            <td style="width:30%"><b> Sample construction</b></td>
+            <td style="width:50%"><b> Description</b></td>
+          </tr>
+          <tr>
+            <td style="width:20%"> and</td>
+            <td style="width:30%"> bidichecker.FilterFactory.and(filter1,
+              filter2)</td>
+            <td style="width:50%"> Composes two filters
+              by <b>and</b>-ing their suppressions<span><br>
+            </span></td>
+          </tr>
+          <tr>
+            <td style="width:20%"> atText</td>
+            <td style="width:30%"> bidichecker.FilterFactory.atText()</td>
+            <td style="width:50%"> Matches against the
+              entire <b>atText</b> field of an error</td>
+          </tr>
+          <tr>
+            <td style="width:20%"> atTextRegexp</td>
+            <td style="width:30%"> bidichecker.FilterFactory.atTextRegexp(regexp)</td>
+            <td style="width:50%"> Matches against the
+              entire <b>atText</b> field of an error</td>
+          </tr>
+          <tr>
+            <td style="width:20%"> followedByText<br>
+            </td>
+            <td style="width:30%"> bidichecker.FilterFactory.followedByText(string)</td>
+            <td style="width:50%"> Matches against the
+              entire <b>followedByText</b> field of an error</td>
+          </tr>
+          <tr>
+            <td style="width:20%"> followedByTextRegexp</td>
+            <td style="width:30%"> bidichecker.FilterFactory.followedByTextRegexp(regexp)</td>
+            <td style="width:50%"> Matches against the
+              entire <b>followedByText</b> field of an error</td>
+          </tr>
+          <tr>
+            <td style="width:20%"> locationClass</td>
+            <td style="width:30%"> bidichecker.FilterFactory.locationClass(string)</td>
+            <td style="width:50%"> Matches against an
+              entire <b>class</b> name on any ancestor element containing the error
+              location (including any containing frames)</td>
+          </tr>
+          <tr>
+            <td style="width:20%"> locationClassRegexp</td>
+            <td style="width:30%"> bidichecker.FilterFactory.locationClassRegexp(regexp)</td>
+            <td style="width:50%"> Matches against an entire <b>class</b> name
+              on any ancestor element containing the error
+              location (including any containing frames)</td>
+          </tr>
+          <tr>
+            <td style="width:20%"> locationId</td>
+            <td style="width:30%"> bidichecker.FilterFactory.locationId(string)</td>
+            <td style="width:50%"> Matches against an entire <b>id</b>
+              attribute on any ancestor element containing the error
+              location (including any containing frames)</td>
+          </tr>
+          <tr>
+            <td style="width:20%"> locationIdRegexp</td>
+            <td style="width:30%"> bidichecker.FilterFactory.locationIdRegexp(regexp)</td>
+            <td style="width:50%"> Matches against an entire <b>id</b>
+              attribute on any ancestor element containing the error
+              location (including any containing frames)</td>
+          </tr>
+          <tr>
+            <td> locationXpath</td>
+            <td> bidichecker.FilterFactory.locationXpath(string)</td>
+            <td> Matches an XPath expression against the element of the error
+              location (including the elements representing any containing
+              frames). This does not match against ancestor elements; to
+              match against everything within a given location, you can add
+              "/*" to the XPath expression. There is currently no mechanism
+              for restricting the XPath match to specific frames.
+              <b>NOTE: XPaths are not currently supported on Internet
+                Explorer.</b></td>
+          </tr>
+          <tr>
+            <td style="width:20%"> not</td>
+            <td style="width:30%"> bidichecker.FilterFactory.not(filter)</td>
+            <td style="width:50%"> Inverts the meaning of a
+              filter</td>
+          </tr>
+          <tr>
+            <td style="width:20%"> or</td>
+            <td style="width:30%"> bidichecker.FilterFactory.or(filter1,
+              filter2)</td>
+            <td style="width:50%"> Composes two filters
+              by <b>or</b>-ing their suppressions</td>
+          </tr>
+          <tr>
+            <td style="width:20%"> precededByText</td>
+            <td style="width:30%"> bidichecker.FilterFactory.precededByText(string)</td>
+            <td style="width:50%"> Matches against the
+              entire <b>precededByText</b> field of an error</td>
+          </tr>
+          <tr>
+            <td style="width:20%"> precededByTextRegexp</td>
+            <td style="width:30%"> bidichecker.FilterFactory.precededByTextRegexp(regexp)</td>
+            <td style="width:50%"> Matches against the
+              entire <b>precededByText</b> field of an error</td>
+          </tr>
+          <tr>
+            <td style="width:20%"> severityFrom</td>
+            <td style="width:30%"> bidichecker.FilterFactory.severityFrom(severityThreshold)</td>
+            <td style="width:50%"> Matches any errors with <b>severity</b>
+              at the given threshold, or less severe than it</td>
+          </tr>
+          <tr>
+            <td style="width:20%"> type</td>
+            <td style="width:30%"> bidichecker.FilterFactory.type(typeValue)</td>
+            <td style="width:50%"> Matches against the
+              exact <b>type</b> field of an error</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+
+    <hr>
+
+    <table width="100%"><tr>
+    <td class="prev-link" width="33%"><a href="writing_regression_tests.html">&lt;&lt; Writing regression tests &lt;&lt;</a></td>
+    <td class="up-link" width="33%"><a href="index.html">
+        ^^ Table of Contents ^^</a></td>
+    <td class="next-link" width="33%"><a href="catalog_of_checks.html">&gt;&gt; Catalog of checks &gt;&gt;</a></td>
+    </tr></table>
+
+  </body>
+</html>

@@ -20,6 +20,7 @@
 goog.provide('bidichecker.HighlightableText');
 
 goog.require('bidichecker.HighlightableArea');
+goog.require('bidichecker.utils');
 goog.require('goog.dom');
 goog.require('goog.style');
 
@@ -74,15 +75,14 @@ bidichecker.HighlightableText = function(nodes, startOffset, endOffset) {
 };
 
 
-/** @inheritDoc */
+/** @override */
 bidichecker.HighlightableText.prototype.highlightOnPage = function() {
   if (this.newNodes_.length == 0) {
     // Wrap each text node in a highlighted span.
     //
     // TODO(user): What should we do if this fails to display the error, e.g.
-    // if the background color is already yellow, or if the error location is
-    // concealed behind another DOM element or scrolled out of view in a
-    // scrollable element?
+    // if the error location is concealed behind another DOM element or scrolled
+    // out of view in a scrollable element?
     for (var i = 0; i < this.nodes_.length; ++i) {
       // Adjust the boundary character positions for the first and last nodes.
       var startOffset = i == 0 ? this.startOffset_ : 0;
@@ -106,7 +106,7 @@ bidichecker.HighlightableText.prototype.highlightOnPage = function() {
 };
 
 
-/** @inheritDoc */
+/** @override */
 bidichecker.HighlightableText.prototype.unhighlightOnPage = function() {
   if (this.newNodes_.length != 0) {
     // Swap back the original nodes for the highlighted ones.
@@ -138,10 +138,12 @@ bidichecker.HighlightableText.highlightNodeText_ = function(node, opt_start,
     // The unhighlighted text prefix, if any.
     children.push(node.data.substring(0, start));
   }
-  // The highlighted substring, wrapped in a yellow-highlighted span.
-  children.push(goog.dom.createDom('span',
-      {style: 'color:red; background-color:yellow'},
-      node.data.substring(start, end)));
+  // The highlighted substring.
+  var highlightSpan =
+      goog.dom.createDom('span', {}, node.data.substring(start, end));
+  bidichecker.utils.highlightElementStyle(highlightSpan);
+  children.push(highlightSpan);
+
   if (end < node.data.length) {
     // The unhighlighted text suffix, if any.
     children.push(node.data.substring(end));

@@ -1,0 +1,158 @@
+<!DOCTYPE HTML>
+<html>
+  <!--
+    Copyright 2012 Google Inc. All Rights Reserved.
+
+    Use of this source code is governed by an Apache 2.0 License.
+    See the COPYING file for details.
+  -->
+  <head>
+    <title>BidiChecker Bookmarklet Installation Page</title>
+    <link href="bookmarklet.css" rel="stylesheet" type="text/css">
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+
+    <!-- We load the GUI code to validate that it's installed as required. -->
+    <script src="gui-app/gui_compiled.js"></script>
+
+    <script>
+      function validateInstallation() {
+        var protocol = window.location.protocol;
+        if (protocol != 'http:' && protocol != 'https:') {
+          return 'The URL must begin with http: or https:';
+        }
+        if (!window.bidichecker) {
+          return '"bidichecker" namespace is not loaded - ' +
+              'is bidichecker_packaged.js missing?';
+        }
+        if (!window.bidichecker.gui) {
+          return '"bidichecker.gui" namespace is not loaded - ' +
+              'is gui_compiled.js missing?';
+        }
+      }
+
+      function alertFailedInstallation(errorMessage) {
+        var errorDiv = document.getElementById('installation-error');
+        var messageDiv = document.getElementById('error-message');
+
+        var htmlMessage =
+            'Error: <span style="font-weight: bold">' + errorMessage +
+            '<\/span><\/p>';
+        document.getElementById('ltr-bookmarklet').href = 'about:blank';
+        document.getElementById('rtl-bookmarklet').href = 'about:blank';
+        errorDiv.style.display = 'block';
+        messageDiv.innerHTML = htmlMessage;
+      }
+
+      function init() {
+        var errorMessage = validateInstallation();
+        if (errorMessage) {
+          alertFailedInstallation(errorMessage);
+        }
+
+        var locationUrl = window.location.toString();
+        var lastSlash = locationUrl.lastIndexOf('/');
+        var baseUrl = locationUrl.substr(0, lastSlash);
+        var scriptUrl = baseUrl + '/bidichecker_packaged.js';
+        var guiAppUrl = baseUrl + '/gui-app/errorpage.html';
+        document.getElementById('ltr-bookmarklet').href =
+            bidichecker.generateBookmarklet({}, scriptUrl, guiAppUrl);
+        document.getElementById('rtl-bookmarklet').href =
+            bidichecker.generateBookmarklet({dir: 'rtl'}, scriptUrl, guiAppUrl);
+      }
+
+      // Notify the user on any error (result of failure to load script, etc.).
+      // Otherwise the user would be silently left with non-functional
+      // bookmarklets.
+      window.onerror = alertFailedInstallation;
+    </script>
+  </head>
+
+  <body onload="init();">
+    <div id='installation-error'>
+      <p>BidiChecker does not appear to be correctly installed at this location!
+        The bookmarklet links on this page have been disabled.</p>
+
+      <div id='error-message'></div>
+
+      <p>For this bookmarklet installation page to work, it must be
+        installed on a web server and accessed via
+        <span class="inline-code">http:</span> or
+        <span class="inline-code">https:</span>.</p>
+
+      <p>It must be installed along with the complete BidiChecker deployment
+        directory.
+        That's the
+             <a href="http://code.google.com/p/bidichecker/source/browse/#svn/trunk/lib">lib/ subdirectory in the source tree.</a>
+      </p>
+    </div>
+
+    <h1>BidiChecker Bookmarklet Installation Page</h1>
+
+    <h2>What is a BidiChecker Bookmarklet?</h2>
+
+    <p>A "BidiChecker Bookmarklet" is a button you can add to your web browser
+      that will run
+      <a href="http://code.google.com/p/bidichecker/">BidiChecker</a>
+      on any web page, displaying any bidi errors in an interactive window.
+
+
+    <h2>How do I install one?</h2>
+
+    <p>Just drag one or both of the links below to your browser's Bookmarks
+      toolbar. This will create a button on the Bookmarks toolbar. You can then
+      click the button to run BidiChecker on the current page for ad hoc
+      spot-checking. (You may first have to make the Bookmarks toolbar visible
+      in your browser; each browser has a command or menu option to do
+      this.)</p>
+
+    <table>
+      <tr>
+        <td>
+          <a href='#' id='ltr-bookmarklet' onclick="return false;">
+            BidiChecker LTR
+          </a>
+        </td>
+        <td>
+          <a href='#' id='rtl-bookmarklet' onclick="return false;">
+            BidiChecker RTL
+          </a>
+        </td>
+      </tr>
+      <tr>
+        <td>This bookmarklet checks that the page being checked has an overall
+          directionality of left-to-right (for example, an English UI)</td>
+        <td>This bookmarklet checks that the page being checked has an
+          overall directionality of right-to-left (for example, a Hebrew or
+          Arabic UI)</td>
+      </tr>
+    </table>
+
+    <h2>How do I use it?</h2>
+
+    <p>To run BidiChecker, just navigate your browser to the page you want to
+      test, interact with the page to get it into the state you want to test,
+      and click on one of the BidiChecker bookmarklets in your browser's
+      bookmarks toolbar. A window will appear with the results of the
+      run. You can browse through the errors, change the table sort key, and
+      select an individual error to highlight its location on the page.</p>
+    <p>Click "Show options" to change the checker options; from that page,
+      you can also install a new bookmarklet that starts with the set of
+      options you configure.</p>
+
+    <h2>Known limitations</h2>
+    <p>The bookmarklet works on most recent browsers. Internet Explorer 9 and up
+      is supported but not older versions.</p>
+
+    <h2>Acknowledgments</h2>
+    <p>We'd like to thank
+      <a href="http://chris.improbable.org/">developer/blogger Chris Adams</a>
+      for
+      <a href="http://chris.improbable.org/2010/11/4/google-bidichecker-bookmarklet/">demonstrating
+      the BidiChecker bookmarklet concept</a>. His original source code can be
+      found <a href="https://gist.github.com/662454">here on GitHub</a>.</p>
+
+    <p>The bookmarklet links we offer here differ somewhat from Chris's
+      implementation, but the basic concept is the same.</p>
+
+  </body>
+</html>

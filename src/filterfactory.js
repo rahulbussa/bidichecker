@@ -40,7 +40,7 @@ goog.require('goog.json');
 bidichecker.FilterFactory.ComposableFilter = function() {};
 
 
-/** @inheritDoc */
+/** @override */
 bidichecker.FilterFactory.ComposableFilter.prototype.isSuppressed =
     goog.abstractMethod;
 
@@ -548,7 +548,7 @@ goog.inherits(bidichecker.FilterFactory.AndFilter_,
     bidichecker.FilterFactory.ComposableFilter);
 
 
-/** @inheritDoc */
+/** @override */
 bidichecker.FilterFactory.AndFilter_.prototype.isSuppressed = function(
     error, locationElements) {
   return this.filter1_.isSuppressed(error, locationElements) &&
@@ -578,7 +578,7 @@ goog.inherits(bidichecker.FilterFactory.AtTextFilter_,
     bidichecker.FilterFactory.ComposableFilter);
 
 
-/** @inheritDoc */
+/** @override */
 bidichecker.FilterFactory.AtTextFilter_.prototype.isSuppressed = function(
     error, locationElements) {
   return this.atText_ == (error.getAtText() || '');
@@ -608,7 +608,7 @@ goog.inherits(bidichecker.FilterFactory.AtTextRegexpFilter_,
     bidichecker.FilterFactory.ComposableFilter);
 
 
-/** @inheritDoc */
+/** @override */
 bidichecker.FilterFactory.AtTextRegexpFilter_.prototype.isSuppressed = function(
     error, locationElements) {
   return this.atTextRegexp_.test(error.getAtText() || '');
@@ -637,7 +637,7 @@ goog.inherits(bidichecker.FilterFactory.FollowedByTextFilter_,
     bidichecker.FilterFactory.ComposableFilter);
 
 
-/** @inheritDoc */
+/** @override */
 bidichecker.FilterFactory.FollowedByTextFilter_.prototype.isSuppressed =
     function(error, locationElements) {
   return this.followedByText_ == (error.getFollowedByText() || '');
@@ -668,7 +668,7 @@ goog.inherits(bidichecker.FilterFactory.FollowedByTextRegexpFilter_,
     bidichecker.FilterFactory.ComposableFilter);
 
 
-/** @inheritDoc */
+/** @override */
 bidichecker.FilterFactory.FollowedByTextRegexpFilter_.prototype.isSuppressed =
     function(error, locationElements) {
   return this.followedByTextRegexp_.test(error.getFollowedByText() || '');
@@ -697,7 +697,7 @@ goog.inherits(bidichecker.FilterFactory.LocationClassFilter_,
     bidichecker.FilterFactory.ComposableFilter);
 
 
-/** @inheritDoc */
+/** @override */
 bidichecker.FilterFactory.LocationClassFilter_.prototype.isSuppressed =
     function(error, locationElements) {
   for (var i = 0; i < locationElements.length; ++i) {
@@ -740,7 +740,7 @@ goog.inherits(bidichecker.FilterFactory.LocationClassRegexpFilter_,
     bidichecker.FilterFactory.ComposableFilter);
 
 
-/** @inheritDoc */
+/** @override */
 bidichecker.FilterFactory.LocationClassRegexpFilter_.prototype.isSuppressed =
     function(error, locationElements) {
   for (var i = 0; i < locationElements.length; ++i) {
@@ -781,7 +781,7 @@ goog.inherits(bidichecker.FilterFactory.LocationIdFilter_,
     bidichecker.FilterFactory.ComposableFilter);
 
 
-/** @inheritDoc */
+/** @override */
 bidichecker.FilterFactory.LocationIdFilter_.prototype.isSuppressed = function(
     error, locationElements) {
   for (var i = 0; i < locationElements.length; ++i) {
@@ -818,7 +818,7 @@ goog.inherits(bidichecker.FilterFactory.LocationIdRegexpFilter_,
     bidichecker.FilterFactory.ComposableFilter);
 
 
-/** @inheritDoc */
+/** @override */
 bidichecker.FilterFactory.LocationIdRegexpFilter_.prototype.isSuppressed =
     function(error, locationElements) {
   for (var i = 0; i < locationElements.length; ++i) {
@@ -858,7 +858,7 @@ goog.inherits(bidichecker.FilterFactory.LocationXpathFilter_,
     bidichecker.FilterFactory.ComposableFilter);
 
 
-/** @inheritDoc */
+/** @override */
 bidichecker.FilterFactory.LocationXpathFilter_.prototype.isSuppressed =
     function(error, locationElements) {
   // TODO(user): This currently matches the path to the element in the
@@ -895,7 +895,7 @@ goog.inherits(bidichecker.FilterFactory.NotFilter_,
     bidichecker.FilterFactory.ComposableFilter);
 
 
-/** @inheritDoc */
+/** @override */
 bidichecker.FilterFactory.NotFilter_.prototype.isSuppressed = function(
     error, locationElements) {
   return !this.filter_.isSuppressed(error, locationElements);
@@ -929,7 +929,7 @@ goog.inherits(bidichecker.FilterFactory.OrFilter_,
     bidichecker.FilterFactory.ComposableFilter);
 
 
-/** @inheritDoc */
+/** @override */
 bidichecker.FilterFactory.OrFilter_.prototype.isSuppressed = function(
     error, locationElements) {
   return this.filter1_.isSuppressed(error, locationElements) ||
@@ -959,7 +959,7 @@ goog.inherits(bidichecker.FilterFactory.PrecededByTextFilter_,
     bidichecker.FilterFactory.ComposableFilter);
 
 
-/** @inheritDoc */
+/** @override */
 bidichecker.FilterFactory.PrecededByTextFilter_.prototype.isSuppressed =
     function(error, locationElements) {
   return this.precededByText_ == (error.getPrecededByText() || '');
@@ -990,7 +990,7 @@ goog.inherits(bidichecker.FilterFactory.PrecededByTextRegexpFilter_,
     bidichecker.FilterFactory.ComposableFilter);
 
 
-/** @inheritDoc */
+/** @override */
 bidichecker.FilterFactory.PrecededByTextRegexpFilter_.prototype.isSuppressed =
     function(error, locationElements) {
   return this.precededByTextRegexp_.test(error.getPrecededByText() || '');
@@ -1018,7 +1018,7 @@ goog.inherits(bidichecker.FilterFactory.SeverityFilter_,
     bidichecker.FilterFactory.ComposableFilter);
 
 
-/** @inheritDoc */
+/** @override */
 bidichecker.FilterFactory.SeverityFilter_.prototype.isSuppressed = function(
     error, locationElements) {
   return this.severityThreshold_ <= error.getSeverity();
@@ -1044,7 +1044,7 @@ goog.inherits(bidichecker.FilterFactory.TypeFilter_,
     bidichecker.FilterFactory.ComposableFilter);
 
 
-/** @inheritDoc */
+/** @override */
 bidichecker.FilterFactory.TypeFilter_.prototype.isSuppressed = function(
     error, locationElements) {
   return this.type_ == error.getType();

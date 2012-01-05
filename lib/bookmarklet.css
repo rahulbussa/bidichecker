@@ -1,0 +1,44 @@
+body {
+  width: 600px;
+  font-family: sans-serif;
+  font-size: 13pt;
+  margin-left: 20px
+}
+
+h1 {
+  font-size: 16pt;
+}
+
+h2 {
+  font-size: 14pt;
+}
+
+table {
+  border: 1px dotted black;
+}
+
+td {
+  font-size: 11pt;
+  font-weight: bold;
+  text-align: center;
+}
+
+#ltr-bookmarklet, #rtl-bookmarklet {
+  font-size: 14pt;
+  border-style: solid;
+  border-width: thin;
+}
+
+#installation-error {
+  display: none;
+  font-size: 16pt;
+  color: red;
+  border-style: solid;
+  border-width: thin;
+  border-color: red;
+}
+
+.inline-code {
+  font-family: courier, monospace;
+  font-weight: bold;
+}

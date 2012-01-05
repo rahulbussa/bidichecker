@@ -283,7 +283,9 @@ function testDomWalker_EmbeddedBlockCancelsDeclaredStatus() {
   // If a block with declared directionality contains another block inside it,
   // we don't consider the outer block's contents to be "declared".
   // Note: This DOM must be built with createDom(), since the HTML parser
-  // inserts unwanted paragraph breaks.
+  // inserts unwanted paragraph breaks due to the nested paragraphs.
+  // The HTML would look like:
+  // <div id='test'><p dir='ltr'>Shalom<p dir='ltr'>BACK</p>Okay</p></div>
   var para1 = goog.dom.createDom('p', {'dir': 'ltr'}, 'BACK');
   var para2 = goog.dom.createDom('p', {'dir': 'ltr'}, 'Shalom', para1, 'Okay');
   var testDiv = goog.dom.createDom('div', {'id': 'test'}, para2);
@@ -300,6 +302,7 @@ function testDomWalker_EmbeddedBlockCancelsDeclaredStatus() {
                   {type: TEXT_NODE, text: 'Shalom',
                    inRtl: false, inDeclaredDir: false, block: para2},
 
+                  // "inDeclaredDir" is set only for the innermost paragraph.
                   {type: START_TAG, element: para1,
                    inRtl: false, inDeclaredDir: true, block: para1},
 
@@ -319,6 +322,58 @@ function testDomWalker_EmbeddedBlockCancelsDeclaredStatus() {
                    inRtl: false, inDeclaredDir: false, block: testDiv},
 
                   {type: END_OF_DOM, inRtl: false, block: testDiv}
+                 ];
+  assertStatesEqual(expected, states);
+}
+
+
+function testDomWalker_EmbeddedBlockCancelsDeclaredStatusViaCss() {
+  // As above, but with the paragraph directionality declared via CSS, which
+  // causes a change in the computed directionality.
+  goog.style.installStyles('.domwalker-test-ltr { direction: ltr }');
+
+  // Note: This DOM must be built with createDom(), since the HTML parser
+  // inserts unwanted paragraph breaks due to the nested paragraphs.
+  // The HTML would look like:
+  // <div dir='rtl' id='test'><p class='domwalker-test-ltr'>Shalom
+  // <p dir='ltr'>BACK</p>Okay</p></div>
+  var para1 = goog.dom.createDom('p', {'dir': 'ltr'}, 'BACK');
+  var para2 = goog.dom.createDom('p', {'class': 'domwalker-test-ltr'},
+                                 'Shalom', para1, 'Okay');
+  var testDiv = goog.dom.createDom('div', {'dir': 'rtl', 'id': 'test'}, para2);
+  goog.dom.appendChild(document.body, testDiv);
+
+  var domWalker = new bidichecker.DomWalker(testDiv);
+  var states = walkTheDom(domWalker);
+  var expected = [{type: START_TAG, element: testDiv,
+                   inRtl: true, inDeclaredDir: false, block: testDiv},
+
+                  {type: START_TAG, element: para2,
+                   inRtl: false, inDeclaredDir: false, block: para2},
+
+                  {type: TEXT_NODE, text: 'Shalom',
+                   inRtl: false, inDeclaredDir: false, block: para2},
+
+                  // "inDeclaredDir" is set only for the innermost paragraph.
+                  {type: START_TAG, element: para1,
+                   inRtl: false, inDeclaredDir: true, block: para1},
+
+                  {type: TEXT_NODE, text: 'BACK',
+                   inRtl: false, inDeclaredDir: true, block: para1},
+
+                  {type: END_TAG, element: para1,
+                   inRtl: false, inDeclaredDir: true, block: para1},
+
+                  {type: TEXT_NODE, text: 'Okay',
+                   inRtl: false, inDeclaredDir: false, block: para2},
+
+                  {type: END_TAG, element: para2,
+                   inRtl: false, inDeclaredDir: false, block: para2},
+
+                  {type: END_TAG, element: testDiv,
+                   inRtl: true, inDeclaredDir: false, block: testDiv},
+
+                  {type: END_OF_DOM, inRtl: true, block: testDiv}
                  ];
   assertStatesEqual(expected, states);
 }
@@ -384,6 +439,55 @@ function testDomWalker_DisplayNoneIsIgnored() {
 }
 
 
+function testDomWalker_VisibilityHiddenIsIgnored() {
+  // All the contents have visibility:hidden set; they should be ignored.
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML =
+      '<p dir=\'rtl\' style=\'visibility: hidden\'>Shalom!<\/p>';
+
+  var domWalker = new bidichecker.DomWalker(testDiv);
+  var states = walkTheDom(domWalker);
+  var expected = [{type: START_TAG, element: testDiv,
+                   inRtl: false, inDeclaredDir: false, block: testDiv},
+
+                  {type: END_TAG, element: testDiv,
+                   inRtl: false, inDeclaredDir: false, block: testDiv},
+
+                  {type: END_OF_DOM, inRtl: false, block: testDiv}
+                 ];
+  assertStatesEqual(expected, states);
+}
+
+
+function testDomWalker_VisibilityCollapseIsIgnored() {
+  // All the contents have visibility:collapse set; they should be ignored.
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML =
+      '<p dir=\'rtl\' style=\'visibility: collapse\'>Shalom!<\/p>';
+  var para = testDiv.firstChild;
+
+  // Some browsers (in particular, IE7) do not support visiblity:collapse; skip
+  // the test in that case.
+  if (!para.style.visibility) {
+    return;
+  }
+
+  var domWalker = new bidichecker.DomWalker(testDiv);
+  var states = walkTheDom(domWalker);
+  var expected = [{type: START_TAG, element: testDiv,
+                   inRtl: false, inDeclaredDir: false, block: testDiv},
+
+                  {type: END_TAG, element: testDiv,
+                   inRtl: false, inDeclaredDir: false, block: testDiv},
+
+                  {type: END_OF_DOM, inRtl: false, block: testDiv}
+                 ];
+  assertStatesEqual(expected, states);
+}
+
+
 function testDomWalker_ScriptAndStyleAreIgnored() {
   // <style> shouldn't really appear in the body, but sometimes it does.
   var testDiv = goog.dom.createDom('div', {'id': 'test'});
@@ -394,6 +498,35 @@ function testDomWalker_ScriptAndStyleAreIgnored() {
   var domWalker = new bidichecker.DomWalker(testDiv);
   var states = walkTheDom(domWalker);
   var expected = [{type: START_TAG, element: testDiv,
+                   inRtl: false, inDeclaredDir: false, block: testDiv},
+
+                   {type: END_TAG, element: testDiv,
+                   inRtl: false, inDeclaredDir: false, block: testDiv},
+
+                   {type: END_OF_DOM, inRtl: false, block: testDiv}
+                 ];
+  assertStatesEqual(expected, states);
+}
+
+
+function testDomWalker_TextareaContentsAreIgnored() {
+  // Text nodes inside a <textarea> are not inline with the surrounding text.
+  // We ignore them completely, instead processing the textarea value property
+  // (which contains the up-to-date text) in the undeclared field detector.
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<textarea>A b c d e f g<\/textarea>';
+  var textarea = testDiv.firstChild;
+
+  var domWalker = new bidichecker.DomWalker(testDiv);
+  var states = walkTheDom(domWalker);
+  var expected = [{type: START_TAG, element: testDiv,
+                   inRtl: false, inDeclaredDir: false, block: testDiv},
+
+                   {type: START_TAG, element: textarea,
+                   inRtl: false, inDeclaredDir: false, block: testDiv},
+
+                   {type: END_TAG, element: textarea,
                    inRtl: false, inDeclaredDir: false, block: testDiv},
 
                    {type: END_TAG, element: testDiv,
@@ -437,8 +570,8 @@ function testDomWalker_CanWalkAnIframe() {
   var iframeDoc =
       goog.dom.getFrameContentDocument(/** @type {Element} */ (iframe));
   iframeDoc.open();
-  iframeDoc.write('<div id=line1>hello world</div>' +
-                  '<div id=line2>hello world</div>');
+  iframeDoc.write('<div id=line1>hello world<\/div>' +
+                  '<div id=line2>hello world<\/div>');
   iframeDoc.close();
   var iframeRoot = iframeDoc.body;
 
@@ -508,8 +641,8 @@ function testDomWalker_CanWalkMultipleIframes() {
   // Create two iframes in the document.
   var testDiv = goog.dom.createDom('div', {'id': 'test'});
   goog.dom.appendChild(document.body, testDiv);
-  testDiv.innerHTML = '<iframe id=\'iframe1\'></iframe>' +
-      '<iframe id=\'iframe2\'></iframe>';
+  testDiv.innerHTML = '<iframe id=\'iframe1\'><\/iframe>' +
+      '<iframe id=\'iframe2\'><\/iframe>';
   goog.dom.appendChild(document.body, testDiv);
 
   // Fill the first iframe with content.
@@ -517,7 +650,7 @@ function testDomWalker_CanWalkMultipleIframes() {
   var iframe1Doc =
       goog.dom.getFrameContentDocument(/** @type {Element} */ (iframe1));
   iframe1Doc.open();
-  iframe1Doc.write('<p>hello world</p>');
+  iframe1Doc.write('<p>hello world<\/p>');
   iframe1Doc.close();
   var iframe1Root = iframe1Doc.body;
 
@@ -525,7 +658,7 @@ function testDomWalker_CanWalkMultipleIframes() {
   var iframe2 = testDiv.childNodes[1];
   var iframe2Doc = goog.dom.getFrameContentDocument(iframe2);
   iframe2Doc.open();
-  iframe2Doc.write('<iframe id=\'iframe_nested\'></iframe>');
+  iframe2Doc.write('<iframe id=\'iframe_nested\'><\/iframe>');
   iframe2Doc.close();
   var iframe2Root = iframe2Doc.body;
 
@@ -534,7 +667,7 @@ function testDomWalker_CanWalkMultipleIframes() {
   var iframe3Doc =
       goog.dom.getFrameContentDocument(/** @type {Element} */ (iframe3));
   iframe3Doc.open();
-  iframe3Doc.write('<p id=\'para\'>In a nested iframe!</p>');
+  iframe3Doc.write('<p id=\'para\'>In a nested iframe!<\/p>');
   iframe3Doc.close();
   var iframe3Root = iframe3Doc.body;
 
@@ -591,9 +724,8 @@ function testDomWalker_CanWalkMultipleIframes() {
 
 
 function testDomWalker_CanWalkAFrameSet() {
-  // There doesnt seem to be a way to create a frameset using Javascript under
-  // IE. Disable this test; handling of framesets will be tested by the Java
-  // tests anyway.
+  // There doesn't seem to be a way to create a frameset using Javascript under
+  // IE; disable this test.
   if (goog.userAgent.IE) {
     return;
   }

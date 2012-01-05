@@ -75,7 +75,7 @@ bidichecker.SpilloverDetector = function(errorCollector) {
 bidichecker.SpilloverDetector.prototype.candidate_ = null;
 
 
-/** @inheritDoc */
+/** @override */
 bidichecker.SpilloverDetector.prototype.startListening = function(scanner) {
 
   /**

@@ -1,0 +1,51 @@
+body {
+  font-family: arial, sans-serif;
+}
+
+h1 {
+  background-color: #f9efeb;
+  color: #000000;
+  padding: 10px 15px;
+  font-size: 16px;
+  font-weight: bold;
+  vertical-align: middle;
+}
+
+#content {
+  padding: 15px;
+  background-color: #fff;
+}
+
+#buttons {
+  padding: 0 15px 15px;
+  background-color: #fff;
+}
+
+#error-text {
+  margin-top: 16px;
+  color: #f00;
+  height: 80px;
+  overflow: auto;
+  border: 1px dotted #f00;
+}
+
+#summary {
+  margin-top: 10px;
+}
+
+#happy-message {
+  color: green;
+  padding: 5px;
+  border: 1px dashed;
+}
+
+#bookmarklet-section {
+  font-size: 80%;
+}
+
+.table-cell-ellipsize {
+  display:inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

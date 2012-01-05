@@ -68,7 +68,8 @@ function testReviews_EnglishDataEnglishUi() {
 
   // Run BidiChecker on the application's element. (To run it on the entire web
   // page, use document.body instead of testDiv.)
-  var errors = bidichecker.checkPage(/* shouldBeRtl= */ false, testDiv);
+  var checker = new bidichecker.BidiChecker(bidichecker.REVISION_2);
+  var errors = checker.checkPage(/* shouldBeRtl= */ false, testDiv);
 
   // No BiDi errors should be found.
   assertArrayEquals([], errors);
@@ -92,7 +93,8 @@ function testReviews_HebrewDataHebrewUi() {
   app.render();
 
   // Run BidiChecker on the application's element.
-  var errors = bidichecker.checkPage(/* shouldBeRtl= */ true, testDiv);
+  var checker = new bidichecker.BidiChecker(bidichecker.REVISION_2);
+  var errors = checker.checkPage(/* shouldBeRtl= */ true, testDiv);
 
   // No BiDi errors should be found.
   assertArrayEquals([], errors);
@@ -122,7 +124,8 @@ function testReviews_EnglishDataHebrewUi() {
   // text" errors in the reviews panel.
   var filters = [ bidichecker.FilterFactory.type('Undeclared LTR text').and(
                       bidichecker.FilterFactory.locationId('reviews')) ];
-  var errors = bidichecker.checkPage(/* shouldBeRtl= */ true, testDiv, filters);
+  var checker = new bidichecker.BidiChecker(bidichecker.REVISION_2);
+  var errors = checker.checkPage(/* shouldBeRtl= */ true, testDiv, filters);
 
   // No unexpected BiDi errors should be found.
   assertArrayEquals([], errors);
@@ -149,10 +152,10 @@ function testReviews_HebrewDataEnglishUi() {
   // As before, we'll filter out the known BiDi errors; specifically,
   // "undeclared RTL text" errors in the reviews panel. This time, we'll try
   // the XPath-based filter.
+  var checker = new bidichecker.BidiChecker(bidichecker.REVISION_2);
   var filters = [ bidichecker.FilterFactory.type('Undeclared RTL text').and(
       bidichecker.FilterFactory.locationXpath('id("reviews")/*')) ];
-  var errors =
-      bidichecker.checkPage(/* shouldBeRtl= */ false, testDiv, filters);
+  var errors = checker.checkPage(/* shouldBeRtl= */ false, testDiv, filters);
 
   // No unexpected BiDi errors should be found.
   assertArrayEquals([], errors);
@@ -189,12 +192,11 @@ function testReviews_RunGui() {
 
   // Run BidiChecker on the application's element.
   // We know this is buggy, so the error list will be non-empty.
-  var errors = bidichecker.checkPage(/* shouldBeRtl= */ true, testDiv);
+  var checker = new bidichecker.BidiChecker(bidichecker.REVISION_2);
+  var errors = checker.checkPage(/* shouldBeRtl= */ true, testDiv);
 
   // Run the in-browser error GUI.
-  if (errors.length != 0) {
-    bidichecker.runGui(errors);
-  }
+  checker.runGui();
 
   // This assertion would fail!
 //  assertArrayEquals([], errors);

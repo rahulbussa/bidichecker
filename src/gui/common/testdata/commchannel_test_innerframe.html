@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  <!--
+    Copyright 2011 Google Inc. All Rights Reserved.
+
+    Use of this source code is governed by an Apache 2.0 License.
+    See the COPYING file for details.
+  -->
+
+  <!--
+    Helper for commchannel_test.html. Page designed to be opened in an inner
+    frame so we can test inter-frame communication.
+  -->
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+    <script type="text/javascript" src="../../../../third_party/closure-library/closure/goog/base.js">
+    </script>
+    <script type="text/javascript" src="../../../deps.js"></script>
+    <script>
+goog.require('bidichecker.gui.common.CommChannel');
+
+var channel;
+
+function setUpChannel() {
+  channel = new bidichecker.gui.common.CommChannel(window.parent, {
+    'ping': onPing
+  });
+
+  // Notify other side that we're ready.
+  channel.send('ready');
+}
+
+function onPing(type, data) {
+  // Send back data we've been sent.
+  channel.send('pong', data);
+}
+    </script>
+
+  </head>
+  <body onload="setUpChannel();">
+  </body>
+</html>
+

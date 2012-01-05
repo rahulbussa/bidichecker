@@ -158,8 +158,7 @@ bidichecker.DomWalker.prototype.next_ = function() {
     // entered a "declared" subtree of the DOM. From that point, we stay
     // declared all the way down.
     var isDeclared = goog.array.peek(this.isDeclaredStack_) ||
-        isRtl != goog.array.peek(this.isRtlStack_) ||
-        this.declaresDir_(element);
+        this.declaresDir_(element, isRtl);
     this.isDeclaredStack_.push(isDeclared);
     this.isRtlStack_.push(isRtl);
 
@@ -185,7 +184,11 @@ bidichecker.DomWalker.prototype.next_ = function() {
       // Exiting a block.
       this.blockStack_.pop();
     }
-  } else if (this.node_.nodeType == goog.dom.NodeType.TEXT) {
+  } else if (this.node_.nodeType == goog.dom.NodeType.TEXT &&
+      this.node_.parentNode.nodeName != 'TEXTAREA') {
+    // Text nodes inside a <textarea> are not inline with the surrounding text.
+    // We ignore them completely, instead processing the textarea value property
+    // (which contains the up-to-date text) in the undeclared field detector.
     this.dispatchEvent(bidichecker.DomWalker.EventTypes.TEXT_NODE);
   }
 };
@@ -260,14 +263,27 @@ bidichecker.DomWalker.prototype.getFrames = function() {
 
 /**
  * Does this element impart "declared directionality" status to the text it
- * contains? This is true for an element below the root element which has a
- * "dir" attribute, unless the element also contains a block-level element.
+ * contains? This is meant to suppress errors on a mixed-direction text that
+ * was an atomic data item for the page author. The most that the page author
+ * can do with such text data is declare its overall direction; there is no way
+ * for the page author to know what the internal directional structure of the
+ * text was intended to be.
+ * <p>We assign this status to an element below the root element which has a
+ * "dir" attribute or a "direction" style, or at which the directionality
+ * context changes (presumably by a CSS rule). We do not assign this status to
+ * any element that contains a block-level element; text data items are presumed
+ * not to contain block-level mark-up. We do allow this status for an element
+ * that contains inline elements, since page authors sometimes add some minor
+ * inline mark-up to atomic text data items, e.g. bolding "hits" in snippets.
  * @param {Element} element The element to test.
+ * @param {boolean} isRtl The directionality of the element.
  * @return {boolean} Does the element have "isDeclared" status?
  * @private
  */
-bidichecker.DomWalker.prototype.declaresDir_ = function(element) {
-  if (!element.dir || element == this.rootBlock_) {
+bidichecker.DomWalker.prototype.declaresDir_ = function(element, isRtl) {
+  if ((!element.dir && !element.style.direction &&
+      isRtl == goog.array.peek(this.isRtlStack_)) ||
+      element == this.rootBlock_) {
     return false;
   }
 

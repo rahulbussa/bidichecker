@@ -18,7 +18,7 @@
 					Overview
 				</div>
 				<div>	
-					<div class="desc">Testing utilities to check a web page for BiDi-related errors.
+					<div class="desc">Class which checks a web page for bidi-related errors.
 This file has the top-level entry points for use as a Javascript API, along
 with JSON-based interface functions meant to be called from an external
 testing framework like WebDriver.</div>
@@ -34,6 +34,145 @@ testing framework like WebDriver.</div>
 			<div class="sectionHead">Constructors</div>
 			
 			
+			<div class="section constructor">
+				<div class="itemTitle">
+					<a name="bidichecker.Revision"></a>
+					
+					
+					bidichecker.Revision(<span class="signature">revision</span>)
+					
+				</div>
+				
+				
+					<div class="desc">A class representing a revision of the BidiChecker checks. Higher revisions
+indicate later releases, which check for more error situations.</div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							number
+						</td>
+						<td>
+							revision
+						</td>
+						<td>
+							The revision number.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				
+				
+				<div class="detailHead">properties</div>
+				
+					<ul class="details">
+						<li><span class="type">number</span> <a href="#bidichecker.Revision.revision">revision</a></li>
+					</ul>
+				
+				
+				
+				
+				
+				
+			</div>
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			<div class="section constructor">
+				<div class="itemTitle">
+					<a name="bidichecker.BidiChecker"></a>
+					
+					
+					bidichecker.BidiChecker(<span class="signature">revision</span>)
+					
+				</div>
+				
+				
+					<div class="desc">Class which checks a web page for bidi-related errors. The preferred way to
+invoke BidiChecker is by constructing an instance of this class. The previous
+API, based on static methods, is no longer recommended and will be
+deprecated.</div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							!bidichecker.Revision
+						</td>
+						<td>
+							revision
+						</td>
+						<td>
+							Revision of BidiChecker checks to
+    run.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				<div class="detailHead">methods</div>
+				
+					<ul class="details">
+						<li><a href="#bidichecker.BidiChecker.checkPage">checkPage</a>(shouldBeRtl, opt_element, opt_filters)</li>
+					</ul>
+				
+					<ul class="details">
+						<li><a href="#bidichecker.BidiChecker.checkPageToJson">checkPageToJson</a>(shouldBeRtl, element, filtersJson)</li>
+					</ul>
+				
+					<ul class="details">
+						<li><a href="#bidichecker.BidiChecker.setGuiAppUrl">setGuiAppUrl</a>(guiAppUrl)</li>
+					</ul>
+				
+					<ul class="details">
+						<li><a href="#bidichecker.BidiChecker.runGui">runGui</a>(opt_noPopup)</li>
+					</ul>
+				
+				
+				
+				
+				
+				
+				
+				
+			</div>
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 			
 			
 			
@@ -45,20 +184,33 @@ testing framework like WebDriver.</div>
 			<div class="sectionHead">Functions</div>
 			
 			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 			<div class="section function">
 				<div class="itemTitle">
-					<a name="bidichecker.checkPage"></a>
+					<a name="bidichecker.BidiChecker.checkPage"></a>
 					
+						<i><a href="#bidichecker.BidiChecker" class="type">bidichecker.BidiChecker.</a></i>checkPage(<span class="signature">shouldBeRtl, opt_element, opt_filters</span>)
 					
-					bidichecker.checkPage(<span class="signature">shouldBeRtl, opt_element, opt_filters</span>)
 					
 				</div>
 				
 				
 					<div class="desc">Checks the contents of the current web page, including all nested frames, for
-BiDi-related errors. If <code>opt_element</code> is specified, checks only within
-the given element of the DOM (including any nested frames). This is the main
-entry point for the Javascript API.</div>
+bidi-related errors. If <code>opt_element</code> is specified, checks only within
+the given element of the DOM (including any nested frames).</div>
 				
 				
 				
@@ -131,10 +283,10 @@ entry point for the Javascript API.</div>
 			
 			<div class="section function">
 				<div class="itemTitle">
-					<a name="bidichecker.checkPageToJson"></a>
+					<a name="bidichecker.BidiChecker.checkPageToJson"></a>
 					
+						<i><a href="#bidichecker.BidiChecker" class="type">bidichecker.BidiChecker.</a></i>checkPageToJson(<span class="signature">shouldBeRtl, element, filtersJson</span>)
 					
-					bidichecker.checkPageToJson(<span class="signature">shouldBeRtl, opt_element, opt_filtersJson</span>)
 					
 				</div>
 				
@@ -163,26 +315,27 @@ entry point for the Javascript API.</div>
 				
 					<tr>
 						<td class="type">
-							Element=
+							Element
 						</td>
 						<td>
-							opt_element
+							element
 						</td>
 						<td>
-							The root element of the DOM subtree to be
-    checked; if null, checks the entire current web page.
+							The root element of the DOM subtree to be checked;
+    if null, checks the entire current web page.
 						</td> 
 					</tr>
 				
 					<tr>
 						<td class="type">
-							string=
+							string
 						</td>
 						<td>
-							opt_filtersJson
+							filtersJson
 						</td>
 						<td>
-							Error suppression filters in a JSON string.
+							Error suppression filters in a JSON string,
+    representing a (possibly-empty) array of filter objects.
 						</td> 
 					</tr>
 				
@@ -214,15 +367,15 @@ entry point for the Javascript API.</div>
 			
 			<div class="section function">
 				<div class="itemTitle">
-					<a name="bidichecker.runGui"></a>
+					<a name="bidichecker.BidiChecker.setGuiAppUrl"></a>
 					
+						<i><a href="#bidichecker.BidiChecker" class="type">bidichecker.BidiChecker.</a></i>setGuiAppUrl(<span class="signature">guiAppUrl</span>)
 					
-					bidichecker.runGui(<span class="signature">errors</span>)
 					
 				</div>
 				
 				
-					<div class="desc">Runs the interactive visual error browsing mode.</div>
+					<div class="desc">Sets the location of the GUI files.</div>
 				
 				
 				
@@ -233,14 +386,13 @@ entry point for the Javascript API.</div>
 				
 					<tr>
 						<td class="type">
-							Array.<!bidichecker.Error>
+							string
 						</td>
 						<td>
-							errors
+							guiAppUrl
 						</td>
 						<td>
-							An array of errors to be
-    displayed.
+							Location of the GUI files.
 						</td> 
 					</tr>
 				
@@ -256,15 +408,23 @@ entry point for the Javascript API.</div>
 			
 			<div class="section function">
 				<div class="itemTitle">
-					<a name="bidichecker.runGuiFromJson"></a>
+					<a name="bidichecker.BidiChecker.runGui"></a>
 					
+						<i><a href="#bidichecker.BidiChecker" class="type">bidichecker.BidiChecker.</a></i>runGui(<span class="signature">opt_noPopup</span>)
 					
-					bidichecker.runGuiFromJson(<span class="signature">errorsJson</span>)
 					
 				</div>
 				
 				
-					<div class="desc">JSON interface to <code>runGui</code>.</div>
+					<div class="desc">Runs the interactive visual error browsing GUI, displaying the errors
+reported by the last call to <code>checkPage()</code>. Calling <code>runGui()</code>
+before <code>checkPage()</code> is not supported (and is a no-op). If a GUI opened
+by any prior BidiChecker call in this window is still open, it will be closed
+and then re-opened.
+On IE versions 8 and above, the GUI will always be displayed in an in-page
+dialog box, regardless of the value of opt_noPopup.
+On earlier versions of IE, the GUI will not be displayed. An error message
+will be displayed instead.</div>
 				
 				
 				
@@ -275,14 +435,342 @@ entry point for the Javascript API.</div>
 				
 					<tr>
 						<td class="type">
+							boolean=
+						</td>
+						<td>
+							opt_noPopup
+						</td>
+						<td>
+							Disables opening the error browser in a popup
+    window.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.runBookmarkletGui"></a>
+					
+					
+					bidichecker.runBookmarkletGui(<span class="signature">options, hostWindow, opt_guiAppUrl</span>)
+					
+				</div>
+				
+				
+					<div class="desc">Runs the bookmarklet GUI with a given set of initial options. If a GUI opened
+by any prior BidiChecker call in this window is still open, it will be closed
+and then re-opened.
+On IE the given window is closed, and the GUI is opened in an in-page dialog.
+(This is relevant only for IE versions 9 and up, as the bookmarklet doesn't
+work on earlier versions of IE, due to URL length and other restrictions).</div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							Object.<string, Object>
+						</td>
+						<td>
+							options
+						</td>
+						<td>
+							The initial options.
+    Options are specified as an object with the following (optional) keys:
+    <ul>
+    <li>dir -- string, "rtl" or "ltr" (the default). The expected page
+    directionality.
+    <li>severity -- The severity level from which to suppress error messages,
+    or -1 (for no severity filtering). Default 4.
+    </ul>
+						</td> 
+					</tr>
+				
+					<tr>
+						<td class="type">
+							Window
+						</td>
+						<td>
+							hostWindow
+						</td>
+						<td>
+							The underlying browser window object
+    to be used by the GUI, as returned by window.open, or null to have the
+    function open a new window itself. If non-null, the window should be
+    empty. Do not pass null when calling this function in an onload handler
+    because pop-up blockers will not let it open a window.
+						</td> 
+					</tr>
+				
+					<tr>
+						<td class="type">
+							string=
+						</td>
+						<td>
+							opt_guiAppUrl
+						</td>
+						<td>
+							Location of the GUI files.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.generateBookmarklet"></a>
+					
+					
+					bidichecker.generateBookmarklet(<span class="signature">options, opt_scriptUrl, opt_guiAppUrl</span>)
+					
+				</div>
+				
+				
+					<div class="desc">Generates a BidiChecker bookmarklet. This is a javascript: url that loads the
+BidiChecker package and activates the options page.</div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							!Object.<string, !Object>
+						</td>
+						<td>
+							options
+						</td>
+						<td>
+							The options that the options page
+    will be initially populated with. See OptionsPage constructor
+    documentation for more information.
+						</td> 
+					</tr>
+				
+					<tr>
+						<td class="type">
+							string=
+						</td>
+						<td>
+							opt_scriptUrl
+						</td>
+						<td>
+							Location of the BidiChecker package. Used to
+    install the GUI server. Must not include characters that have special
+    meaning inside JavaScript strings.
+						</td> 
+					</tr>
+				
+					<tr>
+						<td class="type">
+							string=
+						</td>
+						<td>
+							opt_guiAppUrl
+						</td>
+						<td>
+							Location of the GUI application. Must not
+    include characters that have special meaning inside JavaScript strings.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				<div class="detailHead">returns</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
 							string
 						</td>
 						<td>
-							errorsJson
+							The generated link.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.checkPage"></a>
+					
+					
+					bidichecker.checkPage(<span class="signature">shouldBeRtl, opt_element, opt_filters</span>)
+					
+				</div>
+				
+				
+					<div class="desc">Checks the contents of the current web page, including all nested frames, for
+bidi-related errors. If <code>opt_element</code> is specified, checks only within
+the given element of the DOM (including any nested frames).
+<p>This used to be the main entry point for the Javascript API. It is now
+deprecated, and is here only for compatibility with any bookmarklets created
+by users before the class-based API was introduced. All other code should
+instead construct an instance of <code>bidichecker.BidiChecker</code> and call its
+<code>checkPage()</code> instance method.</div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							boolean
 						</td>
 						<td>
-							An array of errors to be displayed, in JSON
-    format (similar to that produced by <code>checkPageJson()</code>).
+							shouldBeRtl
+						</td>
+						<td>
+							Is the root expected to be right-to-left?
+						</td> 
+					</tr>
+				
+					<tr>
+						<td class="type">
+							Element=
+						</td>
+						<td>
+							opt_element
+						</td>
+						<td>
+							The root element of the DOM subtree to be
+    checked; if null, checks the entire current web page.
+						</td> 
+					</tr>
+				
+					<tr>
+						<td class="type">
+							Array.<!bidichecker.Filter>=
+						</td>
+						<td>
+							opt_filters
+						</td>
+						<td>
+							Error suppression filters.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+				<div class="detailHead">returns</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							!Array.<!bidichecker.Error>
+						</td>
+						<td>
+							Array of error objects for all failing
+    checks.
+						</td> 
+					</tr>
+				
+				</table>
+				
+				
+				
+			</div>
+			
+			
+			
+			<div class="section function">
+				<div class="itemTitle">
+					<a name="bidichecker.runGui"></a>
+					
+					
+					bidichecker.runGui(<span class="signature">errors, opt_noPopup, opt_guiAppUrl</span>)
+					
+				</div>
+				
+				
+					<div class="desc">Runs the interactive visual error browsing GUI. If a GUI opened by any prior
+BidiChecker call in this window is still open, it will be closed and then
+re-opened.
+<p>This entry point is deprecated, and is here only for compatibility with
+any bookmarklets created by users before the class-based API was introduced.
+All other code should instead construct an instance of
+<code>bidichecker.BidiChecker</code> and call its <code>checkPage()</code> and
+<code>runGui()</code> instance methods.</div>
+				
+				
+				
+				
+				
+				<div class="detailHead">parameters</div>
+				<table class="params">
+				
+					<tr>
+						<td class="type">
+							!Array.<!bidichecker.Error>
+						</td>
+						<td>
+							errors
+						</td>
+						<td>
+							An array of errors to be
+    displayed.
+						</td> 
+					</tr>
+				
+					<tr>
+						<td class="type">
+							boolean=
+						</td>
+						<td>
+							opt_noPopup
+						</td>
+						<td>
+							Disables opening the error browser in a popup
+    window.
+						</td> 
+					</tr>
+				
+					<tr>
+						<td class="type">
+							string=
+						</td>
+						<td>
+							opt_guiAppUrl
+						</td>
+						<td>
+							Location of the GUI files.
 						</td> 
 					</tr>
 				
@@ -302,6 +790,153 @@ entry point for the Javascript API.</div>
 			
 			
 			
+			<div class="section object">
+				<div class="itemTitle">
+					<a name="bidichecker.Revision.revision"></a>
+					
+					<span class="type">number</span>
+					
+					
+						<i><a href="#bidichecker.Revision" class="type">bidichecker.Revision.</a></i>revision
+					
+					
+				</div>
+				
+				
+					<div class="desc"></div>
+				
+				
+				
+				
+				
+			</div>
+			
+			
+			
+			
+			<div class="section object">
+				<div class="itemTitle">
+					<a name="bidichecker.REVISION_1"></a>
+					
+					<span class="type">!bidichecker.Revision</span>
+					
+					
+					
+						bidichecker.REVISION_1
+					
+				</div>
+				
+				
+					<div class="desc">Currently the default revision, for backwards-compatibility with existing
+user tests that did not specify an explicit revision. Includes checks for
+overall page directionality, undeclared opposite-directionality inline text,
+and "spillover" which causes garbling of numbers following declared opposite-
+directionality text.
+<p>This revision is no longer recommended and will be deprecated. Tests
+should use <code>REVISION_2</code>.</div>
+				
+				
+				
+				
+				
+			</div>
+			
+			
+			
+			
+			<div class="section object">
+				<div class="itemTitle">
+					<a name="bidichecker.REVISION_2"></a>
+					
+					<span class="type">!bidichecker.Revision</span>
+					
+					
+					
+						bidichecker.REVISION_2
+					
+				</div>
+				
+				
+					<div class="desc">Currently the latest revision. Adds checks for undeclared opposite-
+directionality text attributes such as input values and tooltip text.</div>
+				
+				
+				
+				
+				
+			</div>
+			
+			
+			
+			
+			<div class="section object">
+				<div class="itemTitle">
+					<a name="bidichecker.LATEST"></a>
+					
+					<span class="type">!bidichecker.Revision</span>
+					
+					
+					
+						bidichecker.LATEST
+					
+				</div>
+				
+				
+					<div class="desc">Always points to the latest revision. Automated tests should avoid using
+this, as it means that newly-added checks will cause the automated tests to
+fail.</div>
+				
+				
+				
+				
+				
+			</div>
+			
+			
+			
+			
+			
+			
+			
+			<div class="section object">
+				<div class="itemTitle">
+					<a name="bidichecker.instance"></a>
+					
+					<span class="type">bidichecker.BidiChecker</span>
+					
+					
+					
+						bidichecker.instance
+					
+				</div>
+				
+				
+					<div class="desc">A static instance of BidiChecker, for use by an external interface.</div>
+				
+				
+				
+				
+				
+			</div>
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 			
 			
 			
@@ -313,7 +948,7 @@ entry point for the Javascript API.</div>
 		</div>
 	</div>
 	<div class="finePrint">
-	Generated by <a href="http://jsdoctoolkit.org/" target="_blank">JsDoc Toolkit</a> 1.3.3 on Tue, 08 Feb 2011 17:39:01 GMT.
+	Generated by <a href="http://jsdoctoolkit.org/" target="_blank">JsDoc Toolkit</a> 1.3.3 on Thu, 05 Jan 2012 12:29:15 GMT.
 	</div>
 </body>
 </html>

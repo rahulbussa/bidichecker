@@ -163,6 +163,12 @@ bidichecker.Error.nextErrorId_ = 0;
 bidichecker.Error.highlightableAreas_ = [];
 
 
+/** @return {number} The error id. */
+bidichecker.Error.prototype.getId = function() {
+  return this['id'];
+};
+
+
 /** @return {string} The error type. */
 bidichecker.Error.prototype.getType = function() {
   return this['type'];
@@ -275,6 +281,8 @@ bidichecker.Error.prototype.toString = function() {
 
   var value;
   if ((value = this.getAtText())) {
+    var AT_TEXT_TRUNCATION_LENGTH = 20;
+    value = bidichecker.utils.truncateString(value, AT_TEXT_TRUNCATION_LENGTH);
     buffer.append(': ', bidichecker.utils.singleQuoteString(value));
   }
   if ((value = this.getPrecededByText())) {

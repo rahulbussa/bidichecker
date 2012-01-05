@@ -661,7 +661,7 @@ function testFilterFactory_LocationXpathFilterNoMatch() {
     assertFalse(filter.isSuppressed(error, [testDiv.firstChild]));
   } catch (except) {
     // The filter should only throw if the browser doesn't support XPaths.
-    // TODO(elbaum): Remove the try-catch block when XPath is fully supported.
+    // TODO(user): Remove the try-catch block when XPath is fully supported.
     assert(!document.evaluate);
   }
 }
@@ -680,7 +680,7 @@ function testFilterFactory_LocationXpathFilterMatch() {
     assertTrue(filter.isSuppressed(error, [testDiv.firstChild]));
   } catch (except) {
     // The filter should only throw if the browser doesn't support XPaths.
-    // TODO(elbaum): Remove the try-catch block when XPath is fully supported.
+    // TODO(user): Remove the try-catch block when XPath is fully supported.
     assert(!document.evaluate);
   }
 }
@@ -701,7 +701,7 @@ function testFilterFactory_LocationXpathFilterTwoMatches() {
     assertTrue(filter.isSuppressed(error, [testDiv.childNodes[1]]));
   } catch (except) {
     // The filter should only throw if the browser doesn't support XPaths.
-    // TODO(elbaum): Remove the try-catch block when XPath is fully supported.
+    // TODO(user): Remove the try-catch block when XPath is fully supported.
     assert(!document.evaluate);
   }
 }
@@ -743,7 +743,7 @@ function testFilterFactory_LocationXpathMatchesInIframes() {
     assertTrue(filter.isSuppressed(error, [iframe, secondDiv]));
   } catch (except) {
     // The filter should only throw if the browser doesn't support XPaths.
-    // TODO(elbaum): Remove the try-catch block when XPath is fully supported.
+    // TODO(user): Remove the try-catch block when XPath is fully supported.
     assert(!document.evaluate);
   }
 }
@@ -779,7 +779,7 @@ function testFilterFactory_LocationXpathMatchesIframeElement() {
     assertTrue(filter.isSuppressed(error, [iframe, secondDiv]));
   } catch (except) {
     // The filter should only throw if the browser doesn't support XPaths.
-    // TODO(elbaum): Remove the try-catch block when XPath is fully supported.
+    // TODO(user): Remove the try-catch block when XPath is fully supported.
     assert(!document.evaluate);
   }
 }

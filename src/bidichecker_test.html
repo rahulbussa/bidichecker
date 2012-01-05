@@ -34,23 +34,59 @@ goog.require('goog.testing.jsunit');
 function testBidiChecker_CheckPageRunsAllCheckers() {
   var testDiv = goog.dom.createDom('div', {'id': 'test'});
   goog.dom.appendChild(document.body, testDiv);
-  testDiv.innerHTML = '<p><span dir=\'rtl\'>friends<\/span>5,012.7 meters<\/p>';
-  var errors = bidichecker.checkPage(true, testDiv);
+  testDiv.innerHTML =
+      '<p><span dir=\'rtl\'>friends<\/span>5,012.7 meters<\/p>' +
+      '<p dir=\'rtl\'><textarea>Some LTR text.<\/textarea><\/p>';
+  var checker = new bidichecker.BidiChecker(bidichecker.REVISION_2);
+  var errors = checker.checkPage(true, testDiv);
+  var expected = [
+      {'type': 'Overall directionality not RTL',
+       'severity': 1},
 
-  var expected = [{'type': 'Overall directionality not RTL',
-                   'severity': 1},
+      {'type': 'Undeclared LTR text',
+       'atText': 'friends',
+       'severity': 4,
+       'locationDescription': '<div id=\'test\'><p><span dir=\'rtl\'>'},
 
-                  {'type': 'Undeclared LTR text',
-                   'atText': 'friends',
-                   'severity': 4,
-                   'locationDescription':
-                       '<div id=\'test\'><p><span dir=\'rtl\'>'},
+      {'type': 'Declared RTL spillover to number',
+       'atText': '5,012.7',
+       'precededByText': 'friends',
+       'severity': 2,
+       'locationDescription': '<div id=\'test\'><p>'},
 
-                  {'type': 'Declared RTL spillover to number',
-                   'atText': '5,012.7',
-                   'precededByText': 'friends',
-                   'severity': 2,
-                   'locationDescription': '<div id=\'test\'><p>'}];
+      {'type': 'Undeclared LTR textarea value',
+       'severity': 1,
+       'atText': 'Some LTR text.',
+       'locationDescription': '<div id=\'test\'><p dir=\'rtl\'><textarea>'}
+  ];
+  assertErrorFields(expected, errors);
+}
+
+
+function testBidiChecker_CheckPageRunsAllCheckersForOldRevision() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML =
+      '<p><span dir=\'rtl\'>friends<\/span>5,012.7 meters<\/p>' +
+      '<p dir=\'rtl\'><textarea>Some LTR text.<\/textarea><\/p>';
+  var checker = new bidichecker.BidiChecker(bidichecker.REVISION_1);
+  var errors = checker.checkPage(true, testDiv);
+
+  var expected = [
+      {'type': 'Overall directionality not RTL',
+       'severity': 1},
+
+      {'type': 'Undeclared LTR text',
+       'atText': 'friends',
+       'severity': 4,
+       'locationDescription': '<div id=\'test\'><p><span dir=\'rtl\'>'},
+
+      {'type': 'Declared RTL spillover to number',
+       'atText': '5,012.7',
+       'precededByText': 'friends',
+       'severity': 2,
+       'locationDescription': '<div id=\'test\'><p>'}
+  ];
   assertErrorFields(expected, errors);
 }
 
@@ -91,35 +127,39 @@ function testBidiChecker_CheckPageChecksAllIframes() {
   iframe3Doc.close();
 
   // 5. Run BidiChecker on the top-level page.
-  var errors = bidichecker.checkPage(true, testDiv);
+  var checker = new bidichecker.BidiChecker(bidichecker.REVISION_2);
+  var errors = checker.checkPage(true, testDiv);
 
-  var expected = [{'type': 'Undeclared LTR text',
-                   'atText': 'Shalom',
-                   'severity': 3,
-                   'locationDescription': '<div dir=\'rtl\' id=\'test\'><p>'},
+  var expected =
+      [{'type': 'Undeclared LTR text',
+        'atText': 'Shalom',
+        'severity': 3,
+        'locationDescription': '<div dir=\'rtl\' id=\'test\'><p>'},
 
-                  {'type': 'Undeclared LTR text',
-                   'atText': 'hello world',
-                   'severity': 4,
-                   'locationDescription':
-                       '<body><p dir=\'rtl\'> in <iframe id=\'iframe1\'>'},
+       {'type': 'Undeclared LTR text',
+        'atText': 'hello world',
+        'severity': 4,
+        'locationDescription':
+            '<p dir=\'rtl\'> in ' +
+            '<div dir=\'rtl\' id=\'test\'><iframe id=\'iframe1\'>'},
 
-                  {'type': 'Undeclared LTR text',
-                   'atText': 'Hi',
-                   'followedByText': '!',
-                   'severity': 4,
-                   'locationDescription':
-                       '<body><p dir=\'rtl\'> in <iframe id=\'iframe2\'>'},
+       {'type': 'Undeclared LTR text',
+        'atText': 'Hi',
+        'followedByText': '!',
+        'severity': 4,
+        'locationDescription':
+            '<p dir=\'rtl\'> in ' +
+            '<div dir=\'rtl\' id=\'test\'><iframe id=\'iframe2\'>'},
 
-                  {'type': 'Undeclared LTR text',
-                   'atText': 'In a nested iframe',
-                   'followedByText': '!',
-                   'severity': 4,
-                   'locationDescription':
-                       '<p dir=\'rtl\' id=\'para\'> in ' +
-                       '<iframe id=\'iframe_nested\'> in ' +
-                       '<iframe id=\'iframe2\'>'}
-                   ];
+       {'type': 'Undeclared LTR text',
+        'atText': 'In a nested iframe',
+        'followedByText': '!',
+        'severity': 4,
+        'locationDescription':
+            '<p dir=\'rtl\' id=\'para\'> in ' +
+            '<iframe id=\'iframe_nested\'> in ' +
+            '<div dir=\'rtl\' id=\'test\'><iframe id=\'iframe2\'>'}
+      ];
   assertErrorFields(expected, errors);
 }
 
@@ -141,7 +181,8 @@ function testBidiChecker_OverallDirectionalityNotCheckedInIframes() {
   iframeDoc.close();
 
   // 3. Run BidiChecker on the top-level page, expecting RTL directionality.
-  var errors = bidichecker.checkPage(true, testDiv);
+  var checker = new bidichecker.BidiChecker(bidichecker.REVISION_2);
+  var errors = checker.checkPage(true, testDiv);
 
   // 4. Only expect an error at the top level.
   var expected = [{'type': 'Overall directionality not RTL',
@@ -156,7 +197,8 @@ function testBidiChecker_CheckPageRunsFilters() {
   testDiv.innerHTML = '<p><span dir=\'rtl\'>friends<\/span>5,012.7 meters<\/p>';
 
   var filters = [bidichecker.FilterFactory.atText('friends')];
-  var errors = bidichecker.checkPage(true, testDiv, filters);
+  var checker = new bidichecker.BidiChecker(bidichecker.REVISION_2);
+  var errors = checker.checkPage(true, testDiv, filters);
 
   var expected = [{'type': 'Overall directionality not RTL',
                    'severity': 1},
@@ -176,7 +218,8 @@ function testBidiChecker_LocationBasedFilterWorks() {
   testDiv.innerHTML =
     '<p><span dir=\'rtl\' id=\'my_id\' >friends<\/span>5,012.7 meters<\/p>';
   var filters = [bidichecker.FilterFactory.locationId('my_id')];
-  var errors = bidichecker.checkPage(true, testDiv, filters);
+  var checker = new bidichecker.BidiChecker(bidichecker.REVISION_2);
+  var errors = checker.checkPage(true, testDiv, filters);
 
   var expected = [{'type': 'Overall directionality not RTL',
                    'severity': 1},
@@ -192,47 +235,50 @@ function testBidiChecker_LocationBasedFilterWorks() {
 
 function testBidiChecker_XpathFilterNotCachedAcrossCalls() {
   // Onlyl run this test if the browser supports XPaths.
-  // TODO(elbaum): Remove the condition block when XPath is fully supported.
-  if (document.evaluate) {
-    var testDiv = goog.dom.createDom('div', {'id': 'test'});
-    goog.dom.appendChild(document.body, testDiv);
-    testDiv.innerHTML =
+  // TODO(user): Remove the condition block when XPath is fully supported.
+  if (!document.evaluate) {
+    return;
+  }
+
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML =
       '<p><span dir=\'rtl\' id=\'my_id\' >friends<\/span>5,012.7 meters<\/p>';
 
-    var filters = [bidichecker.FilterFactory.locationXpath('id("my_id")')];
-    var errors = bidichecker.checkPage(true, testDiv, filters);
+  var filters = [bidichecker.FilterFactory.locationXpath('id("my_id")')];
+  var checker = new bidichecker.BidiChecker(bidichecker.REVISION_2);
+  var errors = checker.checkPage(true, testDiv, filters);
 
-    var expected = [{'type': 'Overall directionality not RTL',
-                     'severity': 1},
+  var expected = [{'type': 'Overall directionality not RTL',
+                   'severity': 1},
 
-                    {'type': 'Declared RTL spillover to number',
-                     'atText': '5,012.7',
-                     'precededByText': 'friends',
-                     'severity': 2,
-                     'locationDescription': '<div id=\'test\'><p>'}];
-    assertErrorFields(expected, errors);
+                  {'type': 'Declared RTL spillover to number',
+                   'atText': '5,012.7',
+                   'precededByText': 'friends',
+                   'severity': 2,
+                   'locationDescription': '<div id=\'test\'><p>'}];
+  assertErrorFields(expected, errors);
 
-    // Create a new test div containing an element with the same id. If XPath
-    // results are cached across calls to checkPage(), this will fail, since the
-    // cache will still contain the obsolete element.
-    goog.dom.removeNode(testDiv);
-    var testDiv = goog.dom.createDom('div', {'id': 'test'});
-    goog.dom.appendChild(document.body, testDiv);
-    testDiv.innerHTML =
+  // Create a new test div containing an element with the same id. If XPath
+  // results are cached across calls to checkPage(), this will fail, since the
+  // cache will still contain the obsolete element.
+  goog.dom.removeNode(testDiv);
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML =
       '<p><span dir=\'rtl\' id=\'my_id\' align=\'right\'>ends<\/span>5.7<\/p>';
 
-    errors = bidichecker.checkPage(true, testDiv, filters);
+  errors = checker.checkPage(true, testDiv, filters);
 
-    expected = [{'type': 'Overall directionality not RTL',
-                 'severity': 1},
+  expected = [{'type': 'Overall directionality not RTL',
+               'severity': 1},
 
-                {'type': 'Declared RTL spillover to number',
-                 'atText': '5.7',
-                 'precededByText': 'ends',
-                 'severity': 2,
-                 'locationDescription': '<div id=\'test\'><p>'}];
-    assertErrorFields(expected, errors);
-  }
+              {'type': 'Declared RTL spillover to number',
+               'atText': '5.7',
+               'precededByText': 'ends',
+               'severity': 2,
+               'locationDescription': '<div id=\'test\'><p>'}];
+  assertErrorFields(expected, errors);
 }
 
 
@@ -254,7 +300,8 @@ function testBidiChecker_LocationBasedFilterWorksInIframe() {
 
   // 3. Run BidiChecker on the top-level page, filtering within the iframe.
   var filters = [bidichecker.FilterFactory.locationId('iframe1')];
-  var errors = bidichecker.checkPage(true, testDiv, filters);
+  var checker = new bidichecker.BidiChecker(bidichecker.REVISION_2);
+  var errors = checker.checkPage(true, testDiv, filters);
 
   // 4. Only expect errors at the top level.
   var expected = [{'type': 'Undeclared LTR text',
@@ -262,6 +309,39 @@ function testBidiChecker_LocationBasedFilterWorksInIframe() {
                    'severity': 3,
                    'locationDescription': '<div dir=\'rtl\' id=\'test\'><p>'}
                  ];
+  assertErrorFields(expected, errors);
+}
+
+
+function testBidiChecker_StaticCheckPageRunsAllCheckers() {
+  // This tests the deprecated static checkPage() method.
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML =
+      '<p><span dir=\'rtl\'>friends<\/span>5,012.7 meters<\/p>' +
+      '<p dir=\'rtl\'><textarea>Some LTR text.<\/textarea><\/p>';
+  var errors = bidichecker.checkPage(true, testDiv);
+
+  var expected = [
+      {'type': 'Overall directionality not RTL',
+       'severity': 1},
+
+      {'type': 'Undeclared LTR text',
+       'atText': 'friends',
+       'severity': 4,
+       'locationDescription': '<div id=\'test\'><p><span dir=\'rtl\'>'},
+
+      {'type': 'Declared RTL spillover to number',
+       'atText': '5,012.7',
+       'precededByText': 'friends',
+       'severity': 2,
+       'locationDescription': '<div id=\'test\'><p>'},
+
+      {'type': 'Undeclared LTR textarea value',
+       'severity': 1,
+       'atText': 'Some LTR text.',
+       'locationDescription': '<div id=\'test\'><p dir=\'rtl\'><textarea>'}
+  ];
   assertErrorFields(expected, errors);
 }
 

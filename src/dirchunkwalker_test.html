@@ -381,6 +381,27 @@ function testDirChunkWalker_ScriptAndStyleAreIgnored() {
   assertArrayEquals([], chunks);
 }
 
+
+function testDirChunkWalker_TextareaContentsAreIgnored() {
+  // Text nodes inside a <textarea> are not inline with the rest of the page.
+  var testDiv = goog.dom.createDom('div', {'id': 'test'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML =
+      '<p>This contains <textarea>A b c d e f g<\/textarea> a textarea<\/p>';
+
+  var para = testDiv.firstChild;  // <p>...
+
+  var chunks = walkTheChunks(testDiv);
+  var chunk = chunks[0];
+  assertEquals('', DirChunkDiff_(chunk, 'This contains  a textarea', false,
+                                 [{charPos: 0, node: para},
+                                  {charPos: 14, node: para}]));
+  assertEquals(false, chunk.isDeclared());
+  assertEquals(para, chunk.getBlock());
+
+  assertEquals(1, chunks.length);
+}
+
     </script>
 
   </body>
