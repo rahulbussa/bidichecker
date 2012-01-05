@@ -1,0 +1,85 @@
+body {
+  font-family: arial, sans-serif;
+}
+
+h1 {
+  font-size: 30pt;
+  font-weight: bold;
+}
+
+h2 {
+  font-size: 24pt;
+  font-weight: bold;
+}
+
+h3 {
+  font-size: 18pt;
+  font-weight: bold;
+}
+
+h4 {
+  font-size: 14pt;
+  font-weight: bold;
+}
+
+p, td {
+  font-size: 14pt;
+  padding: 3px;
+}
+
+ul li {
+  font-size: 14pt;
+}
+
+ol.toc {
+  font-size: 18pt;
+  line-height: 140%;
+}
+
+ol.toc * ol {
+  font-size: 14pt;
+}
+
+table {
+  border-width: 1px;
+  border-color: "#888888";
+  border-collapse: collapse;
+}
+
+.inline-code {
+  font-family: courier, monospace;
+  font-weight: bold;
+}
+
+.codeblock {
+  background-color: #EFEFEF;
+  color: #006600;
+  font-size: 14pt;
+  font-weight: bold;
+  border: 1px solid lightGrey;
+  padding: 0.5em 0 0.5em 1em;
+}
+
+.prev-link {
+  text-align: left;
+  font-size: 12pt;
+}
+
+.up-link {
+  text-align: center;
+  font-size: 12pt;
+}
+
+.next-link {
+  text-align: right;
+  font-size: 12pt;
+}
+
+.new-item {
+  font-size: 8pt;
+  font-weight: bold;
+  vertical-align: middle;
+  background-color: yellow;
+  color: red;
+  border: 1px solid red;
+}

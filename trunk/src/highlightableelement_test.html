@@ -27,6 +27,7 @@ goog.require('bidichecker.HighlightableElement');
 
 goog.require('goog.color');
 goog.require('goog.testing.jsunit');
+goog.require('goog.userAgent.product.isVersion');
     </script>
 
   </head>
@@ -37,19 +38,23 @@ function testErrorHighlightableElement_HighlightOnPage() {
   var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
   testDiv.innerHTML = '<p>Shalom</p>';
 
-  var original = goog.style.getBackgroundColor(testDiv);
+  var originalBackgroundColor = goog.style.getBackgroundColor(testDiv) || '';
+  var originalOutline = testDiv.style.outline || '';
 
-  // Highlight the div element by changing its background color
+  // Highlight the div element by changing its background color and adding an
+  // outline.
   var location = new bidichecker.HighlightableElement(testDiv);
   location.highlightOnPage();
 
   // Check that the background color has been changed.
   assertEquals('#ffff00',
       goog.color.parse(goog.style.getBackgroundColor(testDiv)).hex);
+  assertCSSValueEquals('outline', 'medium solid red', testDiv.style.outline);
 
   // Revert the background color.
   location.unhighlightOnPage();
-  assertEquals(original, goog.style.getBackgroundColor(testDiv));
+  assertEquals(originalBackgroundColor, goog.style.getBackgroundColor(testDiv));
+  assertCSSValueEquals('outline', originalOutline, testDiv.style.outline);
 }
 
     </script>

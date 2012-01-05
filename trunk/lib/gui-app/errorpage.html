@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <!--
+    Copyright 2011 Google Inc. All Rights Reserved.
+
+    Use of this source code is governed by an Apache 2.0 License.
+    See the COPYING file for details.
+  -->
+
+  <head>
+    <title>BidiChecker</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+    <link href="bidichecker.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="gui_compiled.js"></script>
+    <script type='text/javascript' src='https://www.google.com/jsapi'></script>
+    <script type='text/javascript'>
+      google.load('visualization', '1', {packages:['table']});
+    </script>
+  </head>
+
+  <body onload="new bidichecker.gui.app.ErrorPage();">
+    <h1>BidiChecker Error Browser</h1>
+    <div id="content">
+
+      <div class="show-on-errors" style="display: none">
+        <div id="table-container"></div>
+
+        <!-- Text content of the current error. -->
+        <div id="error-text"></div>
+
+      </div>
+
+      <div id="no-errors-container" style="display: none">
+        <span id="happy-message">
+          Hooray! No bidi errors found.
+        </span>
+      </div>
+
+      <div id="summary">
+        <span class="show-on-errors" style="display: none">
+          Found <span id="error-count"></span> errors. |
+
+          <a href="#" id="select-table">Select all errors</a>
+          (for easy copy and paste) |
+        </span>
+
+        <a href="options.html">Show options</a>
+      </div>
+
+
+    </div>
+  </body>
+</html>

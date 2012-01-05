@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+  <!--
+    Copyright 2011 Google Inc. All Rights Reserved.
+
+    Use of this source code is governed by an Apache 2.0 License.
+    See the COPYING file for details.
+  -->
+
+  <!--
+  Unit tests for guiserver.js.
+  -->
+  <head>
+    <title>bidichecker - Javascript Unit Tests</title>
+    <script type="text/javascript" src="../../../third_party/closure-library/closure/goog/base.js">
+    </script>
+
+    <!-- Include the generated deps.js which enables goog.require of
+         the modules under test.
+    -->
+    <script type="text/javascript" src="../../deps.js"></script>
+    <script type="text/javascript">
+goog.require('bidichecker.gui.server.GuiServer');
+
+goog.require('bidichecker.BidiChecker');
+goog.require('bidichecker.Error');
+goog.require('bidichecker.gui.common.CommChannel');
+goog.require('bidichecker.gui.server.GuiContainer');
+
+goog.require('goog.json');
+goog.require('goog.testing.jsunit');
+goog.require('goog.testing.MockControl');
+    </script>
+
+  </head>
+  <body>
+    <script type="text/javascript">
+
+var GUI_APP_URL = "http://www.example.com/gui-app";
+
+function setUp() {
+  g_mockControl = new goog.testing.MockControl();
+  g_mockBidiChecker = g_mockControl.createLooseMock(bidichecker.BidiChecker);
+  g_mockChannel =
+    g_mockControl.createLooseMock(bidichecker.gui.common.CommChannel);
+  g_mockChannelConstructor =
+    g_mockControl.createConstructorMock(bidichecker.gui.common, 'CommChannel');
+  g_mockGuiContainer =
+    g_mockControl.createLooseMock(bidichecker.gui.server.GuiContainer);
+}
+
+function tearDown() {
+  g_mockControl.$tearDown();
+}
+
+function setupStartExpectations() {
+  g_mockWindow = {};
+  // Expect the mock channel constructor to be called with a message map, and
+  // save that message map so we can later use it to simulate messages.
+  g_messageMapSaver = new goog.testing.mockmatchers.SaveArgument();
+  g_mockChannelConstructor(g_mockWindow, g_messageMapSaver)
+      .$returns(g_mockChannel);
+  g_mockGuiContainer.getContentWindow().$returns(g_mockWindow);
+}
+
+function startGuiServer(opt_options, opt_errors) {
+  var server = new bidichecker.gui.server.GuiServer(g_mockBidiChecker,
+      opt_options || {}, g_mockGuiContainer, GUI_APP_URL, opt_errors);
+  server.start();
+  return server;
+}
+
+function testGuiServer_start() {
+  setupStartExpectations();
+  g_mockControl.$replayAll();
+
+  startGuiServer();
+  g_mockControl.$verifyAll();
+
+  // Check that window location was set correctly. This check can't be done by
+  // the mock because it's a property assignment, which is hard to intercept.
+  assertEquals('Location should be set to GUI app url.', GUI_APP_URL,
+      g_mockWindow.location);
+}
+
+/**
+ * Simulates a message being received by the CommChannel, by calling the
+ * callback registered on the mock CommChannel.
+ */
+function simulateMessage(type, data) {
+  var callback = g_messageMapSaver.arg[type];
+  callback(type, data);
+}
+
+function testGuiServer_checkPageWithoutInitialErrors() {
+  setupStartExpectations();
+
+  // Expect checkPage to be called.
+  var filters = [];
+  var errors = [new bidichecker.Error('my error', 1),
+      new bidichecker.Error('their error', 2)];
+  g_mockBidiChecker.checkPage(false, null, filters).$returns(errors);
+
+  // Expect the server to send back a message with the error list returned by
+  // checkPage (as raw JSON objects).
+  var rawErrors = goog.json.parse(bidichecker.Error.serialize(errors));
+  g_mockChannel.send('errorList', rawErrors);
+
+  g_mockControl.$replayAll();
+
+  var options = {
+    severity: -1  // So we won't have to deal with severity filters.
+  };
+  startGuiServer(options);
+  simulateMessage('checkPage');
+
+  g_mockControl.$verifyAll();
+}
+
+function testGuiServer_checkPageWithInitialErrors() {
+  setupStartExpectations();
+
+  var errors = [new bidichecker.Error('my error', 1),
+      new bidichecker.Error('their error', 2)];
+
+  // Expect the server to send back a message with the error list we gave it
+  // (as raw JSON objects).
+  var rawErrors = goog.json.parse(bidichecker.Error.serialize(errors));
+  g_mockChannel.send('errorList', rawErrors);
+
+  g_mockControl.$replayAll();
+
+  var options = {
+    severity: -1  // So we won't have to deal with severity filters.
+  };
+  startGuiServer(options, errors);
+  simulateMessage('checkPage');
+
+  g_mockControl.$verifyAll();
+
+  // The second time we get the message, the server should call checkPage as
+  // usual and send back a message with the returned error list.
+  g_mockControl.$resetAll();
+  var filters = [];
+  var newErrors = [new bidichecker.Error('his error', 3),
+      new bidichecker.Error('our error', 4)];
+  g_mockBidiChecker.checkPage(false, null, filters).$returns(newErrors);
+  var rawNewErrors = goog.json.parse(bidichecker.Error.serialize(newErrors));
+  g_mockChannel.send('errorList', rawNewErrors);
+  g_mockControl.$replayAll();
+  simulateMessage('checkPage');
+  g_mockControl.$verifyAll();
+}
+
+function testGuiServer_getOptions() {
+  setupStartExpectations();
+
+  // Expect the server to send back a message with the default options.
+  var defaultOptions = {
+    'dir': 'ltr',
+    'severity': 4
+  };
+  g_mockChannel.send('options', defaultOptions);
+
+  g_mockControl.$replayAll();
+
+  startGuiServer();
+  simulateMessage('getOptions');
+
+  g_mockControl.$verifyAll();
+}
+
+function testGuiServer_setOptions() {
+  setupStartExpectations();
+
+  g_mockControl.$replayAll();
+
+  var server = startGuiServer();
+  // Options which are decidedly different from the default.
+  var options = {
+    'dir': 'rtl',
+    'severity': 2
+  };
+  simulateMessage('setOptions', options);
+
+  g_mockControl.$verifyAll();
+  assertObjectEquals(options, server.getOptions());
+}
+
+function testGuiServer_highlightError() {
+  setupStartExpectations();
+  // Server is expected to create an Error object, get its HighlightableArea,
+  // and call its highlightOnPage method.
+  var rawError = {
+    'dummy': 'this is the error as an object'
+  };
+  var mockError =
+    g_mockControl.createLooseMock(bidichecker.Error);
+  var mockErrorConstructor =
+    g_mockControl.createConstructorMock(bidichecker, 'Error');
+  var mockHighlightableArea =
+    g_mockControl.createLooseMock(bidichecker.HighlightableArea);
+  mockErrorConstructor(rawError).$returns(mockError);
+  mockError.getHighlightableArea().$returns(mockHighlightableArea);
+  var coords = {
+    'y': 123
+  };
+  mockHighlightableArea.highlightOnPage().$returns(coords);
+  // Expect server to call handleScroll with *some* number that we don't know
+  // for sure since it depends on how much the (test) window was actually
+  // scrolled, an on a magic offset defined in GuiServer.
+  g_mockGuiContainer.handleScroll(goog.testing.mockmatchers.isNumber);
+
+  g_mockControl.$replayAll();
+
+  var server = startGuiServer();
+  simulateMessage('highlightError', rawError);
+
+  g_mockControl.$verifyAll();
+}
+
+function testGuiServer_unhighlightError() {
+  setupStartExpectations();
+  // Server is expected to create an Error object, get its HighlightableArea,
+  // and call its unhighlightOnPage method.
+  var rawError = {
+    'dummy': 'this is the error as an object'
+  };
+  var mockError =
+    g_mockControl.createLooseMock(bidichecker.Error);
+  var mockErrorConstructor =
+    g_mockControl.createConstructorMock(bidichecker, 'Error');
+  var mockHighlightableArea =
+    g_mockControl.createLooseMock(bidichecker.HighlightableArea);
+  mockErrorConstructor(rawError).$returns(mockError);
+  mockError.getHighlightableArea().$returns(mockHighlightableArea);
+  mockHighlightableArea.unhighlightOnPage();
+
+  g_mockControl.$replayAll();
+
+  var server = startGuiServer();
+  simulateMessage('unhighlightError', rawError);
+
+  g_mockControl.$verifyAll();
+}
+
+function testGuiServer_startServer() {
+  var mockServer1 =
+    g_mockControl.createLooseMock(bidichecker.gui.server.GuiServer);
+  mockServer1.start();
+  g_mockControl.$replayAll();
+  bidichecker.gui.server.GuiServer.startServer(mockServer1);
+  g_mockControl.$verifyAll();
+
+  // Starting another server. The first server's dispose method should be
+  // called.
+  g_mockControl.$resetAll();
+  mockServer1.dispose();
+  var mockServer2 =
+    g_mockControl.createLooseMock(bidichecker.gui.server.GuiServer);
+  mockServer2.start();
+  g_mockControl.$replayAll();
+  bidichecker.gui.server.GuiServer.startServer(mockServer2);
+  g_mockControl.$verifyAll();
+}
+
+function testGuiServer_dispose() {
+  setupStartExpectations();
+  g_mockChannel.dispose();
+  g_mockGuiContainer.dispose();
+
+  g_mockControl.$replayAll();
+
+  var server = startGuiServer();
+  server.dispose();
+  g_mockControl.$verifyAll();
+}
+
+    </script>
+
+  </body>
+</html>

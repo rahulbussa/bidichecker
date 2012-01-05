@@ -154,6 +154,15 @@ function testError_CreateFromRawObjectMissingRequiredFieldThrows() {
   assertThrows(createWithMissingId);
 }
 
+
+function testError_LongAtTextIsTruncated() {
+  var error = new bidichecker.Error('abc', 2, null,
+      'We all live in a yellow submarine, a yellow submarine, a yellow ');
+  assertEquals(
+      'We all live in a yellow submarine, a yellow submarine, a yellow ',
+       error.getAtText());
+  assertEquals('[2] abc: \'We all live in a yel\u2026\'', error.toString());
+}
     </script>
 
   </body>

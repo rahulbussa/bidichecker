@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <!--
+      Copyright 2010 Google Inc. All Rights Reserved.
+
+      Use of this source code is governed by an Apache 2.0 License.
+      See the COPYING file for details.
+    -->
+
+
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link href="users_guide.css" rel="stylesheet" type="text/css">
+
+    <title>BidiChecker User's Guide</title>
+  </head>
+
+  <body>
+
+    <table width="100%"><tr>
+    <td class="prev-link" width="33%"><a href="catalog_of_checks.html">&lt;&lt; Catalog of checks &lt;&lt;</a></td>
+    <td class="up-link" width="33%"><a href="index.html">
+        ^^ Table of Contents ^^</a></td>
+    <td class="next-link" width="33%"><a href="closing_notes.html">&gt;&gt; Closing notes &gt;&gt;</a></td>
+    </tr></table>
+
+    <hr>
+
+    <h1><a href="index.html">BidiChecker User's Guide</a></h1>
+
+    <h2>6. How to devise effective test cases</h2>
+
+        <p>Just running BidiChecker on random pages of your application
+      may reveal some bidi support errors, but it is unlikely to be an
+      effective approach to bidi testing. To start with the obvious, if
+      you run bidi checks on a page with a left-to-right UI and contents
+      in a left-to-right language, you probably won't find any errors,
+      but neither would you have tested the handling of right-to-left
+      text! An application with an LTR UI should at the minimum run
+      BidiChecker on each page while displaying RTL text contents. For
+      example, a search application should test pages with an RTL search
+      query. If your application also supports RTL UIs, they should be
+      tested both with RTL contents and with LTR contents, as each one
+      may reveal different errors.</p>
+
+    <p>Keep in mind that most user input fields, and output which displays
+      them, should be able to support RTL contents, even on an LTR
+      page. Hebrew- and Arabic-speaking users may access web content or
+      enter data in their native languages, even if the UI is in
+      English. There are exceptions; fields such as phone numbers, currency
+      values or e-mail addresses need only support LTR data (though the
+      human name associated with an e-mail account may well be RTL). But as
+      a rule, any data field your application displays may need to handle
+      RTL text. Thorough testing should include displaying RTL contents in
+      every such field and checking the page with BidiChecker.</p>
+
+
+    <hr>
+
+    <table width="100%"><tr>
+    <td class="prev-link" width="33%"><a href="catalog_of_checks.html">&lt;&lt; Catalog of checks &lt;&lt;</a></td>
+    <td class="up-link" width="33%"><a href="index.html">
+        ^^ Table of Contents ^^</a></td>
+    <td class="next-link" width="33%"><a href="closing_notes.html">&gt;&gt; Closing notes &gt;&gt;</a></td>
+    </tr></table>
+
+  </body>
+</html>

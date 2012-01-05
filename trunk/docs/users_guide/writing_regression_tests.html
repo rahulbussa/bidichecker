@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+  <!--
+      Copyright 2010 Google Inc. All Rights Reserved.
+
+      Use of this source code is governed by an Apache 2.0 License.
+      See the COPYING file for details.
+    -->
+
+
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link href="users_guide.css" rel="stylesheet" type="text/css">
+
+    <title>BidiChecker User's Guide</title>
+  </head>
+
+  <body>
+
+    <table width="100%"><tr>
+    <td class="prev-link" width="33%"><a href="getting_started.html">&lt;&lt; Getting started &lt;&lt;</a></td>
+    <td class="up-link" width="33%"><a href="index.html">
+        ^^ Table of Contents ^^</a></td>
+    <td class="next-link" width="33%"><a href="error_descriptions.html">&gt;&gt; Error descriptions and error suppression &gt;&gt;</a></td>
+    </tr></table>
+
+    <hr>
+
+    <h1><a href="index.html">BidiChecker User's Guide</a></h1>
+
+    <h2>3. Writing regression tests</h2>
+
+        <p>While the bookmarklet
+      is
+      handy for manually checking pages of an application, the main value of
+      BidiChecker is intended to come from the
+      API. Using
+      Javascript, developers can write regression tests which
+      become a permanent part of the application's automated test suite.</p>
+
+    <p>A web page can be opened, the application perhaps manipulated in some
+      way, and then BidiChecker can be invoked to check the contents of the
+      resulting page. BidiChecker returns a collection of error objects, which
+      can be checked for emptiness or compared for equality against some fixed
+      list of expected errors. Known errors or known false positives (really
+      non-errors) can automatically be suppressed from the results using a
+      rich set of built-in filters.</p>
+
+    <ul>
+      <li><a href="#Revisions">Selecting a revision</a></li>
+      <li><a href="#UsingApi">Using the API</a></li>
+      <li><a href="#Viewing">Viewing BidiChecker output</a></li>
+    </ul>
+
+    <h3><a name="Revisions"></a>Selecting a revision</h3>
+
+    <p>From time to time, new checks are added to BidiChecker. In order to keep
+      this from breaking existing automated tests, BidiChecker's constructor
+      takes a parameter known as the "revision", which specifies which release
+      of the checks should be run. Higher revision numbers indicate later
+      releases, which check for more error situations.
+    </p>
+
+    <p>BidiChecker-based tests should generally choose a specific revision.
+      It is also possible to specify the "latest" revision; in this case, the
+      most comprehensive set of checks will always be run, in exchange for the
+      risk that the test suite may break when a new revision is released.</p>
+
+    <table border="1">
+      <tr><td>Revision</td><td>Checks included</td></tr>
+      <tr><td style="text-align: center">1</td><td>
+          <ul>
+            <li><a href="catalog_of_checks.html#IncorrectOverall">
+                Incorrect overall directionality</a></li>
+            <li><a href="catalog_of_checks.html#UndeclaredText">
+                Undeclared opposite-directionality text</a></li>
+            <li><a href="catalog_of_checks.html#SpilloverToNumber">
+                Spillover from declared opposite-directionality element to
+                number</a></li>
+          </ul>
+      </td></tr>
+      <tr><td style="text-align: center">2<br>(latest)</td><td>
+          <p>All the above, plus:</p>
+          <ul>
+          <li><a href="catalog_of_checks.html#UndeclaredAttributes">
+              Undeclared opposite-directionality attributes</a></li>
+          <li><a href="catalog_of_checks.html#UndeclaredText">
+              Undeclared "fake RTL" strings in a declared left-to-right context
+              (upgrade to the check for opposite-directionality text)</a></li>
+          </ul>
+      </td></tr>
+    </table>
+
+    <p>Not meant for use in automated tests, the browser bookmarklet
+      will always run the latest revision.</p>
+
+
+    <h3><a name="UsingApi"></a>Using the API</h3>
+
+    <p>BidiChecker can be integrated into pure Javascript automated unit tests
+      based on
+    a testing framework such as
+         the JSUnit testing package.
+
+    <p>A JSUnit test can navigate the application to a page and check it with
+      BidiChecker. A sample test may look like this:</p>
+
+    <div class="codeblock"><code>
+      function testAppWithBidiChecker() {<br>
+      &nbsp;&nbsp;// Do something to load the application being
+        tested into the page and get it into<br>
+      &nbsp;&nbsp;// an interesting state for bidi, e.g. displaying
+        LTR data in an RTL UI.<br>
+      &nbsp;&nbsp;....<br>
+      <br>
+      &nbsp;&nbsp;// Revision 2 is currently the latest set of bidi
+        checks,<br>
+      &nbsp;&nbsp;// which catches the greatest number of possible
+        errors.<br>
+      &nbsp;&nbsp;var checker =
+        new bidichecker.BidiChecker(bidichecker.REVISION_2);<br>
+      <br>
+      &nbsp;&nbsp;// Check for errors in handling bidi text. First
+        parameter is true to indicate an RTL UI.<br>
+      &nbsp;&nbsp;// It would be false when testing an LTR UI (with
+        RTL data).<br>
+      &nbsp;&nbsp;var bidiErrors = checker.checkPage(true,
+        top.document.body);<br>
+      &nbsp;&nbsp;checker.runGui(); // If errors are found, run the
+        error GUI.<br>
+      &nbsp;&nbsp;assertArrayEquals([], bidiErrors); // Should be no
+        bidi errors!<br>
+      }
+    </code></div>
+
+    <p>A complete code example, including a simple bilingual application and
+      BidiChecker-based JSUnit tests, can be found in the
+      <a href="http://code.google.com/p/bidichecker/source/browse/#svn/trunk/samples/reviews"
+         target="_blank">
+      <span class="inline-code">samples/reviews/</span></a> subdirectory of the
+      download
+      tree.</p>
+
+
+    <h3><a name="Viewing"></a>Viewing BidiChecker output</h3>
+    <p>The tool will produce a list of error messages, one for each bidi
+      bug discovered. Below is a sample of the messages. The contents of
+      the error messages will be explained in more detail later on.</p>
+    <div class="codeblock"><code>
+        [4] Undeclared LTR text: 'The Princess Bride' followed by ': 23'
+        in &lt;div id='reviews'&gt;&lt;div&gt;<br>
+        [4] Undeclared LTR text: 'Leagues Under the Sea' preceded by
+        '20,000 ' followed by ': 17' in &lt;div id='reviews'&gt;&lt;div&gt;
+    </code></div>
+
+    <p>When running a BidiChecker test interactively, however, it is a
+    lot easier to view the errors right in the page where BidiChecker
+    found them using BidiChecker's interactive error browser. To
+    activate the error browser, call
+      <span class="inline-code">bidichecker.runGui(errors)</span> from
+      your test code if
+      <span class="inline-code">bidichecker.checkPage()</span> returns
+      errors. This will display a dialog box showing a table with the
+      errors found:</p>
+    <p><a href="bidichecker_screenshot.png" imageanchor="1">
+        <img border="0" src="bidichecker_screenshot.png">
+    </a></p>
+
+    <p>The GUI mode is simple to control: Select an error by clicking
+      on it, or change the table's sort order by clicking on a column
+      title. The full description of the currently-selected error appears
+      in the box below the table, and its location is highlighted with a
+      yellow background in a red border where it appears on the page. The
+      page being checked will also be scrolled to keep the error's position
+      near the top of the window if possible. The error description text can
+      be copied from the dialog box.</p>
+
+    <p>The page under test remains accessible, so you can select the page
+      contents near an error and view the HTML source using the browser.
+      Note that an error will not be visibly highlighted if its page
+      location is concealed by another page element, for example, or if it
+      is scrolled out of view in a scrollable element. To widen the error
+      table, drag the popup window border and then refresh the window
+      (i.e., press F5).</p>
+
+    <p>Whether or not to call <span class="inline-code">runGui()</span> from an
+      automated test may depend on your test environment. On first thought, when
+      run in an automated framework the visual GUI might not seem to add much
+      value. However, some automated test frameworks store a screenshot on the
+      termination of a failed test; in that case, the screenshot might show
+      the location of the first BidiChecker error highlighted on the page.
+      Furthermore, even automated tests are sometimes run manually in a browser
+      during development or for debugging; in that case, full GUI interactivity
+      would be available when a test fails. Even when the test is run
+      automatically, running the GUI probably does not do any harm.</p>
+
+    <p>Note that if a test page contains more than one test, using
+      <span class="inline-code">runGui()</span> is problematic. Assuming that
+      each test navigates the application in some way and thus manipulates the
+      DOM, the DOM elements where BidiChecker found an error may no longer have
+      the same content or even exist by the time the GUI is used. To maximize
+      the utility of the GUI, tests should be organized so that no more than one
+      test is run in each test page. If multiple tests are nonetheless contained
+      in each page (perhaps for efficiency reasons), it is still possible to use
+      the GUI effectively when tests are run manually, by requesting that the
+      test runner run a single failing test from the page in isolation.</p>
+
+
+
+
+    <hr>
+
+    <table width="100%"><tr>
+    <td class="prev-link" width="33%"><a href="getting_started.html">&lt;&lt; Getting started &lt;&lt;</a></td>
+    <td class="up-link" width="33%"><a href="index.html">
+        ^^ Table of Contents ^^</a></td>
+    <td class="next-link" width="33%"><a href="error_descriptions.html">&gt;&gt; Error descriptions and error suppression &gt;&gt;</a></td>
+    </tr></table>
+
+  </body>
+</html>

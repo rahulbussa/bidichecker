@@ -47,7 +47,7 @@
 <span class='linenumber'> 40</span> </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="PUNC">}</span><span class="PUNC">;</span><span class="WHIT">
 <span class='linenumber'> 41</span> 
 <span class='linenumber'> 42</span> 
-<span class='linenumber'> 43</span> </span><span class="COMM">/** @inheritDoc */</span><span class="WHIT">
+<span class='linenumber'> 43</span> </span><span class="COMM">/** @override */</span><span class="WHIT">
 <span class='linenumber'> 44</span> </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter.prototype.isSuppressed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">
 <span class='linenumber'> 45</span>     </span><span class="NAME">goog.abstractMethod</span><span class="PUNC">;</span><span class="WHIT">
 <span class='linenumber'> 46</span> 
@@ -555,7 +555,7 @@
 <span class='linenumber'>548</span>     </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='linenumber'>549</span> 
 <span class='linenumber'>550</span> 
-<span class='linenumber'>551</span> </span><span class="COMM">/** @inheritDoc */</span><span class="WHIT">
+<span class='linenumber'>551</span> </span><span class="COMM">/** @override */</span><span class="WHIT">
 <span class='linenumber'>552</span> </span><span class="NAME">bidichecker.FilterFactory.AndFilter_.prototype.isSuppressed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT">
 <span class='linenumber'>553</span>     </span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='linenumber'>554</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.filter1_.isSuppressed</span><span class="PUNC">(</span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">&&</span><span class="WHIT">
@@ -585,7 +585,7 @@
 <span class='linenumber'>578</span>     </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='linenumber'>579</span> 
 <span class='linenumber'>580</span> 
-<span class='linenumber'>581</span> </span><span class="COMM">/** @inheritDoc */</span><span class="WHIT">
+<span class='linenumber'>581</span> </span><span class="COMM">/** @override */</span><span class="WHIT">
 <span class='linenumber'>582</span> </span><span class="NAME">bidichecker.FilterFactory.AtTextFilter_.prototype.isSuppressed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT">
 <span class='linenumber'>583</span>     </span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='linenumber'>584</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.atText_</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">error.getAtText</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="STRN">''</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
@@ -615,7 +615,7 @@
 <span class='linenumber'>608</span>     </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='linenumber'>609</span> 
 <span class='linenumber'>610</span> 
-<span class='linenumber'>611</span> </span><span class="COMM">/** @inheritDoc */</span><span class="WHIT">
+<span class='linenumber'>611</span> </span><span class="COMM">/** @override */</span><span class="WHIT">
 <span class='linenumber'>612</span> </span><span class="NAME">bidichecker.FilterFactory.AtTextRegexpFilter_.prototype.isSuppressed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT">
 <span class='linenumber'>613</span>     </span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='linenumber'>614</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.atTextRegexp_.test</span><span class="PUNC">(</span><span class="NAME">error.getAtText</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="STRN">''</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
@@ -644,7 +644,7 @@
 <span class='linenumber'>637</span>     </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='linenumber'>638</span> 
 <span class='linenumber'>639</span> 
-<span class='linenumber'>640</span> </span><span class="COMM">/** @inheritDoc */</span><span class="WHIT">
+<span class='linenumber'>640</span> </span><span class="COMM">/** @override */</span><span class="WHIT">
 <span class='linenumber'>641</span> </span><span class="NAME">bidichecker.FilterFactory.FollowedByTextFilter_.prototype.isSuppressed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">
 <span class='linenumber'>642</span>     </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='linenumber'>643</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.followedByText_</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">error.getFollowedByText</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="STRN">''</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
@@ -675,7 +675,7 @@
 <span class='linenumber'>668</span>     </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='linenumber'>669</span> 
 <span class='linenumber'>670</span> 
-<span class='linenumber'>671</span> </span><span class="COMM">/** @inheritDoc */</span><span class="WHIT">
+<span class='linenumber'>671</span> </span><span class="COMM">/** @override */</span><span class="WHIT">
 <span class='linenumber'>672</span> </span><span class="NAME">bidichecker.FilterFactory.FollowedByTextRegexpFilter_.prototype.isSuppressed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">
 <span class='linenumber'>673</span>     </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='linenumber'>674</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.followedByTextRegexp_.test</span><span class="PUNC">(</span><span class="NAME">error.getFollowedByText</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="STRN">''</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
@@ -704,7 +704,7 @@
 <span class='linenumber'>697</span>     </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='linenumber'>698</span> 
 <span class='linenumber'>699</span> 
-<span class='linenumber'>700</span> </span><span class="COMM">/** @inheritDoc */</span><span class="WHIT">
+<span class='linenumber'>700</span> </span><span class="COMM">/** @override */</span><span class="WHIT">
 <span class='linenumber'>701</span> </span><span class="NAME">bidichecker.FilterFactory.LocationClassFilter_.prototype.isSuppressed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">
 <span class='linenumber'>702</span>     </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='linenumber'>703</span>   </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">locationElements.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="PUNC">++</span><span class="NAME">i</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
@@ -747,7 +747,7 @@
 <span class='linenumber'>740</span>     </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='linenumber'>741</span> 
 <span class='linenumber'>742</span> 
-<span class='linenumber'>743</span> </span><span class="COMM">/** @inheritDoc */</span><span class="WHIT">
+<span class='linenumber'>743</span> </span><span class="COMM">/** @override */</span><span class="WHIT">
 <span class='linenumber'>744</span> </span><span class="NAME">bidichecker.FilterFactory.LocationClassRegexpFilter_.prototype.isSuppressed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">
 <span class='linenumber'>745</span>     </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='linenumber'>746</span>   </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">locationElements.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="PUNC">++</span><span class="NAME">i</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
@@ -788,7 +788,7 @@
 <span class='linenumber'>781</span>     </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='linenumber'>782</span> 
 <span class='linenumber'>783</span> 
-<span class='linenumber'>784</span> </span><span class="COMM">/** @inheritDoc */</span><span class="WHIT">
+<span class='linenumber'>784</span> </span><span class="COMM">/** @override */</span><span class="WHIT">
 <span class='linenumber'>785</span> </span><span class="NAME">bidichecker.FilterFactory.LocationIdFilter_.prototype.isSuppressed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT">
 <span class='linenumber'>786</span>     </span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='linenumber'>787</span>   </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">locationElements.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="PUNC">++</span><span class="NAME">i</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
@@ -825,7 +825,7 @@
 <span class='linenumber'>818</span>     </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='linenumber'>819</span> 
 <span class='linenumber'>820</span> 
-<span class='linenumber'>821</span> </span><span class="COMM">/** @inheritDoc */</span><span class="WHIT">
+<span class='linenumber'>821</span> </span><span class="COMM">/** @override */</span><span class="WHIT">
 <span class='linenumber'>822</span> </span><span class="NAME">bidichecker.FilterFactory.LocationIdRegexpFilter_.prototype.isSuppressed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">
 <span class='linenumber'>823</span>     </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='linenumber'>824</span>   </span><span class="KEYW">for</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="KEYW">var</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="NUMB">0</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="NAME">i</span><span class="WHIT"> </span><span class="PUNC">&lt;</span><span class="WHIT"> </span><span class="NAME">locationElements.length</span><span class="PUNC">;</span><span class="WHIT"> </span><span class="PUNC">++</span><span class="NAME">i</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
@@ -865,7 +865,7 @@
 <span class='linenumber'>858</span>     </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='linenumber'>859</span> 
 <span class='linenumber'>860</span> 
-<span class='linenumber'>861</span> </span><span class="COMM">/** @inheritDoc */</span><span class="WHIT">
+<span class='linenumber'>861</span> </span><span class="COMM">/** @override */</span><span class="WHIT">
 <span class='linenumber'>862</span> </span><span class="NAME">bidichecker.FilterFactory.LocationXpathFilter_.prototype.isSuppressed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">
 <span class='linenumber'>863</span>     </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='linenumber'>864</span>   </span><span class="COMM">// TODO(user): This currently matches the path to the element in the</span><span class="WHIT">
@@ -902,7 +902,7 @@
 <span class='linenumber'>895</span>     </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='linenumber'>896</span> 
 <span class='linenumber'>897</span> 
-<span class='linenumber'>898</span> </span><span class="COMM">/** @inheritDoc */</span><span class="WHIT">
+<span class='linenumber'>898</span> </span><span class="COMM">/** @override */</span><span class="WHIT">
 <span class='linenumber'>899</span> </span><span class="NAME">bidichecker.FilterFactory.NotFilter_.prototype.isSuppressed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT">
 <span class='linenumber'>900</span>     </span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='linenumber'>901</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="PUNC">!</span><span class="NAME">this.filter_.isSuppressed</span><span class="PUNC">(</span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
@@ -936,7 +936,7 @@
 <span class='linenumber'>929</span>     </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='linenumber'>930</span> 
 <span class='linenumber'>931</span> 
-<span class='linenumber'>932</span> </span><span class="COMM">/** @inheritDoc */</span><span class="WHIT">
+<span class='linenumber'>932</span> </span><span class="COMM">/** @override */</span><span class="WHIT">
 <span class='linenumber'>933</span> </span><span class="NAME">bidichecker.FilterFactory.OrFilter_.prototype.isSuppressed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT">
 <span class='linenumber'>934</span>     </span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='linenumber'>935</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.filter1_.isSuppressed</span><span class="PUNC">(</span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT">
@@ -966,7 +966,7 @@
 <span class='linenumber'>959</span>     </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='linenumber'>960</span> 
 <span class='linenumber'>961</span> 
-<span class='linenumber'>962</span> </span><span class="COMM">/** @inheritDoc */</span><span class="WHIT">
+<span class='linenumber'>962</span> </span><span class="COMM">/** @override */</span><span class="WHIT">
 <span class='linenumber'>963</span> </span><span class="NAME">bidichecker.FilterFactory.PrecededByTextFilter_.prototype.isSuppressed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">
 <span class='linenumber'>964</span>     </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='linenumber'>965</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.precededByText_</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="PUNC">(</span><span class="NAME">error.getPrecededByText</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="STRN">''</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
@@ -997,7 +997,7 @@
 <span class='linenumber'>990</span>     </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='linenumber'>991</span> 
 <span class='linenumber'>992</span> 
-<span class='linenumber'>993</span> </span><span class="COMM">/** @inheritDoc */</span><span class="WHIT">
+<span class='linenumber'>993</span> </span><span class="COMM">/** @override */</span><span class="WHIT">
 <span class='linenumber'>994</span> </span><span class="NAME">bidichecker.FilterFactory.PrecededByTextRegexpFilter_.prototype.isSuppressed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT">
 <span class='linenumber'>995</span>     </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='linenumber'>996</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.precededByTextRegexp_.test</span><span class="PUNC">(</span><span class="NAME">error.getPrecededByText</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">||</span><span class="WHIT"> </span><span class="STRN">''</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
@@ -1025,7 +1025,7 @@
 <span class='linenumber'>1018</span>     </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='linenumber'>1019</span> 
 <span class='linenumber'>1020</span> 
-<span class='linenumber'>1021</span> </span><span class="COMM">/** @inheritDoc */</span><span class="WHIT">
+<span class='linenumber'>1021</span> </span><span class="COMM">/** @override */</span><span class="WHIT">
 <span class='linenumber'>1022</span> </span><span class="NAME">bidichecker.FilterFactory.SeverityFilter_.prototype.isSuppressed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT">
 <span class='linenumber'>1023</span>     </span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='linenumber'>1024</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.severityThreshold_</span><span class="WHIT"> </span><span class="PUNC">&lt;=</span><span class="WHIT"> </span><span class="NAME">error.getSeverity</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
@@ -1051,7 +1051,7 @@
 <span class='linenumber'>1044</span>     </span><span class="NAME">bidichecker.FilterFactory.ComposableFilter</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">
 <span class='linenumber'>1045</span> 
 <span class='linenumber'>1046</span> 
-<span class='linenumber'>1047</span> </span><span class="COMM">/** @inheritDoc */</span><span class="WHIT">
+<span class='linenumber'>1047</span> </span><span class="COMM">/** @override */</span><span class="WHIT">
 <span class='linenumber'>1048</span> </span><span class="NAME">bidichecker.FilterFactory.TypeFilter_.prototype.isSuppressed</span><span class="WHIT"> </span><span class="PUNC">=</span><span class="WHIT"> </span><span class="KEYW">function</span><span class="PUNC">(</span><span class="WHIT">
 <span class='linenumber'>1049</span>     </span><span class="NAME">error</span><span class="PUNC">,</span><span class="WHIT"> </span><span class="NAME">locationElements</span><span class="PUNC">)</span><span class="WHIT"> </span><span class="PUNC">{</span><span class="WHIT">
 <span class='linenumber'>1050</span>   </span><span class="KEYW">return</span><span class="WHIT"> </span><span class="NAME">this.type_</span><span class="WHIT"> </span><span class="PUNC">==</span><span class="WHIT"> </span><span class="NAME">error.getType</span><span class="PUNC">(</span><span class="PUNC">)</span><span class="PUNC">;</span><span class="WHIT">

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+  <!--
+    Copyright 2011 Google Inc. All Rights Reserved.
+
+    Use of this source code is governed by an Apache 2.0 License.
+    See the COPYING file for details.
+  -->
+
+  <!--
+  Unit tests for the generateBookmarklet method.
+  -->
+  <head>
+    <title>bidichecker - Javascript Unit Tests</title>
+    <script type="text/javascript" src="../third_party/closure-library/closure/goog/base.js">
+    </script>
+
+    <!-- Include the generated deps.js which enables goog.require of
+         the modules under test.
+    -->
+    <script type="text/javascript" src="deps.js"></script>
+    <script type="text/javascript">
+goog.require('bidichecker');
+
+goog.require('goog.testing.jsunit');
+goog.require('goog.testing.MockControl');
+goog.require('goog.userAgent.product');
+    </script>
+
+  </head>
+  <body>
+    <script type="text/javascript">
+
+/**
+ * The URLs the bookmarklet will think it's loading. Don't load and run the
+ * actual package. That would be part of an integration test.
+ */
+var SCRIPT_URL = 'http://example.com/bidichecker_packaged.js';
+var GUI_APP_URL = 'http://example.net/gui-app';
+
+/**
+ * An arbitrary set of bidichecker options, just to make sure that the generator
+ * can serialize the options correctly.
+ */
+var OPTIONS = { dir: 'rtl', severity: 2 };
+
+function setUp() {
+  g_mockControl = new goog.testing.MockControl();
+
+  // We want to test a script which loads bidichecker while using bidichecker
+  // ourselves, so rename the bidichecker namespace.
+  g_realBidichecker = bidichecker;
+  delete bidichecker;
+
+  g_mockOpen = g_mockControl.createGlobalFunctionMock('open');
+  var head = document.getElementsByTagName("head")[0];
+  g_mockAppendChild = g_mockControl.createMethodMock(head,
+      'appendChild');
+  g_mockGetElementById = g_mockControl.createMethodMock(document,
+      'getElementById');
+}
+
+function tearDown() {
+  bidichecker = g_realBidichecker;
+  g_mockControl.$tearDown();
+
+  // Delete global window object created by the bookmarklet under test.
+  delete g_bidicheckerBookmarkletGuiWnd;
+
+  delete g_bookmarkletLink;
+  delete g_initialWindowObj;
+  delete g_mockAppendChild;
+  delete g_mockControl;
+  delete g_mockGetElementById;
+  delete g_mockOpen;
+  delete g_mockRunBookmarkletGui;
+  delete g_scriptElem;
+  delete g_realBidichecker;
+}
+
+/**
+ * Adds an expectation for window.open to be called with the initial parameters
+ * for the GUI window.
+ * @return {Object} A mock Window object that will also be returned from the
+ *     window.open call.
+ */
+function expectWindowOpen() {
+  var mockWindowObj = {
+    focus: g_mockControl.createFunctionMock('focus')
+  };
+  g_mockOpen('about:blank', '_blank',
+      'width=1,height=1,resizable=yes,scrollbars=yes')
+    .$returns(mockWindowObj);
+  return mockWindowObj;
+}
+
+/**
+ * Evaluates the given script in the global scope. This is different from the
+ * built-in eval function, which evaluates the script in the caller's scope.
+ * @param {string} script The script to evaluate.
+ */
+function globalEval(script) {
+  if (window.execScript) {
+    // IE and Chrome.
+    window.execScript(script);
+  } else {
+    // Firefox.
+    eval.call(null, script);
+  }
+}
+
+function generateBookmarkletLink() {
+  g_bookmarkletLink = g_realBidichecker.generateBookmarklet(OPTIONS, SCRIPT_URL,
+      GUI_APP_URL);
+}
+
+function runBookmarkletLink() {
+  // Ideally we'd do 'window.location = link' to activate a bookmarklet.
+  // However, the browser handles this assignment only after the function
+  // returns so it wouldn't help us. Instead, we evaluate the contained JS code.
+  // So first extract the script itself from the javascript link.
+  var bookmarkletScript = g_bookmarkletLink.replace(/^javascript:/, "");
+  globalEval(bookmarkletScript);
+}
+
+/**
+ * Verifies that the link is syntactically correct.
+ */
+function testBookmarklet_syntax() {
+  generateBookmarkletLink();
+  assertTrue(/^javascript:/.test(g_bookmarkletLink));
+}
+
+function simulateInitialActivation() {
+  g_mockGetElementById(goog.testing.mockmatchers.isString).$returns(null);
+  g_initialWindowObj = expectWindowOpen();
+  var scriptElemSaver = new goog.testing.mockmatchers.SaveArgument();
+  g_mockAppendChild(scriptElemSaver);
+  g_mockControl.$replayAll();
+  runBookmarkletLink()
+  g_mockControl.$verifyAll();
+  g_mockControl.$resetAll();
+
+  // Retrieve script element that was "added" to the document.
+  g_scriptElem = scriptElemSaver.arg;
+  assertEquals(SCRIPT_URL, g_scriptElem.src);
+}
+
+function simulateScriptLoad(mockWindowObj) {
+  // Pretend that bidichecker was loaded.
+  g_mockRunBookmarkletGui = g_mockControl.createFunctionMock(
+      'runBookmarkletGui');
+  window.bidichecker = {
+    'runBookmarkletGui': g_mockRunBookmarkletGui
+  };
+
+  // Simulate the script load event.
+  g_mockControl.$resetAll();
+  g_mockRunBookmarkletGui(OPTIONS, mockWindowObj, GUI_APP_URL);
+  g_mockControl.$replayAll();
+  g_scriptElem.onload();
+  g_mockControl.$verifyAll();
+  g_mockControl.$resetAll();
+}
+
+function testBookmarklet_activateWhileScriptIsLoading() {
+  // Don't test on IE since the bookmarklet doesn't work there.
+  if (goog.userAgent.product.IE) {
+    return;
+  }
+  generateBookmarkletLink();
+  simulateInitialActivation();
+
+  // If the bookmarklet is activated while the script is loading, it should
+  // bring the new window into focus.
+  g_initialWindowObj.focus();
+  g_mockControl.$replayAll();
+  runBookmarkletLink()
+  g_mockControl.$verifyAll();
+}
+
+function testBookmarklet_activateWhileScriptIsLoadingWithWindowClosed() {
+  // Don't test on IE since the bookmarklet doesn't work there.
+  if (goog.userAgent.product.IE) {
+    return;
+  }
+  generateBookmarkletLink();
+  simulateInitialActivation();
+
+  // If the user closed the window while the script is loading, activating the
+  // bookmarklet should cause a new window to be opened.
+  g_mockGetElementById(goog.testing.mockmatchers.isString)
+      .$returns(g_scriptElem);
+  g_initialWindowObj.closed = true;
+  var newWindowObj = expectWindowOpen();
+  g_mockControl.$replayAll();
+  runBookmarkletLink()
+  g_mockControl.$verifyAll();
+  g_mockControl.$resetAll();
+
+  // When bidichecker is loaded is should use the newly opened window.
+  simulateScriptLoad(newWindowObj);
+}
+
+function testBookmarklet_reactivateAfterScriptLoaded() {
+  // Don't test on IE since the bookmarklet doesn't work there.
+  if (goog.userAgent.product.IE) {
+    return;
+  }
+  generateBookmarkletLink();
+  simulateInitialActivation();
+  simulateScriptLoad(g_initialWindowObj);
+
+  // If the bookmarklet is reactivated, it should bring the existing window into
+  // focus.
+  g_initialWindowObj.focus = g_mockControl.createFunctionMock('focus'),
+  g_initialWindowObj.focus();
+  g_mockControl.$replayAll();
+  runBookmarkletLink()
+  g_mockControl.$verifyAll();
+}
+
+function testBookmarklet_reactivateAfterScriptLoadedWithWindowClosed() {
+  // Don't test on IE since the bookmarklet doesn't work there.
+  if (goog.userAgent.product.IE) {
+    return;
+  }
+  generateBookmarkletLink();
+  simulateInitialActivation();
+  simulateScriptLoad(g_initialWindowObj);
+
+  // If the user closed the window after the script was loaded, activating the
+  // bookmarklet should cause a new window to be opened.
+  g_initialWindowObj.closed = true;
+  g_mockGetElementById(goog.testing.mockmatchers.isString)
+      .$returns(g_scriptElem);
+  var newWindowObj = expectWindowOpen();
+  g_mockRunBookmarkletGui(OPTIONS, newWindowObj, GUI_APP_URL);
+  g_mockControl.$replayAll();
+  runBookmarkletLink()
+  g_mockControl.$verifyAll();
+}
+
+
+    </script>
+
+  </body>
+</html>

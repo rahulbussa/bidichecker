@@ -20,20 +20,21 @@
 goog.provide('bidichecker.HighlightableElement');
 
 goog.require('bidichecker.HighlightableArea');
+goog.require('bidichecker.utils');
 goog.require('goog.style');
 
 
 /**
  * Class representing the highlightable area of a BiDi error without associated
  * text.
- * @param {Element} element A DOM element indicating the location of the error.
+ * @param {!Element} element A DOM element indicating the location of the error.
  * @implements {bidichecker.HighlightableArea}
  * @constructor
  */
 bidichecker.HighlightableElement = function(element) {
   /**
    * The element associated with the error.
-   * @type {Element}
+   * @type {!Element}
    * @private
    */
   this.element_ = element;
@@ -41,29 +42,27 @@ bidichecker.HighlightableElement = function(element) {
 
 
 /**
- * The original background color of the element.
- * @type {?string}
+ * Contains the color, backgroundColor and outline fields of the element's
+ * original style.
+ * @type {Object}
  * @private
  */
-bidichecker.HighlightableElement.prototype.oldBackgroundColor_ = null;
+bidichecker.HighlightableElement.prototype.savedStyle_ = null;
 
 
-/** @inheritDoc */
+/** @override */
 bidichecker.HighlightableElement.prototype.highlightOnPage = function() {
-  // Change the element's background color to yellow.
-  // TODO(user): What should we do if the background is already yellow?
-  this.oldBackgroundColor_ = goog.style.getBackgroundColor(this.element_);
-  goog.style.setStyle(this.element_, 'background-color', 'yellow');
-  return goog.style.getPageOffset(/** @type {Element} */ (this.element_));
+  this.savedStyle_ = bidichecker.utils.highlightElementStyle(this.element_);
+  return goog.style.getPageOffset(this.element_);
 };
 
 
-/** @inheritDoc */
+/** @override */
 bidichecker.HighlightableElement.prototype.unhighlightOnPage = function() {
-  // Restore the original border style.
-  if (this.oldBackgroundColor_ != null) {
-    goog.style.setStyle(this.element_, 'background-color',
-        this.oldBackgroundColor_);
+  // Restore the original styles.
+  if (this.savedStyle_) {
+    this.element_.style.color = this.savedStyle_.color;
+    this.element_.style.backgroundColor = this.savedStyle_.backgroundColor;
+    this.element_.style.outline = this.savedStyle_.outline;
   }
 };
-

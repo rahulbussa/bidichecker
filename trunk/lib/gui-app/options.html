@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <!--
+    Copyright 2011 Google Inc. All Rights Reserved.
+
+    Use of this source code is governed by an Apache 2.0 License.
+    See the COPYING file for details.
+  -->
+
+  <head>
+    <title>BidiChecker</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+    <link href="bidichecker.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="gui_compiled.js"></script>
+  </head>
+
+  <body onload="new bidichecker.gui.app.OptionsPage();">
+    <h1>BidiChecker Options</h1>
+    Expected page directionality:
+    <input type="radio" name="dir" value="ltr">LTR
+    <input type="radio" name="dir" value="rtl">RTL
+
+    <p>Suppress by severity:
+    <input type="radio" name="severity-filtering" value="on"> From level <input
+    id="severity" type="text" size="2">
+    <input type="radio" name="severity-filtering" value="off"> Off
+
+    <p>
+    <button id="run">Check Page</button>
+
+    <div id="bookmarklet-section">
+      Bookmarklet link (<a id="show-bookmarklet-help" href="#">what's this?</a>)
+      that runs BidiChecker with these settings:
+      <a id="bookmarklet">BidiChecker</a>
+    </div>
+  </body>
+</html>
+

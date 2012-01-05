@@ -77,7 +77,8 @@ function testBidiChecker_CheckPageRunsAllCheckers() {
   document.body.appendChild(testDiv);
 
   testDiv.innerHTML = '<p><span dir=\'rtl\'>friends<\/span>5,012.7 meters<\/p>';
-  var errors = bidichecker.checkPage(true, testDiv);
+  var checker = new bidichecker.BidiChecker(bidichecker.REVISION_1);
+  var errors = checker.checkPage(true, testDiv);
 
   var expected = [{'type': 'Overall directionality not RTL',
                    'severity': 1},
@@ -106,7 +107,8 @@ function testBidiChecker_CheckPageRunsFilters() {
   testDiv.innerHTML = '<p><span dir=\'rtl\'>friends<\/span>5,012.7 meters<\/p>';
 
   var filters = [bidichecker.FilterFactory.atText('friends')];
-  var errors = bidichecker.checkPage(true, testDiv, filters);
+  var checker = new bidichecker.BidiChecker(bidichecker.REVISION_1);
+  var errors = checker.checkPage(true, testDiv, filters);
 
   var expected = [{'type': 'Overall directionality not RTL',
                    'severity': 1},
@@ -129,7 +131,8 @@ function testBidiChecker_LocationBasedFilterWorks() {
   testDiv.innerHTML =
     '<p><span dir=\'rtl\' id=\'my_id\' >friends<\/span>5,012.7 meters<\/p>';
   var filters = [bidichecker.FilterFactory.locationId('my_id')];
-  var errors = bidichecker.checkPage(true, testDiv, filters);
+  var checker = new bidichecker.BidiChecker(bidichecker.REVISION_1);
+  var errors = checker.checkPage(true, testDiv, filters);
 
   var expected = [{'type': 'Overall directionality not RTL',
                    'severity': 1},
@@ -152,7 +155,8 @@ function testBidiChecker_ComposingFiltersWorks() {
     '<p><span dir=\'rtl\' id=\'my_id\' >friends<\/span>5,012.7 meters<\/p>';
   var filters = [bidichecker.FilterFactory.locationId('my_id').and(
                     bidichecker.FilterFactory.atText('friends'))];
-  var errors = bidichecker.checkPage(true, testDiv, filters);
+  var checker = new bidichecker.BidiChecker(bidichecker.REVISION_1);
+  var errors = checker.checkPage(true, testDiv, filters);
 
   var expected = [{'type': 'Overall directionality not RTL',
                    'severity': 1},

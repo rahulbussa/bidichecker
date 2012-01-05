@@ -57,6 +57,8 @@ function testErrorHighlightableText_HighlightOneNode() {
       goog.color.parse(goog.style.getBackgroundColor(highlightSpan)).hex);
   assertEquals('#ff0000',
       goog.color.parse(goog.style.getStyle(highlightSpan, 'color')).hex);
+  assertCSSValueEquals('outline', 'medium solid red',
+      highlightSpan.style.outline);
 
   // The new text node should be the child of the inner span element.
   textNode = highlightSpan.firstChild;
@@ -89,6 +91,8 @@ function testErrorHighlightableText_HighlightStartOfNode() {
       goog.color.parse(goog.style.getBackgroundColor(highlightSpan)).hex);
   assertEquals('#ff0000',
       goog.color.parse(goog.style.getStyle(highlightSpan, 'color')).hex);
+  assertCSSValueEquals('outline', 'medium solid red',
+      highlightSpan.style.outline);
 
   // The prefix part should be the only child of the highlighted span element.
   assertEquals('Shal',
@@ -125,6 +129,8 @@ function testErrorHighlightableText_HighlightEndOfNode() {
       goog.color.parse(goog.style.getBackgroundColor(highlightSpan)).hex);
   assertEquals('#ff0000',
       goog.color.parse(goog.style.getStyle(highlightSpan, 'color')).hex);
+  assertCSSValueEquals('outline', 'medium solid red',
+      highlightSpan.style.outline);
 
   // The prefix part should be the first child of the wrapper span element.
   assertEquals('Sh',

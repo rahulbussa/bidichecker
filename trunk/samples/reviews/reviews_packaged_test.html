@@ -60,7 +60,8 @@ function testReviews_EnglishDataEnglishUi() {
 
   // Run BidiChecker on the application's element. (To run it on the entire web
   // page, use document.body instead of testDiv.)
-  var errors = bidichecker.checkPage(/* shouldBeRtl= */ false, testDiv);
+  var checker = new bidichecker.BidiChecker(bidichecker.REVISION_2);
+  var errors = checker.checkPage(/* shouldBeRtl= */ false, testDiv);
 
   // No BiDi errors should be found.
   assertArrayEquals([], errors);
@@ -85,7 +86,8 @@ function testReviews_HebrewDataHebrewUi() {
   app.render();
 
   // Run BidiChecker on the application's element.
-  var errors = bidichecker.checkPage(/* shouldBeRtl= */ true, testDiv);
+  var checker = new bidichecker.BidiChecker(bidichecker.REVISION_2);
+  var errors = checker.checkPage(/* shouldBeRtl= */ true, testDiv);
 
   // No BiDi errors should be found.
   assertArrayEquals([], errors);
@@ -114,9 +116,10 @@ function testReviews_EnglishDataHebrewUi() {
   // We know this is buggy, but we're not ready to fix it yet, so we'll filter
   // out the known BiDi errors. Specifically, we'll filter out "undeclared LTR
   // text" errors in the reviews panel.
+  var checker = new bidichecker.BidiChecker(bidichecker.REVISION_2);
   var filters = [ bidichecker.FilterFactory.type('Undeclared LTR text').and(
                       bidichecker.FilterFactory.locationId('reviews')) ];
-  var errors = bidichecker.checkPage(/* shouldBeRtl= */ true, testDiv, filters);
+  var errors = checker.checkPage(/* shouldBeRtl= */ true, testDiv, filters);
 
   // No unexpected BiDi errors should be found.
   assertArrayEquals([], errors);
@@ -144,10 +147,10 @@ function testReviews_HebrewDataEnglishUi() {
   // As before, we'll filter out the known BiDi errors; specifically,
   // "undeclared RTL text" errors in the reviews panel. This time, we'll try
   // the XPath-based filter.
+  var checker = new bidichecker.BidiChecker(bidichecker.REVISION_2);
   var filters = [ bidichecker.FilterFactory.type('Undeclared RTL text').and(
       bidichecker.FilterFactory.locationXpath('id("reviews")/*')) ];
-  var errors =
-      bidichecker.checkPage(/* shouldBeRtl= */ false, testDiv, filters);
+  var errors = checker.checkPage(/* shouldBeRtl= */ false, testDiv, filters);
 
   // No unexpected BiDi errors should be found.
   assertArrayEquals([], errors);
@@ -164,9 +167,11 @@ function testReviews_HebrewDataEnglishUi() {
 // The function name is chosen to be last alphabetically so it's run last and
 // its results remain in the browser.
 //
-// In practice, you probably wouldn't run the GUI from an automated test suite,
-// but you might activate it manually for specific tests that are failing for
-// unclear reasons.
+// In practice, if you want to run the GUI from an automated test suite, you
+// should generally organize the tests so that each test page has just one test.
+// Otherwise, after one test has found an error, another test on the page may
+// modify or even remove the part of the DOM where the first test found the
+// error, making it impossible for the GUI to display the error.
 function testReviews_RunGui() {
   // Reviews data to display - all in English.
   var reviewsData = [
@@ -185,12 +190,11 @@ function testReviews_RunGui() {
 
   // Run BidiChecker on the application's element.
   // We know this is buggy, so the error list will be non-empty.
-  var errors = bidichecker.checkPage(/* shouldBeRtl= */ true, testDiv);
+  var checker = new bidichecker.BidiChecker(bidichecker.REVISION_2);
+  var errors = checker.checkPage(/* shouldBeRtl= */ true, testDiv);
 
   // Run the in-browser error GUI.
-  if (errors.length != 0) {
-    bidichecker.runGui(errors);
-  }
+  checker.runGui();
 
   // This assertion would fail!
 //  assertArrayEquals([], errors);

@@ -36,12 +36,20 @@ goog.require('goog.events.EventHandler');
  * A detector which listens for {@code bidichecker.DirChunkEvent} events and
  * checks for text with the opposite directionality as is declared for its
  * chunk.
+ * @param {number} revision Revision of checks to run. Revision 2 adds a check
+ *     for undeclared "fake RTL" strings.
  * @param {!bidichecker.ErrorCollector} errorCollector Collects any new errors
  *     discovered in this checking pass.
  * @constructor
  * @implements {bidichecker.Detector}
  */
-bidichecker.UndeclaredTextDetector = function(errorCollector) {
+bidichecker.UndeclaredTextDetector = function(revision, errorCollector) {
+  /**
+   * @type {number}
+   * @private
+   */
+  this.revision_ = revision;
+
   /**
    * @type {!bidichecker.ErrorCollector}
    * @private
@@ -50,7 +58,7 @@ bidichecker.UndeclaredTextDetector = function(errorCollector) {
 };
 
 
-/** @inheritDoc */
+/** @override */
 bidichecker.UndeclaredTextDetector.prototype.startListening =
     function(scanner) {
   /**
@@ -93,7 +101,9 @@ bidichecker.UndeclaredTextDetector.prototype.handleChunk_ = function(event) {
       }
     });
   } else {
-    var matches = bidichecker.utils.findRtlSubstrings(chunk.getText());
+    var matches = this.revision_ >= 2 ?
+        bidichecker.utils.findRtlAndFakeRtlSubstrings(chunk.getText()) :
+        bidichecker.utils.findRtlSubstrings(chunk.getText());
     goog.array.forEach(matches, function(match) {
       // As above, but for RLMs in an LTR context.
       if (!bidichecker.utils.hasOnlyRlmChars(match.text)) {
@@ -140,7 +150,7 @@ bidichecker.UndeclaredTextDetector.prototype.addError_ = function(
 bidichecker.UndeclaredTextDetector.prototype.addAdjacentNeutrals_ = function(
     text, match, error) {
   var neutralsBefore =
-      bidichecker.utils.findNeutralTextBeforeIndex(text, match.index);
+      bidichecker.utils.findVisibleNeutralTextBeforeIndex(text, match.index);
   if (neutralsBefore) {
     if (error.getSeverity() == 3) {
       error.setSeverity(2);
@@ -148,7 +158,7 @@ bidichecker.UndeclaredTextDetector.prototype.addAdjacentNeutrals_ = function(
     error.setPrecededByText(neutralsBefore.text);
   }
 
-  var neutralsAfter = bidichecker.utils.findNeutralTextAtIndex(
+  var neutralsAfter = bidichecker.utils.findVisibleNeutralTextAtIndex(
       text, match.index + match.text.length);
   if (neutralsAfter) {
     if (error.getSeverity() == 3) {

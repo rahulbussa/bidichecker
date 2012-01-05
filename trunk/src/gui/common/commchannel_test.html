@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+  <!--
+    Copyright 2011 Google Inc. All Rights Reserved.
+
+    Use of this source code is governed by an Apache 2.0 License.
+    See the COPYING file for details.
+  -->
+
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+    <title>CommChannel: End-to-End test</title>
+    <script type="text/javascript" src="../../../third_party/closure-library/closure/goog/base.js">
+    </script>
+    <script type="text/javascript" src="../../deps.js"></script>
+    <script>
+      goog.require('bidichecker.gui.common.CommChannel');
+      goog.require('goog.dom');
+      goog.require('goog.testing.AsyncTestCase');
+      goog.require('goog.testing.jsunit');
+      goog.require('goog.userAgent.product');
+    </script>
+
+  </head>
+  <body>
+    <script>
+// Set up AsyncTestCase.
+var asyncTestCase = goog.testing.AsyncTestCase.createAndInstall(
+    document.title);
+
+// Send a message to an inner frame and wait for an acknowledgement. This
+// doesn't completely test CommChannel, since it doesn't test communications
+// between separate windows (we can't test that because opening a new window
+// would be blocked by popup blockers).
+function testCommunicationWithFrame() {
+  // Skip test since postMessage doesn't work in versions before 8. (An
+  // isVersion(X) call means version X and up).
+  if (goog.userAgent.IE && !goog.userAgent.isVersion('8')) {
+    return;
+  }
+
+  // Message that the inner page sends when it is ready to receive messages.
+  var onReadyMessage = function(type, data) {
+    assertEquals(type, 'ready');
+    assertNull(data);
+
+    // Send ping message and wait for reply.
+    asyncTestCase.waitForAsync('receive pong');
+    channel.send('ping', pingData);
+  };
+
+  // Acknowledgement message. Should have the same data that we've sent.
+  var onPongMessage = function(type, data) {
+    assertEquals(type, 'pong');
+    assertEquals(data, pingData);
+
+    // Done.
+    asyncTestCase.continueTesting();
+  };
+
+  // Arbitrary data to send to other frame, and to verify later that we get it
+  // back.
+  var pingData = 'testing 123';
+
+  // Create frame.
+  var iframe = goog.dom.createElement('iframe');
+  document.body.appendChild(iframe);
+
+  // Set up comm channel.
+  var channel = new bidichecker.gui.common.CommChannel(iframe.contentWindow, {
+    'ready': onReadyMessage,
+    'pong': onPongMessage
+  });
+
+  // Navigate frame to the test helper and wait for it to say it's ready.
+  asyncTestCase.waitForAsync('frame ready');
+  iframe.src = 'testdata/commchannel_test_innerframe.html';
+}
+
+    </script>
+  </body>
+</html>
+

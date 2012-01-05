@@ -11,11 +11,20 @@
   <head>
     <title>BidiChecker - Test All Units</title>
 
+    <style>
+      .warning {
+      font-size: 14px;
+      font-weight: bold;
+      width: 80%;
+      }
+    </style>
+
     <!-- All *_test.html files to be tested. -->
     <script type="text/javascript">
       window.allTestFiles = [
           'bidichecker_test.html',
           'bidichecker_packaged_test.html',
+          'bookmarklet_test.html',
           'dirchunk_test.html',
           'dirchunk_test.html',
           'dirchunkwalker_test.html',
@@ -23,10 +32,13 @@
           'error_test.html',
           'errorcollector_test.html',
           'filterfactory_test.html',
+          'gui/common/commchannel_test.html',
+          'gui/server/guiserver_test.html',
           'highlightableelement_test.html',
           'highlightabletext_test.html',
           'overalldirectionalitydetector_test.html',
           'spilloverdetector_test.html',
+          'undeclaredfielddetector_test.html',
           'undeclaredtextdetector_test.html',
           'utils_test.html'
           ];
@@ -38,6 +50,7 @@
     <!-- Include the closure multi-test runner. -->
     <script type="text/javascript">
       goog.require('goog.testing.MultiTestRunner');
+      goog.require('goog.userAgent.product');
     </script>
     <link rel="stylesheet"
           href="../third_party/closure-library/closure/goog/css/multitestrunner.css" type="text/css">
@@ -48,15 +61,25 @@
     </script>
   </head>
 
-  <!-- Start the runner and render it. -->
-  <body onload='runner.start();'>
+  <body>
+    <script>
+      if (goog.userAgent.product.CHROME &&
+      window.location.toString().indexOf('file:') == 0) {
+      document.write(
+      '<div class="warning">' +
+        'WARNING: Due to Chrome\'s security restrictions ' +
+        'this test will not be able to load files off your local disk ' +
+        'unless you start Chrome with:<br>' +
+        '<code>--allow-file-access-from-files<\/code><\/div><br>');
+      }
+    </script>
+
     <h1>Test All Units</h1>
 
     <script type="text/javascript">
       runner.render();
+      runner.start();
     </script>
-
-    <!-- Add any elements required by the production code.  -->
 
   </body>
 </html>

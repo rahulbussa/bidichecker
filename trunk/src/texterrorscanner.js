@@ -24,19 +24,27 @@ goog.require('bidichecker.ErrorCollector');
 goog.require('bidichecker.OverallDirectionalityDetector');
 goog.require('bidichecker.Scanner');
 goog.require('bidichecker.SpilloverDetector');
+goog.require('bidichecker.UndeclaredFieldDetector');
 goog.require('bidichecker.UndeclaredTextDetector');
 goog.require('goog.i18n.bidi');
 
 
 /**
  * A scanner that runs the standard text error detectors.
+ * @param {number} revision Revision of checks to run.
  * @param {Array.<!bidichecker.Filter>=} opt_filters Error suppression filters.
  * @constructor
  * @extends {bidichecker.Scanner}
  */
-bidichecker.TextErrorScanner = function(opt_filters) {
+bidichecker.TextErrorScanner = function(revision, opt_filters) {
   bidichecker.Scanner.call(this, opt_filters,
                            /* opt_needDirChunkWalker */ true);
+
+  /**
+   * @type {number}
+   * @private
+   */
+  this.revision_ = revision;
 };
 goog.inherits(bidichecker.TextErrorScanner, bidichecker.Scanner);
 
@@ -52,7 +60,7 @@ goog.inherits(bidichecker.TextErrorScanner, bidichecker.Scanner);
 bidichecker.TextErrorScanner.prototype.buildDetectors = function(
     element, expectedDir) {
   return bidichecker.TextErrorScanner.buildDetectors(element, expectedDir,
-                                                     this.errorCollector);
+      this.errorCollector, this.revision_);
 };
 
 
@@ -64,20 +72,26 @@ bidichecker.TextErrorScanner.prototype.buildDetectors = function(
  * @param {goog.i18n.bidi.Dir} expectedDir Expected overall directionality, or
  *     {@code UNKNOWN} if not applicable.
  * @param {!bidichecker.ErrorCollector} errorCollector The error collector.
+ * @param {number} revision Revision of checks to run.
  * @return {Array.<!bidichecker.Detector>} List of detectors to run.
  */
-bidichecker.TextErrorScanner.buildDetectors = function(element, expectedDir,
-                                                       errorCollector) {
-  var detectors = [
-      new bidichecker.UndeclaredTextDetector(errorCollector),
-      new bidichecker.SpilloverDetector(errorCollector)
-  ];
+bidichecker.TextErrorScanner.buildDetectors = function(element,
+                                                       expectedDir,
+                                                       errorCollector,
+                                                       revision) {
+  var detectors = [];
   if (expectedDir != goog.i18n.bidi.Dir.UNKNOWN) {
     var shouldBeRtl = (expectedDir == goog.i18n.bidi.Dir.RTL);
-    detectors.unshift(
+    detectors.push(
         new bidichecker.OverallDirectionalityDetector(shouldBeRtl,
                                                       errorCollector));
   }
+  detectors.push(
+      new bidichecker.UndeclaredTextDetector(revision, errorCollector));
+  if (revision >= 2) {
+    detectors.push(new bidichecker.UndeclaredFieldDetector(errorCollector));
+  }
+  detectors.push(new bidichecker.SpilloverDetector(errorCollector));
 
   return detectors;
 };

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /**
- * @fileoverview Utility functions for BiDi support. Adapted in part from
+ * @fileoverview Utility functions for bidi support. Adapted in part from
  * <http://code.google.com/p/closure-library/source/browse/trunk/closure/goog/i18n/bidi.js>.
  */
 
@@ -84,7 +84,7 @@ bidichecker.utils.rtlChars_ = '\u0591-\u07FF\u200F\uFB1D-\uFDFF\uFE70-\uFEFC';
  * @private
  */
 bidichecker.utils.nonprintingChars_ = '\u0000-\u001f\u007f\u0085\u00a0\u1680' +
-    '\u180e\u2000-\u200f\u2028\u2029\u202f\u205f\u3000';
+    '\u180e\u2000-\u200f\u2028-\u202f\u205f\u3000';
 
 
 /**
@@ -101,6 +101,37 @@ bidichecker.utils.rtlSubstringReg_ =
     new RegExp('[' + bidichecker.utils.rtlChars_ + '](?:[^' +
                bidichecker.utils.ltrChars_ + '\u202A-\u202E]*[' +
                bidichecker.utils.rtlChars_ + '])?', 'g');
+
+
+/**
+ * Regular expression to check for a substring of RTL characters with neutral
+ * characters among them (excluding Unicode bidi control characters), or a
+ * series of "fake RTL" substrings of LTR or neutral characters sandwiched
+ * between Unicode RLO and PDF characters.
+ * @type {RegExp}
+ * @private
+ */
+bidichecker.utils.rtlAndFakeRtlSubstringReg_ =
+    // Pattern has two alternatives: either an RTL substring as above, or an LTR
+    // substring (as below) sandwiched between RLO and PDF characters.
+    new RegExp(
+        // Starts with an RTL character.
+        '(?:[' + bidichecker.utils.rtlChars_ + ']' +
+        // Contains a sequence of non-LTR characters.
+        '(?:[^' + bidichecker.utils.ltrChars_ + '\u202A-\u202E]*' +
+        // And ends with an RTL character.
+        '[' + bidichecker.utils.rtlChars_ + '])?)' +
+        // Or...
+        '|' +
+        // Starts with an RLO, followed by an LTR character.
+        '(?:\u202E[' + bidichecker.utils.ltrChars_ + ']' +
+        // Contains a sequence of non-RTL characters.
+        '(?:[^' + bidichecker.utils.rtlChars_ + '\u202A-\u202E]*' +
+        // Ends with an LTR character, followed by a PDF.
+        '[' + bidichecker.utils.ltrChars_ + '])?\u202C' +
+        // Possibly repeated successively, separated by neutrals.
+        '[' + bidichecker.utils.neutralChars_ + ']*)+',
+        'g');
 
 
 /**
@@ -121,26 +152,37 @@ bidichecker.utils.ltrSubstringReg_ =
 
 /**
  * Regular expression to check for a prefix substring of neutral characters,
- * possibly including whitespace. Used to find neutrals following opposite-
- * directionality text.
+ * possibly including whitespace but ending with a visible character. Used to
+ * find neutrals following opposite-directionality text.
  * @type {RegExp}
  * @private
  */
-bidichecker.utils.initialNeutralSubstringReg_ =
+bidichecker.utils.initialVisibleNeutralSubstringReg_ =
   new RegExp('^[' + bidichecker.utils.neutralChars_ + ']*[' +
              bidichecker.utils.nonWhiteNeutralChars_ + ']');
 
 
 /**
  * Regular expression to check for a suffix substring of neutral characters,
- * possibly including whitespace. Used to find neutrals preceding opposite-
- * directionality text.
+ * possibly including whitespace but starting with a visible character. Used to
+ * find neutrals preceding opposite-directionality text.
+ * @type {RegExp}
+ * @private
+ */
+bidichecker.utils.finalVisibleNeutralSubstringReg_ =
+  new RegExp('[' + bidichecker.utils.nonWhiteNeutralChars_ + '][' +
+             bidichecker.utils.neutralChars_ + ']*$');
+
+
+/**
+ * Regular expression to check for a suffix substring of neutral characters,
+ * possibly including whitespace. Used to strip neutrals following a fake RTL
+ * string (see {@code bidichecker.utils.rtlAndFakeRtlSubstringReg_}).
  * @type {RegExp}
  * @private
  */
 bidichecker.utils.finalNeutralSubstringReg_ =
-  new RegExp('[' + bidichecker.utils.nonWhiteNeutralChars_ + '][' +
-             bidichecker.utils.neutralChars_ + ']*$');
+  new RegExp('[' + bidichecker.utils.neutralChars_ + ']*$');
 
 
 /**
@@ -232,6 +274,35 @@ bidichecker.utils.findRtlSubstrings = function(str) {
 
 
 /**
+ * Finds substrings in a given string of RTL characters with neutral characters
+ * among them, or "fake RTL" consisting of LTR characters sandwiched between
+ * Unicode RLO and PDF characters.
+ * @param {string} str The string to be searched.
+ * @return {Array.<bidichecker.utils.Substring>} Array of matching substrings.
+ *     Returns empty array if no match.
+ */
+bidichecker.utils.findRtlAndFakeRtlSubstrings = function(str) {
+  var results = [];
+  var match;
+  while ((match = bidichecker.utils.rtlAndFakeRtlSubstringReg_.exec(str))) {
+    // The regexp matches trailing neutrals after a fake RTL substring; we want
+    // to strip them.
+    var matchString = match[0];
+
+    // Trim the neutrals from the end of the matched substring.
+    var neutralsMatch =
+        bidichecker.utils.finalNeutralSubstringReg_.exec(match[0]);
+    if (neutralsMatch) {
+      matchString =
+          matchString.substr(0, matchString.length - neutralsMatch[0].length);
+    }
+    results.push(new bidichecker.utils.Substring(matchString, match.index));
+  }
+  return results;
+};
+
+
+/**
  * Finds substrings in a given string of LTR characters with neutral characters
  * among them. Ignores "fake RTL" strings, when the LTR characters are
  * sandwiched between Unicode RLO and PDF characters.
@@ -243,7 +314,7 @@ bidichecker.utils.findLtrSubstrings = function(str) {
   var results = [];
   var match;
   while ((match = bidichecker.utils.ltrSubstringReg_.exec(str))) {
-    // Skip fake RTl strings.
+    // Skip fake RTL strings.
     if (str.charAt(match.index - 1) == '\u202E' &&
         str.charAt(match.index + match[0].length) == '\u202C') {
       continue;
@@ -281,8 +352,8 @@ bidichecker.utils.hasOnlyRlmChars = function(str) {
  * @param {number} index The index from which to begin searching.
  * @return {bidichecker.utils.Substring} Matching substring or null if no match.
  */
-bidichecker.utils.findNeutralTextAtIndex = function(str, index) {
-  var match = bidichecker.utils.initialNeutralSubstringReg_.exec(
+bidichecker.utils.findVisibleNeutralTextAtIndex = function(str, index) {
+  var match = bidichecker.utils.initialVisibleNeutralSubstringReg_.exec(
       str.substr(index));
   if (match) {
     return new bidichecker.utils.Substring(match[0], index);
@@ -298,8 +369,8 @@ bidichecker.utils.findNeutralTextAtIndex = function(str, index) {
  * @param {number} index The index before which to begin searching.
  * @return {bidichecker.utils.Substring} Matching substring or null if no match.
  */
-bidichecker.utils.findNeutralTextBeforeIndex = function(str, index) {
-  var match = bidichecker.utils.finalNeutralSubstringReg_.exec(
+bidichecker.utils.findVisibleNeutralTextBeforeIndex = function(str, index) {
+  var match = bidichecker.utils.finalVisibleNeutralSubstringReg_.exec(
       str.substr(0, index));
   if (match) {
     return new bidichecker.utils.Substring(match[0], index - match[0].length);
@@ -409,15 +480,42 @@ bidichecker.utils.singleQuoteString = function(str) {
 
 
 /**
+ * Truncates a string if it's longer than a given length. Longer values are
+ * abbreviated after that length, appending an ellipsis, so the maximum result
+ * length is maxLength + 1.
+ * @param {string} str The original string.
+ * @param {number} maxLength The length at which to truncate.
+ * @return {string} The possibly-truncated string.
+ */
+bidichecker.utils.truncateString = function(str, maxLength) {
+  var ELLIPSIS = '\u2026';
+  if (str.length > maxLength) {
+    return str.substr(0, maxLength) + ELLIPSIS;
+  }
+  return str;
+};
+
+
+/**
  * Stringifies an attribute node as xyz='abc', where xyz is the attribute name
  * and abc is its value. Escapes any special characters in the attribute value.
+ * Attribute values other than "class" and "id" are truncated to a maximum of 20
+ * characters (before escaping).
  * @param {Node} node An attribute node.
  * @return {string} The string description of the attribute.
  * @private
  */
 bidichecker.utils.describeAttribute_ = function(node) {
-  return node.nodeName + '=' +
-      bidichecker.utils.singleQuoteString(node.nodeValue);
+  var TRUNCATION_LENGTH = 20;
+  var value = node.nodeValue;
+  if (node.nodeName != 'class' && node.nodeName != 'id') {
+    value = bidichecker.utils.truncateString(value, TRUNCATION_LENGTH);
+  }
+  if (node.nodeName == 'style') {
+    // IE mangles the case of style attributes; normalize on lowercase.
+    value = value.toLowerCase();
+  }
+  return node.nodeName + '=' + bidichecker.utils.singleQuoteString(value);
 };
 
 
@@ -433,8 +531,10 @@ bidichecker.utils.describeNode = function(node) {
   if (node.attributes) {
     for (var i = 0; i < node.attributes.length; ++i) {
       var attribute = node.attributes[i];
-      // In IE, node.attributes includes implicitly defined attributes.
-      if (attribute.specified === undefined || attribute.specified) {
+      // In IE, node.attributes includes implicitly defined attributes. It also
+      // sometimes contains attributes with null values.
+      if (attribute.nodeValue &&
+          (attribute.specified === undefined || attribute.specified)) {
         attributes.push(attribute);
       }
     }
@@ -449,10 +549,8 @@ bidichecker.utils.describeNode = function(node) {
 
 
 /**
- * Describes the location in the DOM of an element node. Walks up to the
- * lowest-level parent node with an id attribute, or else continues all the way
- * up the hierarchy.
- * Output is a string of the form <div id='xyz'><p dir='rtl'>.
+ * Describes the location in the DOM of an element node. Output is a string of
+ * the form <div id='xyz'><p dir='rtl'>.
  * @param {Node} node The node to describe.
  * @return {string} The string description.
  */
@@ -461,8 +559,9 @@ bidichecker.utils.describeLocation = function(node) {
   for (var current = node; current; current = current.parentNode) {
     descriptions.push(bidichecker.utils.describeNode(current));
 
-    // Found a uniquely identifiable element; stop here.
-    if (current.id || current.nodeName == 'BODY') {
+    // Stop below the body (or frameset) node.
+    if (current.parentNode.nodeName == 'BODY' ||
+        current.parentNode.nodeName == 'FRAMESET') {
       break;
     }
   }
@@ -555,6 +654,18 @@ bidichecker.utils.getDisplayStyle = function(element) {
 
 
 /**
+ * Returns the visibility style of an element.
+ * @param {Element} element The element to test.
+ * @return {?string} The element's visibility style, if available.
+ */
+bidichecker.utils.getVisibilityStyle = function(element) {
+  var style = goog.style.getCascadedStyle(element, 'visibility') ||
+    goog.style.getComputedStyle(element, 'visibility');
+  return style;
+};
+
+
+/**
  * Checks if an element is actually displayed as a block-level html element,
  * considering both the default tag type and the <tt>display</tt> css property.
  * @param {Element} element The element to test.
@@ -572,7 +683,8 @@ bidichecker.utils.isBlockElement = function(element) {
 
 /**
  * Checks if a node is displayable; that is, it does not have style
- * "display:none" and is not a script, noscript or style element.
+ * "display:none", "visibility:hidden" or "visibility:collapse", and is not a
+ * script, noscript or style element.
  * <p>In some browsers (such as IE), contents of noscript tags are not
  * accessible anyway with scripting activated. In others (such as Chrome) the
  * DOM contains a noscript element whose contents are the entity-encoded HTML
@@ -587,8 +699,32 @@ bidichecker.utils.isDisplayable = function(node) {
         node.nodeName == 'NOSCRIPT') {
       return false;
     }
-    return bidichecker.utils.getDisplayStyle(
-        /** @type {Element} */ (node)) != 'none';
+    var element = /** @type {Element} */ (node);
+    if (bidichecker.utils.getDisplayStyle(element) == 'none') {
+        return false;
+    }
+    var visibility = bidichecker.utils.getVisibilityStyle(element);
+    return visibility != 'hidden' && visibility != 'collapse';
   }
   return true;
+};
+
+
+/**
+ * Modifies the style of an element to highlight its contents visually. Changes
+ * the element's text color to red and background color to yellow, and
+ * adds a red outline.
+ * @param {!Element} element The element to modify.
+ * @return {!Object} Contains the color, backgroundColor and outline fields of
+ *     the element's original style.
+ */
+bidichecker.utils.highlightElementStyle = function(element) {
+  var oldStyle =
+      {'color': element.style.color || '',
+       'backgroundColor': element.style.backgroundColor || '',
+       'outline': element.style.outline || ''};
+  element.style.color = 'red';
+  element.style.backgroundColor = 'yellow';
+  element.style.outline = 'medium solid red';
+  return oldStyle;
 };

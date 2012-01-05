@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html>
+  <!--
+      Copyright 2010 Google Inc. All Rights Reserved.
+
+      Use of this source code is governed by an Apache 2.0 License.
+      See the COPYING file for details.
+    -->
+
+
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link href="users_guide.css" rel="stylesheet" type="text/css">
+
+    <title>BidiChecker User's Guide</title>
+  </head>
+
+  <body>
+
+    <table width="100%"><tr>
+    <td class="prev-link" width="33%"><a href="error_descriptions.html">&lt;&lt; Error descriptions and error suppression &lt;&lt;</a></td>
+    <td class="up-link" width="33%"><a href="index.html">
+        ^^ Table of Contents ^^</a></td>
+    <td class="next-link" width="33%"><a href="how_to_devise.html">&gt;&gt; How to devise effective test cases &gt;&gt;</a></td>
+    </tr></table>
+
+    <hr>
+
+    <h1><a href="index.html">BidiChecker User's Guide</a></h1>
+
+    <h2>5. Catalog of checks</h2>
+
+        <p>The "meat" of BidiChecker is the actual bidi
+    checks. BidiChecker runs a series of checkers on the web page DOM,
+    each of which scans for a particular kind of error and generates
+    error reports. This section catalogs the checks implemented so far
+    and the errors they produce.</p>
+
+    <ul>
+      <li><a href="#IncorrectOverall">Incorrect overall directionality</a></li>
+      <li><a href="#UndeclaredText">Undeclared opposite-directionality text</a>
+      </li>
+      <li><a href="#UndeclaredAttributes">
+          Undeclared opposite-directionality attributes</a></li>
+      <li><a href="#SpilloverToNumber">
+          Spillover from declared opposite-directionality element to number
+      </a></li>
+    </ul>
+
+    <h3><a name="IncorrectOverall">Incorrect overall directionality</a></h3>
+
+    <h4>Description</h4>
+
+    <p>Checks whether the overall declared directionality of the web
+      page (or root element being checked) is the same as that intended
+      by the developer (as specified in the call to BidiChecker). If,
+      for example, the developer specified an intended directionality of
+      RTL, but the page body or root element is LTR, an error will be
+      reported. This type of error is always severity level 1.</p>
+
+    <h4>Sample output</h4>
+
+    <div class="codeblock"><code>[1] Overall directionality not LTR</code>
+    </div>
+
+    <p><a href="http://doctype.googlecode.com/svn-history/trunk/bidihowto/bidi-support-in-a-ui/declaring-page-directionality.html"
+          target="_blank">More
+    information about declaring the overall page directionality.</a></p>
+
+
+    <h3><a name="UndeclaredText">Undeclared opposite-directionality
+        text</a></h3>
+
+    <h4>Description</h4>
+
+    <p>Checks for strongly-directional characters (such as English,
+      Hebrew or Arabic letters) which are in an area declared to have
+      the opposite directionality. Each run of opposite-directionality
+      text (possibly mixed in with neutrals) is reported as an
+      error.</p>
+
+    <p>When testing bidi support, RTL text is sometimes simulated by surrounding
+      English letters with the Unicode control characters RLO and PDF, forcing
+      the English text to behave like right-to-left characters. This is
+      sometimes known as "Fake Bidi" or "Fake RTL". Starting from revision 2,
+      the undeclared opposite-directionality checker also generates an error for
+      fake-RTL text in an LTR context.</p>
+
+    <h4>Why is it a problem?</h4>
+
+    <p>Undeclared opposite-directionality text is a problem because</p>
+
+    <ul>
+      <li>Undeclared opposite-directionality text (LTR or RTL) is
+        often displayed garbled. The common cases (see the link below for
+        examples) are when it:
+        <ul>
+          <li>Starts with a number or punctuation or other neutral
+            characters (e.g. copyright symbol).</li>
+          <li>Ends with punctuation or other neutral characters.</li>
+          <li>Contains embedded text of directionality opposite to it,
+            i.e. in the original directionality.</li>
+        </ul>
+      </li>
+      <li>Even when it is not garbled itself, it can garble the layout
+        of the line in which it appears by "sticking" to a logically
+        separate opposite-directionality phrase next to it. This is
+        especially problematic when these are separated by neutral
+        items like images or inputs, since it will all be laid out in
+        reverse.</li></ul>
+
+    <h4>Why it might not be a problem</h4>
+
+    <p>Undeclared opposite-directionality text is not necessarily a
+      problem. There are messages that you never want translated,
+      e.g. "Gmail". If their text does not fall into one of the troublesome
+      categories above and does not happen to lie next to another undeclared
+      opposite-directionality phrase, no visible problem will result.</p>
+
+    <h4>Sample output</h4>
+
+    <div class="codeblock">
+      <code>[2] Undeclared RTL text: '&#x5e9;&#x5dc;&#x5d5;&#x5dd;'
+        followed by '.' in &lt;p id='resultStats'&gt;&lt;b&gt;</code></div>
+
+    <p>If the run of opposite-directionality text is immediately preceded
+      or followed by a run of neutral characters, those characters are
+      reported as the error context fields and the error severity is set at
+      level 2. If there is no such adjacent run of neutral characters, the
+      error severity is 3. (But see the next section.)</p>
+
+    <p><a href="http://doctype.googlecode.com/svn-history/trunk/bidihowto/bidi-support-in-a-ui/declaring-opposite-directionality.html"
+          target="_blank">More
+    information about declaring opposite-directionality text.</a></p>
+
+
+    <h4>Severity demotion of errors in areas of explicitly-declared
+    directionality</h4>
+
+    <p>In certain circumstances, the severity of undeclared
+      opposite-directionality text errors is demoted to 4. If an element
+      other than the root element has an explicitly-declared directionality
+      (i.e., a "dir" attribute), and that element also does not contain any
+      block-level elements (i.e., it is the lowest-level block in its
+      subtree), then bidi errors inside that element's subtree are assigned
+      the lowest severity. This is based on the assumption that the explicit
+      declaration of directionality indicates that the code which generated
+      this part of the page has somehow deliberately assessed its
+      directionality. Rather than second-guess the developers, we demote the
+      severity of error reports in that subtree. It may, for example,
+      represent a block of user-generated content included from an external
+      website; errors in such content are not the responsibility of the
+      application.</p>
+
+    <p>This heuristic is far from perfect, and we may revisit it as
+      necessary.</p>
+
+
+    <h3><a name="UndeclaredAttributes">
+        Undeclared opposite-directionality attributes</a></h3>
+
+    <h4>Description</h4>
+
+    <p>Checks text-valued attributes, such as input fields, button labels and
+      tooltips ("title" and "alt" attributes), looking for those which have
+      strongly-directional characters (such as English, Hebrew or Arabic
+      letters) with the opposite of the declared directionality, while
+      containing no letters with the declared directionality itself. Each such
+      attribute is reported as an error.</p>
+
+    <p>This set of checks was introduced in Revision 2, and is not active in
+      tests run at Revision 1.</p>
+
+    <p>The following attribute types are checked:</p>
+
+    <ul>
+      <li>On all elements: "title" attributes (used to display tooltips).</li>
+      <li>On "input" elements of type "text", "search", "button", "reset" and
+        "submit": the "value" attribute (contains the input field value or the
+        button label).</li>
+      <li>On "input" elements of type "file": checks that the element is
+        declared as left-to-right.
+      <li>On "img" elements and on "input" elements of type="image": "alt"
+        attributes (used to display tooltips).</li>
+      <li>On "textarea" elements: the "value" attribute (contains the textarea
+        contents).</li>
+    </ul>
+
+    <p>These attributes have several points in common:</p>
+    <ul>
+      <li>The text is contained not in a text node in the DOM, but in a property
+        of the element.</li>
+      <li>The text they contain is not part of the text flow around them.</li>
+      <li>The directionality must be declared for the entire element, as the
+        text does not support internal markup with spans of different
+        directions.</li>
+    </ul>
+
+    <p>Note that when the attribute value contains both LTR and RTL characters,
+      it is not flagged as an error regardless of its declared directionality.
+      This is because only one directionality can be declared for the whole
+      value, and different applications use different criteria to estimate the
+      directionality of mixed-directionality text. <b>That it is not flagged as
+      an error does not necessarily mean that there is no problem.</b> In fact,
+      when the wrong directionality is declared for a mixed-directionality
+      value, very severe garbling usually results. We just have no way of
+      knowing whether there is a problem or not, and the application has no way
+      of avoiding the situation.</p>
+
+    <p>This set of checks can produce errors of the following types:</p>
+    <ul>
+      <li>File input not LTR</li>
+      <li>Undeclared LTR alt text</li>
+      <li>Undeclared RTL alt text</li>
+      <li>Undeclared LTR button label</li>
+      <li>Undeclared RTL button label</li>
+      <li>Undeclared LTR input value</li>
+      <li>Undeclared RTL input value</li>
+      <li>Undeclared LTR textarea value</li>
+      <li>Undeclared RTL textarea value</li>
+      <li>Undeclared LTR title text</li>
+      <li>Undeclared RTL title text</li>
+    </ul>
+
+    <h4>Why is it a problem?</h4>
+
+    <p>As with undeclared opposite-directionality inline text, text garbling can
+      affect text attributes with the wrong directionality declaration.
+      Also, entering text into an input or textarea with the wrong
+      directionality is a real pain for the user.</p>
+
+    <p>Ideally, text inputs (&lt;input type=text|search&gt; and
+      &lt;textarea&gt;) in which the user could enter a value of either
+      direction should change their directionality automatically on the fly
+      depending on the value the user has entered so far. Functions which
+      implement this can be found in Javascript libraries and template systems,
+      such as Closure's
+      <a href="http://closure-library.googlecode.com/svn/docs/closure_goog_i18n_bidi.js.html"
+         target="_blank">goog.i18n.bidi.estimateDirection()</a>.</p>
+
+    <p>In cases where the intended directionality of the title attribute does
+      not match that of some other text property, such as an input's text
+      content or a button's label or an image's alt attribute, place a span or
+      div around the element, move the title attribute there, and give the two
+      elements different directionalities.</p>
+
+
+    <h4>Why it might not be a problem</h4>
+
+    <p>If the text value is known to contain only one direction of text, and not
+      to start or end with punctuation or other direction-neutral characters,
+      the appearance of the text will not in practice be different when the
+      wrong directionality is declared. In such cases, the error severity is
+      set at level 3; otherwise, it will be 2.</p>
+
+    <p>However, if the element with the text-valued attribute itself has a "dir"
+      attribute (or a "direction" style applied directly or via a style file),
+      the severity will be demoted to 4. This is based on the assumption that
+      the explicit declaration of directionality indicates that the code which
+      generated this part of the page has somehow deliberately assessed its
+      directionality. Rather than second-guess the developers, we demote the
+      severity of error reports for that element.</p>
+
+    <p>On the other hand, errors in textarea or input values always get severity
+      1 due to the nuisance to users of entering data in a box with the wrong
+      directionality.</p>
+
+
+    <h4>Sample output</h4>
+
+    <div class="codeblock">
+      <code>
+        [2] Undeclared RTL textarea value: '&#x5e9;&#x5dc;&#x5d5;&#x5dd;'
+        followed by '.' in &lt;p id='userinput'&gt;&lt;textarea&gt;<br>
+        [3] Undeclared LTR input value: 'Shalom' in &lt;p
+        dir='rtl'&gt;&lt;input type='text' value='Shalom'&gt;<br>
+        [4] Undeclared LTR title text: 'Hello' in &lt;p&gt;&lt;div dir='rtl'
+        title='Hello'&gt; <br>
+        [2] Undeclared RTL alt text: '&#x5e9;&#x5dc;&#x5d5;&#x5dd;' followed by
+        '!' in &lt;p&gt;&lt;img alt='&#x5e9;&#x5dc;&#x5d5;&#x5dd;!'
+        src='http://fake.url/'&gt;<br>
+        [2] File input not LTR in &lt;p dir='rtl'&gt;&lt;input type='file'&gt;
+    </code></div>
+
+
+    <h3><a name="SpilloverToNumber">Spillover from declared
+        opposite-directionality element to number</a></h3>
+
+    <h4>Description</h4>
+
+    <p>When an opposite-directionality element is followed by a number
+      (possibly with intervening neutral characters),
+      the <a href="http://unicode.org/reports/tr9/" target="_blank">standard
+        Unicode bidi algorithm</a> extends the opposite-directionality region
+      to encompass the subsequent number. This can, and often does, cause
+      text garbling. For examples, follow the link below.</p>
+
+    <p>We identify spillover by the following heuristic criteria:</p>
+
+    <ul><li>When an HTML element with a 'dir' attribute closes, and this
+        causes a change in the current declared directionality, the element
+        becomes a spillover candidate.</li>
+      <li>If we then encounter a text node containing a number, with only
+        neutral characters preceding it, a spillover error has been
+        identified.</li>
+      <li>However, if following the spillover candidate we encounter: a) a
+        text node containing a strongly-directional character, b) the opening
+        of an element with a 'dir' attribute, c) the closing of an element
+        with a 'dir' attribute which does not change the current
+        directionality, or d) the opening or closing of a block-level element
+        - then the spillover candidate is canceled.</li></ul>
+
+    <h4>Sample output</h4>
+
+    <div class="codeblock">
+      <code>[2] Declared LTR spillover to
+          number: '1' preceded by 'The Unbearable Light&hellip;' in
+          &lt;ol id='rso'&gt;&lt;li class='g'&gt;&lt;table
+          class='ts'&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td width='290' valign='top'
+          colspan='1'&gt;
+      </code>
+    </div>
+
+    <p>Spillover errors have severity level 2. As with undeclared
+      opposite-directionality text, errors in an area of explictly-declared
+      directionality are demoted to severity level 4 (see above).</p>
+
+    <p><a href="http://doctype.googlecode.com/svn-history/trunk/bidihowto/bidi-support-in-a-ui/resetting-directionality.html"
+          target="_blank">More
+    information about preventing spillover errors.</a></p>
+
+
+    <hr>
+
+    <table width="100%"><tr>
+    <td class="prev-link" width="33%"><a href="error_descriptions.html">&lt;&lt; Error descriptions and error suppression &lt;&lt;</a></td>
+    <td class="up-link" width="33%"><a href="index.html">
+        ^^ Table of Contents ^^</a></td>
+    <td class="next-link" width="33%"><a href="how_to_devise.html">&gt;&gt; How to devise effective test cases &gt;&gt;</a></td>
+    </tr></table>
+
+  </body>
+</html>

@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+  <!--
+    Copyright 2011 Google Inc. All Rights Reserved.
+
+    Use of this source code is governed by an Apache 2.0 License.
+    See the COPYING file for details.
+  -->
+
+  <!--
+  Unit tests for undeclaredfielddetector.js.
+  -->
+  <head>
+    <title>bidichecker - Javascript Unit Tests</title>
+    <script type="text/javascript" src="../third_party/closure-library/closure/goog/base.js">
+    </script>
+
+    <!-- Include the generated deps.js which enables goog.require of
+         the modules under test.
+    -->
+    <script type="text/javascript" src="deps.js"></script>
+    <script type="text/javascript">
+// This in turn pulls in the rest of the files.
+goog.require('bidichecker');
+
+goog.require('goog.testing.jsunit');
+goog.require('goog.userAgent.product.isVersion');
+    </script>
+    <script type="text/javascript" src="testutils.js"></script>
+
+  </head>
+  <body>
+    <script type="text/javascript">
+
+// IE7 doesn't report all the attributes for some unclear reason. We fix some of
+// the tests to handle this weirdness.
+var USING_IE7 = goog.userAgent.product.IE && !goog.userAgent.isVersion(8);
+
+
+/**
+ * Runs the undeclared field detector on the contents of a DOM element.
+ * @param {!Element} rootElement The root element of the DOM to be checked.
+ * @return {!Array.<!bidichecker.Error>} List of error messages.
+ */
+function runUndeclaredFieldDetector(rootElement) {
+  var errorCollector =
+      new bidichecker.ErrorCollector(new bidichecker.FrameStack());
+
+  var scanner = new bidichecker.Scanner();
+  // Override the buildDetectors method to build only one detector.
+  scanner.buildDetectors = function(element, shouldBeRtl) {
+    return [new bidichecker.UndeclaredFieldDetector(errorCollector)];
+  };
+
+  scanner.scan(rootElement);
+  return errorCollector.getErrors();
+}
+
+
+function testUndeclaredFieldDetector_NoError() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'ltr'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<div title=\'Hello\'><\/div>';
+  var errors = runUndeclaredFieldDetector(testDiv);
+  assertErrorFields([], errors);
+}
+
+
+function testUndeclaredFieldDetector_TitleAttributeLtrError() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<div title=\'Hello\'><\/div>';
+  var errors = runUndeclaredFieldDetector(testDiv);
+  var expected = [
+      {'type': 'Undeclared LTR title text',
+       'severity': 3,
+       'atText': 'Hello',
+       'locationDescription':
+           '<div dir=\'rtl\' id=\'test\'><div title=\'Hello\'>'}
+  ];
+  assertErrorFields(expected, errors);
+}
+
+
+function testUndeclaredFieldDetector_TitleAttributeRtlError() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'ltr'});
+  goog.dom.appendChild(document.body, testDiv);
+  // Hebrew text reads "Shalom".
+  testDiv.innerHTML = '<div title=\'\u05e9\u05dc\u05d5\u05dd\'><\/div>';
+  var errors = runUndeclaredFieldDetector(testDiv);
+  var expected = [
+      {'type': 'Undeclared RTL title text',
+       'severity': 3,
+       'atText': '\u05e9\u05dc\u05d5\u05dd',
+       'locationDescription':
+           '<div dir=\'ltr\' id=\'test\'>' +
+           '<div title=\'\u05e9\u05dc\u05d5\u05dd\'>'}
+  ];
+  assertErrorFields(expected, errors);
+}
+
+
+function testUndeclaredFieldDetector_TitleAttributeMixedDirectionNoError() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<div title=\'\u05e9\u05dc\u05d5\u05dd\Hello\'><\/div>';
+  var errors = runUndeclaredFieldDetector(testDiv);
+  assertErrorFields([], errors);
+}
+
+
+function testUndeclaredFieldDetector_StartingNeutralCausesHighSeverityError() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<div title=\'...working\'><\/div>';
+  var errors = runUndeclaredFieldDetector(testDiv);
+  var expected = [
+      {'type': 'Undeclared LTR title text',
+       'severity': 2,
+       'atText': '...working',
+       'locationDescription':
+           '<div dir=\'rtl\' id=\'test\'>' +
+           '<div title=\'...working\'>'}
+  ];
+  assertErrorFields(expected, errors);
+}
+
+
+function testUndeclaredFieldDetector_FinalNeutralCausesHighSeverityError() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'ltr'});
+  goog.dom.appendChild(document.body, testDiv);
+  // Hebrew text reads "Shalom!" (trailing punctuation mark will be garbled).
+  testDiv.innerHTML = '<div title=\'\u05e9\u05dc\u05d5\u05dd!\'><\/div>';
+  var errors = runUndeclaredFieldDetector(testDiv);
+  var expected = [
+      {'type': 'Undeclared RTL title text',
+       'severity': 2,
+       'atText': '\u05e9\u05dc\u05d5\u05dd!',
+       'locationDescription':
+           '<div dir=\'ltr\' id=\'test\'>' +
+           '<div title=\'\u05e9\u05dc\u05d5\u05dd!\'>'}
+  ];
+  assertErrorFields(expected, errors);
+}
+
+
+function testUndeclaredFieldDetector_InputValueError() {
+  // Input value errors always have severity 1.
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'ltr'});
+  goog.dom.appendChild(document.body, testDiv);
+  // Hebrew text reads "Shalom".
+  testDiv.innerHTML =
+      '<input type=\'text\' dir=\'ltr\' value=\'\u05e9\u05dc\u05d5\u05dd\'>';
+  var errors = runUndeclaredFieldDetector(testDiv);
+  var expected = [
+      {'type': 'Undeclared RTL input value',
+       'severity': 1,
+       'atText': '\u05e9\u05dc\u05d5\u05dd',
+       'locationDescription':
+           '<div dir=\'ltr\' id=\'test\'>' +
+           '<input dir=\'ltr\' type=\'text\' ' +
+           'value=\'\u05e9\u05dc\u05d5\u05dd\'>'}
+  ];
+  if (USING_IE7) {
+    expected[0].locationDescription =
+        '<div dir=\'ltr\' id=\'test\'><input dir=\'ltr\'>';
+  }
+  assertErrorFields(expected, errors);
+}
+
+
+function testUndeclaredFieldDetector_InputDefaultTypeError() {
+  // Input value errors always have severity 1.
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  goog.dom.appendChild(document.body, testDiv);
+
+  // If input type is not specified, it defaults to "text".
+  testDiv.innerHTML = '<input value=\'Hello\'>';
+  var errors = runUndeclaredFieldDetector(testDiv);
+  var expected = [
+      {'type': 'Undeclared LTR input value',
+       'severity': 1,
+       'atText': 'Hello',
+       'locationDescription':
+           '<div dir=\'rtl\' id=\'test\'><input value=\'Hello\'>'}
+  ];
+  if (USING_IE7) {
+    expected[0].locationDescription = '<div dir=\'rtl\' id=\'test\'><input>';
+  }
+  assertErrorFields(expected, errors);
+}
+
+
+function testUndeclaredFieldDetector_InputSearchTextError() {
+  // Input value errors always have severity 1.
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<input type=\'search\' value=\'Hello\'>';
+  var errors = runUndeclaredFieldDetector(testDiv);
+  var expected = [
+      {'type': 'Undeclared LTR input value',
+       'severity': 1,
+       'atText': 'Hello',
+       'locationDescription':
+           '<div dir=\'rtl\' id=\'test\'>' +
+           '<input type=\'search\' value=\'Hello\'>'}
+  ];
+  if (USING_IE7) {
+    // Doesn't support type='search' yet.
+    expected[0].locationDescription = '<div dir=\'rtl\' id=\'test\'><input>';
+  }
+  assertErrorFields(expected, errors);
+}
+
+
+function testUndeclaredFieldDetector_InputSubmitButtonError() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<input type=\'submit\' value=\'Hello\'>';
+  var errors = runUndeclaredFieldDetector(testDiv);
+  var expected = [
+      {'type': 'Undeclared LTR button label',
+       'severity': 3,
+       'atText': 'Hello',
+       'locationDescription':
+           '<div dir=\'rtl\' id=\'test\'>' +
+           '<input type=\'submit\' value=\'Hello\'>'}
+  ];
+  if (USING_IE7) {
+    expected[0].locationDescription =
+        '<div dir=\'rtl\' id=\'test\'><input type=\'submit\'>';
+  }
+  assertErrorFields(expected, errors);
+}
+
+
+function testUndeclaredFieldDetector_InputImageAltTextError() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML =
+      '<input type=\'image\' src=\'junk://fake.url/\' alt=\'Hello\'>';
+  var errors = runUndeclaredFieldDetector(testDiv);
+  var expected = [
+      {'type': 'Undeclared LTR alt text',
+       'severity': 3,
+       'atText': 'Hello',
+       'locationDescription':
+           '<div dir=\'rtl\' id=\'test\'>' +
+           '<input alt=\'Hello\' src=\'junk://fake.url/\' type=\'image\'>'}
+  ];
+  assertErrorFields(expected, errors);
+}
+
+
+function testUndeclaredFieldDetector_ImageTagAltTextError() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<img src=\'junk://fake.url/\' alt=\'Hello\'>';
+  var errors = runUndeclaredFieldDetector(testDiv);
+  var expected = [
+      {'type': 'Undeclared LTR alt text',
+       'severity': 3,
+       'atText': 'Hello',
+       'locationDescription':
+           '<div dir=\'rtl\' id=\'test\'>' +
+           '<img alt=\'Hello\' src=\'junk://fake.url/\'>'}
+  ];
+  assertErrorFields(expected, errors);
+}
+
+
+function testUndeclaredFieldDetector_TextareaValueError() {
+  // Textarea errors always have severity 1.
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<textarea dir=\'rtl\'>This is a textarea<\/textarea>';
+  var errors = runUndeclaredFieldDetector(testDiv);
+  var expected = [
+      {'type': 'Undeclared LTR textarea value',
+       'severity': 1,
+       'atText': 'This is a textarea',
+       'locationDescription':
+           '<div dir=\'rtl\' id=\'test\'><textarea dir=\'rtl\'>'}
+  ];
+  assertErrorFields(expected, errors);
+}
+
+
+function testUndeclaredFieldDetector_FileInputMustBeLtrError() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<input type=\'file\'>';
+  var errors = runUndeclaredFieldDetector(testDiv);
+  var expected = [
+      {'type': 'File input not LTR',
+       'severity': 2,
+       'locationDescription':
+           '<div dir=\'rtl\' id=\'test\'><input type=\'file\'>'}
+  ];
+  assertErrorFields(expected, errors);
+}
+
+
+function testUndeclaredFieldDetector_FileInputNoError() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'ltr'});
+  goog.dom.appendChild(document.body, testDiv);
+  testDiv.innerHTML = '<input type=\'file\'>';
+  var errors = runUndeclaredFieldDetector(testDiv);
+  assertErrorFields([], errors);
+}
+
+
+function testUndeclaredFieldDetector_DeclaredElementCausesLowSeverityError() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  goog.dom.appendChild(document.body, testDiv);
+
+  // This is still an error, but because the actual element has a 'dir'
+  // declaration, we assume it's and demote the severity.
+  testDiv.innerHTML = '<div dir=\'rtl\' title=\'...working\'><\/div>';
+  var errors = runUndeclaredFieldDetector(testDiv);
+  var expected = [
+      {'type': 'Undeclared LTR title text',
+       'severity': 4,
+       'atText': '...working',
+       'locationDescription':
+           '<div dir=\'rtl\' id=\'test\'>' +
+           '<div dir=\'rtl\' title=\'...working\'>'
+      }
+  ];
+  assertErrorFields(expected, errors);
+}
+
+
+function testUndeclaredFieldDetector_CssDeclaredElementCausesLowSeverity() {
+  var testDiv = goog.dom.createDom('div', {'id': 'test', 'dir': 'rtl'});
+  goog.dom.appendChild(document.body, testDiv);
+
+  // As above, but this time the directionality of the element is declared via
+  // a CSS style.
+  testDiv.innerHTML =
+      '<div title=\'working!\' style=\'direction: rtl;\'><\/div>';
+  var errors = runUndeclaredFieldDetector(testDiv);
+  var expected = [
+      {'type': 'Undeclared LTR title text',
+       'severity': 4,
+       'atText': 'working!',
+       'locationDescription':
+           '<div dir=\'rtl\' id=\'test\'>' +
+           '<div style=\'direction: rtl\' title=\'working!\'>'
+      }
+  ];
+  // Some browsers add a semicolon to the end of the style attribute; normalize
+  // the values before asserting.
+  if (!!errors[0].locationDescription) {
+    errors[0].locationDescription =
+        errors[0].locationDescription.replace('rtl;', 'rtl');
+  }
+  if (USING_IE7) {
+    expected[0].locationDescription =
+        '<div dir=\'rtl\' id=\'test\'><div title=\'working!\'>';
+  }
+  assertErrorFields(expected, errors);
+}
+
+    </script>
+
+  </body>
+</html>

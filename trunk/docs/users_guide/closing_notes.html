@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+  <!--
+      Copyright 2010 Google Inc. All Rights Reserved.
+
+      Use of this source code is governed by an Apache 2.0 License.
+      See the COPYING file for details.
+    -->
+
+
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link href="users_guide.css" rel="stylesheet" type="text/css">
+
+    <title>BidiChecker User's Guide</title>
+  </head>
+
+  <body>
+
+    <table width="100%"><tr>
+    <td class="prev-link" width="33%"><a href="how_to_devise.html">&lt;&lt; How to devise effective test cases &lt;&lt;</a></td>
+    <td class="up-link" width="33%"><a href="index.html">
+        ^^ Table of Contents ^^</a></td>
+    <td class="next-link" width="33%">&nbsp;</td>
+    </tr></table>
+
+    <hr>
+
+    <h1><a href="index.html">BidiChecker User's Guide</a></h1>
+
+    <h2>7. Closing notes</h2>
+
+        <ul>
+      <li><a href="#HtmlIssues">Issues with HTML support</a></li>
+      <li><a href="#KnownProblems">Known problems</a></li>
+    </ul>
+
+    <h3><a name="HtmlIssues">Issues with HTML support</a></h3>
+
+    <p>Certain features of HTML require special handling:</p>
+
+    <ul>
+      <li><b>Undisplayed text.</b> Content designated as
+        "display:none" is ignored by BidiChecker. If a page has elements
+        which are conditionally displayed when something is clicked, for
+        example, they will not be checked while invisible.</li>
+
+      <li><b>Frames.</b> When traversing the DOM of the page,
+        BidiChecker also enters the contents of frames (either FRAME or IFRAME
+        elements). The frame's location is appended to the element's location
+        description, such as: "<span class="inline-code">in
+          &lt;div id='abc'&gt;&lt;p&gt; in &lt;iframe id='frame1'&gt;</span>".
+        In the case of FRAMEs making up the top-level page passed to
+        BidiChecker, their overall directionality is checked to match the
+        specified value; in the case of IFRAMEs and FRAMEs below IFRAMEs, their
+        overall directionality is not checked. If a frame's contents are hosted
+        on a different domain, they are not checked; the Javascript security
+        model makes them inaccessible, and you probably don't intend to check
+        them anyway.
+      </li>
+
+      <li><b>Unicode bidi characters.</b> BidiChecker does not yet handle
+        <a href="http://www.w3.org/TR/unicode-xml/#Bidi" target="_blank">Unicode
+        bidi embedding control characters</a>. This
+        means that in the rare situation where embedding control characters
+        are used to fix a bidi bug, such as
+        in <b>&lt;option&gt;</b> elements, BidiChecker will report
+        the bug anyway. In the rarer circumstance where incorrectly used
+        embedding control characters may introduce a bug, the bug will not be
+        identified. However, BidiChecker currently <b>does</b> correctly
+        handle the
+        <a href="http://code.google.com/p/pseudolocalization-tool/"
+           target="_blank">Fake
+        Bidi pseudolocale</a>, treating Fake Bidi messages as RTL text when
+        searching for undeclared LTR text. (Below revision 2, it is only
+        treated as RTL when looking for undeclared LTR text, but not when
+        looking for undeclared RTL text.)</li>
+
+      <li><b>Layout garbling of non-text inline elements.</b> Certain page
+        elements, such as inputs and images, are affected by bidi layout
+        garbling bugs as if they were neutral characters. This is not yet
+        identified.</li>
+
+      <li><b>&lt;noscript&gt; elements.</b> The contents
+        of <b>noscript</b> tags (which are meant to be rendered when
+        scripting is disabled) are not checked by BidiChecker; anything inside
+        them is skipped.</li>
+    </ul>
+
+
+    <h3><a name="KnownProblems">Known problems</a></h3>
+
+    <ul>
+      <li>The GUI may not work correctly if more than one test is run from a
+        given JavaScript test file. Assuming each test navigates the application
+        and modifies the DOM of the page, errors identified by a run of
+        BidiChecker in one test may refer to DOM elements which are modified or
+        deleted by a subsequent test. This will leave a malfunctioning GUI,
+        which will be unable to highlight some or all of the error locations.
+        Furthermore, even if errors are found in more than one test, only one
+        instance of the GUI will be available. If the GUI is to be run from
+        automated tests, it is recommended to structure the system so as to run
+        only one test per test page.</li>
+
+      <li>The in-page dialog box of the GUI mode does not work correctly
+        when run on some pages. For example, in a page based on frameset-style
+        frames, the dialog box will always appear in the first frame on the
+        page, where it may not fit or may be inaccessible or invisible.
+        Generally you should prefer to run the GUI in popup mode when possible.
+      </li>
+
+      <li>If an error's page location is scrolled out of view in a scrollable
+        component, covered by another element, or generally hidden in some way
+        (other than by setting <span class="inline-code">display:none</span>,
+        which would prevent BidiChecker reporting an error on it in the first
+        place), it will not be visible when highlighted by the GUI.</li>
+    </ul>
+
+
+
+
+    <hr>
+
+    <table width="100%"><tr>
+    <td class="prev-link" width="33%"><a href="how_to_devise.html">&lt;&lt; How to devise effective test cases &lt;&lt;</a></td>
+    <td class="up-link" width="33%"><a href="index.html">
+        ^^ Table of Contents ^^</a></td>
+    <td class="next-link" width="33%">&nbsp;</td>
+    </tr></table>
+
+  </body>
+</html>
