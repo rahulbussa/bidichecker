@@ -289,8 +289,8 @@ bidichecker.gui.app.OptionsPage.prototype.getOptions_ = function() {
       -1;
 
   options.dir = /** @type {string} */
-      bidichecker.gui.app.getRadioButtonGroupValue_(goog.dom.getDomHelper(),
-          'dir');
+      (bidichecker.gui.app.getRadioButtonGroupValue_(goog.dom.getDomHelper(),
+          'dir'));
 
   return options;
 };

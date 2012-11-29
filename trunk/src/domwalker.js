@@ -239,7 +239,7 @@ bidichecker.DomWalker.prototype.inDeclaredDir = function() {
  *     position.
  */
 bidichecker.DomWalker.prototype.getCurrentBlock = function() {
-  return (/** @type {Element} */ goog.array.peek(this.blockStack_));
+  return /** @type {Element} */ (goog.array.peek(this.blockStack_));
 };
 
 

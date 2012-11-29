@@ -59,7 +59,7 @@ function testErrorCollector_AddErrorWithLocation() {
 
   var collector = new bidichecker.ErrorCollector(new bidichecker.FrameStack());
   var error = new bidichecker.Error('abc', 2);
-  var locationElement = (/** @type {Element} */ testDiv.firstChild);
+  var locationElement = /** @type {Element} */ (testDiv.firstChild);
   collector.addError(error, locationElement);
   assertArrayEquals([error], collector.getErrors());
 
@@ -125,10 +125,10 @@ function testErrorCollector_AddErrorsInFrames() {
 
   var frameStack = new bidichecker.FrameStack;
   var collector = new bidichecker.ErrorCollector(frameStack);
-  var frameElement1 = (/** @type {Element} */ testDiv.firstChild);
-  var frameElement2 = (/** @type {Element} */ testDiv.firstChild.firstChild);
+  var frameElement1 = /** @type {Element} */ (testDiv.firstChild);
+  var frameElement2 = /** @type {Element} */ (testDiv.firstChild.firstChild);
   var locationElement =
-      (/** @type {Element} */ testDiv.firstChild.firstChild.firstChild);
+      /** @type {Element} */ (testDiv.firstChild.firstChild.firstChild);
 
   frameStack.push(frameElement1);
   var error1 = new bidichecker.Error('abc', 2);

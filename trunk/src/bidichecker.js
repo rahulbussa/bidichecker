@@ -167,7 +167,7 @@ bidichecker.BidiChecker.prototype.checkPage = function(shouldBeRtl, opt_element,
   // {@top.document.body} always finds the top level of the current page, even
   // if we started within a frame.
   var nonNullElement =
-      (/** @type {!Element} */ opt_element || top.document.body);
+      /** @type {!Element} */ (opt_element || top.document.body);
   var filters = opt_filters || [];
 
   bidichecker.Error.clearHighlightableAreas();

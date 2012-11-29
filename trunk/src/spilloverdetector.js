@@ -101,6 +101,11 @@ bidichecker.SpilloverDetector.prototype.startListening = function(scanner) {
   eventHandler.listenOnce(scanner.getDomWalker(),
                           bidichecker.DomWalker.EventTypes.END_OF_DOM,
                           eventHandler.removeAll, false, eventHandler);
+
+  // Temp assignment to convince static analysis we will dispose eventHandler.
+  var eventTarget = /** @type {!goog.events.EventTarget}*/ (
+      scanner.getDomWalker());
+  eventTarget.registerDisposable(eventHandler);
 };
 
 

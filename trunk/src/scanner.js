@@ -127,7 +127,7 @@ bidichecker.Scanner.prototype.scanDomRecursively_ = function(
     try {
       // Accessing the body will fail for security reasons if the frame is
       // hosted on a different domain; hence, the try-catch block.
-      var frameBody = (/** @type {!Element} */
+      var frameBody = /** @type {!Element} */ (
           goog.dom.getFrameContentDocument(frame).body);
 
       // We assume we don't know the expected overall directionality of iframes.
@@ -161,9 +161,15 @@ bidichecker.Scanner.prototype.runDetectors_ = function(element, expectedDir) {
   for (var i = 0; i < detectors.length; ++i) {
     detectors[i].startListening(this);
   }
-
-  this.domWalker_.go();
-  return this.domWalker_.getFrames();
+  try {
+    this.domWalker_.go();
+    return this.domWalker_.getFrames();
+  } finally {
+    goog.dispose(this.domWalker_);
+    this.domWalker_ = null;
+    goog.dispose(this.dirChunkWalker_);
+    this.dirChunkWalker_ = null;
+  }
 };
 
 

@@ -161,7 +161,7 @@ bidichecker.FilterFactory.readFiltersFromJson = function(opt_filtersJson) {
   }
 
   var bareFilters =
-      (/** @type {Array.<!Object>} */ goog.json.parse(opt_filtersJson));
+      /** @type {Array.<!Object>} */ (goog.json.parse(opt_filtersJson));
   return goog.array.map(bareFilters, function(bareFilter) {
     return bidichecker.FilterFactory.constructFilter_(bareFilter);
   });
@@ -451,7 +451,7 @@ bidichecker.FilterFactory.checkParam_ = function(bareObject, field, type) {
  */
 bidichecker.FilterFactory.getStringParam_ = function(bareObject, field) {
   bidichecker.FilterFactory.checkParam_(bareObject, field, 'string');
-  return (/** @type {string} */ bareObject[field]);
+  return /** @type {string} */ (bareObject[field]);
 };
 
 
@@ -464,7 +464,7 @@ bidichecker.FilterFactory.getStringParam_ = function(bareObject, field) {
  */
 bidichecker.FilterFactory.getNumberParam_ = function(bareObject, field) {
   bidichecker.FilterFactory.checkParam_(bareObject, field, 'number');
-  return (/** @type {number} */ bareObject[field]);
+  return /** @type {number} */ (bareObject[field]);
 };
 
 
@@ -481,7 +481,7 @@ bidichecker.FilterFactory.getRegexpParam_ = function(bareObject, fieldName) {
   var field = bareObject[fieldName];
   var pattern;
   if (typeof field == 'string') {
-    pattern = (/** @type {string} */ field);
+    pattern = /** @type {string} */ (field);
   } else if (field instanceof RegExp) {
     pattern = field.source;
   } else {

@@ -55,7 +55,7 @@ goog.inherits(bidichecker.TextErrorScanner, bidichecker.Scanner);
  *     usually the body.
  * @param {goog.i18n.bidi.Dir} expectedDir Expected overall directionality, or
  *     {@code UNKNOWN} if not applicable.
- * @return {Array.<!bidichecker.Detector>} List of detectors to run.
+ * @return {!Array.<!bidichecker.Detector>} List of detectors to run.
  */
 bidichecker.TextErrorScanner.prototype.buildDetectors = function(
     element, expectedDir) {
@@ -73,7 +73,7 @@ bidichecker.TextErrorScanner.prototype.buildDetectors = function(
  *     {@code UNKNOWN} if not applicable.
  * @param {!bidichecker.ErrorCollector} errorCollector The error collector.
  * @param {number} revision Revision of checks to run.
- * @return {Array.<!bidichecker.Detector>} List of detectors to run.
+ * @return {!Array.<!bidichecker.Detector>} List of detectors to run.
  */
 bidichecker.TextErrorScanner.buildDetectors = function(element,
                                                        expectedDir,
