@@ -77,6 +77,11 @@ bidichecker.UndeclaredTextDetector.prototype.startListening =
   eventHandler.listenOnce(scanner.getDirChunkWalker(),
                           bidichecker.DirChunkWalker.EventTypes.END_OF_CHUNKS,
                           eventHandler.removeAll, false, eventHandler);
+
+  // Temp assignment to convince static analysis we will dispose eventHandler.
+  var eventTarget = /** @type {!goog.events.EventTarget}*/ (
+      scanner.getDirChunkWalker());
+  eventTarget.registerDisposable(eventHandler);
 };
 
 
@@ -132,7 +137,7 @@ bidichecker.UndeclaredTextDetector.prototype.addError_ = function(
       new bidichecker.Error(message, severity, highlightableArea, match.text);
   this.addAdjacentNeutrals_(chunk.getText(), match, error);
   var locationElement =
-      (/** @type {Element} */ chunk.findNodeAtPosition(match.index).parentNode);
+      /** @type {Element} */ (chunk.findNodeAtPosition(match.index).parentNode);
   this.errorCollector_.addError(error, locationElement);
 };
 

@@ -52,6 +52,9 @@
         var locationUrl = window.location.toString();
         var lastSlash = locationUrl.lastIndexOf('/');
         var baseUrl = locationUrl.substr(0, lastSlash);
+        // Force the bookmarklet to use https: URLs for the scripts so that it
+        // works on https: pages.
+        baseUrl = baseUrl.replace(/^http:/, 'https:');
         var scriptUrl = baseUrl + '/bidichecker_packaged.js';
         var guiAppUrl = baseUrl + '/gui-app/errorpage.html';
         document.getElementById('ltr-bookmarklet').href =
