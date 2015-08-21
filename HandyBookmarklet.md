@@ -1,0 +1,1 @@
+Information about the BidiChecker bookmarklet has been moved [here](http://bidichecker.googlecode.com/svn/trunk/src/install_bookmarklet.html).
